@@ -3,6 +3,7 @@
 
 #include <string>
 #include <GL/glew.h>
+#include <memory>
 #include "common.h"
 
 

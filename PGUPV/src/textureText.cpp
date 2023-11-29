@@ -1,5 +1,6 @@
 
 #include <assert.h>
+#include <cstring>
 
 #include "glStateCache.h"
 #include "textureText.h"

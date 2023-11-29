@@ -9,7 +9,7 @@ set(SDL_TEST_LIBRARY OFF)
 
 FetchContent_Declare(SDL
     GIT_REPOSITORY "https://github.com/libsdl-org/SDL"
-    GIT_TAG "df05d5eff45d15eff45cdae9f65e2ab4c3fd8e07"
+    GIT_TAG "main"
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(SDL)
@@ -23,6 +23,8 @@ set_target_properties(freetype PROPERTIES
 			 INTERFACE_INCLUDE_DIRECTORIES ${FREETYPE_INCLUDE_DIRS}
 			 IMPORTED_IMPLIB ${FREETYPE_LIBRARY}
 )
+
+else()
 endif()
 
 set(SDL3TTF_VENDORED OFF)
@@ -102,19 +104,19 @@ FetchContent_Declare(dirent
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(dirent)
+
 add_library(dirent_lib INTERFACE)
 target_include_directories(dirent_lib INTERFACE ${dirent_SOURCE_DIR}/include)
+set(EXTRA_LIBS "dirent_lib")
 
-endif()
 
 
-if (MSVC)
 set(FreeImageDLL ${CMAKE_CURRENT_SOURCE_DIR}/FreeImage/Dist/x64/FreeImage.dll)
-add_library(FreeImage SHARED IMPORTED)
-set_target_properties(FreeImage PROPERTIES
-			 INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/FreeImage/Dist/x64/
-             IMPORTED_LOCATION ${FreeImageDLL}
-			 IMPORTED_IMPLIB ${CMAKE_CURRENT_SOURCE_DIR}/FreeImage/Dist/x64/FreeImage.lib
+add_library(freeimage SHARED IMPORTED)
+set_target_properties(freeimage PROPERTIES
+	INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/FreeImage/Dist/x64/
+        IMPORTED_LOCATION ${FreeImageDLL}
+	IMPORTED_IMPLIB ${CMAKE_CURRENT_SOURCE_DIR}/FreeImage/Dist/x64/FreeImage.lib
 )
 
 
@@ -137,26 +139,33 @@ set_target_properties(${libname} PROPERTIES
 			 INTERFACE_INCLUDE_DIRECTORIES ${FFmpeg_INCLUDE_DIR}
              IMPORTED_LOCATION ${DLL}
 			 IMPORTED_IMPLIB ${LIBFILE}
+set(EXTRA_LIBS ${EXTRA_LIBS} ${libname})
 )
 endforeach()
 
-else()
 
+else()
+find_package(FREEIMAGE REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(FFMPEG)
+set(EXTRA_LIBS ${FFMPEG_LIBRARIES})
+message("EXTRA_LIBS:")
+message("${EXTRA_LIBS}")
 endif()
 
 
 add_library(PG-deps INTERFACE)
-target_link_libraries(PG-deps INTERFACE SDL3::SDL3 assimp::assimp SDL3_ttf::SDL3_ttf FreeImage 
-	nlohmann_json::nlohmann_json gli_lib libavformat libavcodec libswscale libavutil libavdevice
-	par_lib	dirent_lib)
+target_link_libraries(PG-deps INTERFACE SDL3::SDL3 assimp::assimp SDL3_ttf::SDL3_ttf freeimage 
+	nlohmann_json::nlohmann_json gli_lib ${EXTRA_LIBS} par_lib)
 
 add_library(PG-public-deps INTERFACE)
 target_link_libraries(PG-deps INTERFACE glm::glm)
 
-
 add_library(glew STATIC glew-2.2.0/src/glew.c)
 target_include_directories(glew PUBLIC glew-2.2.0/include)
 target_compile_definitions(glew PUBLIC GLEW_STATIC)
+target_link_libraries(glew PUBLIC OpenGL::GL)
+
 
 set(imdir ${imgui_SOURCE_DIR})
 

@@ -7,7 +7,7 @@
 //
 
 #ifndef _WIN32
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 #else
 #include <SDL_keycode.h>
 #endif
