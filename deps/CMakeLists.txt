@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.14)
 
 include(FetchContent)
 
+set(OpenGL_GL_PREFERENCE "GLVND")
+
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 set(SDL_TESTS OFF)
