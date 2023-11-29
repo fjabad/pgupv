@@ -2,19 +2,33 @@ cmake_minimum_required(VERSION 3.14)
 
 include(FetchContent)
 
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 set(SDL_TESTS OFF)
+set(SDL_TEST_LIBRARY OFF)
+
 FetchContent_Declare(SDL
     GIT_REPOSITORY "https://github.com/libsdl-org/SDL"
-    GIT_TAG "release-2.28.5"
+    GIT_TAG "df05d5eff45d15eff45cdae9f65e2ab4c3fd8e07"
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(SDL)
 
+if (MSVC)
+add_library(freetype STATIC IMPORTED)
+set (FREETYPE_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/freetype-2.13.2/objs/freetype.lib)
+set(FREETYPE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/freetype-2.13.2/include)
 
+set_target_properties(freetype PROPERTIES
+			 INTERFACE_INCLUDE_DIRECTORIES ${FREETYPE_INCLUDE_DIRS}
+			 IMPORTED_IMPLIB ${FREETYPE_LIBRARY}
+)
+endif()
+
+set(SDL3TTF_VENDORED OFF)
 FetchContent_Declare(SDL_ttf
     GIT_REPOSITORY "https://github.com/libsdl-org/SDL_ttf.git"
-    GIT_TAG "release-2.20.2"
+    GIT_TAG "3958dc2192fcb6c32ea236c8f980131512364e95"
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(SDL_ttf)
@@ -95,17 +109,6 @@ endif()
 
 
 if (MSVC)
-set(SDL3TTF_VENDORED OFF)
-add_library(freetype STATIC IMPORTED)
-set (FREETYPE_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/freetype-2.13.2/objs/freetype.lib)
-set(FREETYPE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/freetype-2.13.2/include)
-
-set_target_properties(freetype PROPERTIES
-			 INTERFACE_INCLUDE_DIRECTORIES ${FREETYPE_INCLUDE_DIRS}
-			 IMPORTED_IMPLIB ${FREETYPE_LIBRARY}
-)
-
-
 set(FreeImageDLL ${CMAKE_CURRENT_SOURCE_DIR}/FreeImage/Dist/x64/FreeImage.dll)
 add_library(FreeImage SHARED IMPORTED)
 set_target_properties(FreeImage PROPERTIES
@@ -155,7 +158,9 @@ add_library(glew STATIC glew-2.2.0/src/glew.c)
 target_include_directories(glew PUBLIC glew-2.2.0/include)
 target_compile_definitions(glew PUBLIC GLEW_STATIC)
 
-add_library(dearimgui STATIC imgui/imgui.cpp imgui/imgui_draw.cpp imgui/imgui_tables.cpp imgui/imgui_widgets.cpp imgui/backends/imgui_impl_sdl3.cpp imgui/backends/imgui_impl_opengl3.cpp)
-target_include_directories(dearimgui PUBLIC imgui/ imgui/backends)
+set(imdir ${imgui_SOURCE_DIR})
+
+add_library(dearimgui STATIC ${imdir}/imgui.cpp ${imdir}/imgui_draw.cpp ${imdir}/imgui_tables.cpp ${imdir}/imgui_widgets.cpp ${imdir}/backends/imgui_impl_sdl3.cpp ${imdir}/backends/imgui_impl_opengl3.cpp)
+target_include_directories(dearimgui PUBLIC ${imdir}/ ${imdir}/backends)
 target_compile_definitions(dearimgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW GLM_ENABLE_EXPERIMENTAL IMGUI_DISABLE_OBSOLETE_FUNCTIONS IMGUIZMO_IMGUI_FOLDER= IMGUI_DEFINE_MATH_OPERATORS)
 target_link_libraries(dearimgui PRIVATE SDL3::SDL3)
