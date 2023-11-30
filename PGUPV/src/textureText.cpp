@@ -7,7 +7,12 @@
 #include "log.h"
 #include "app.h"
 
+
+#ifdef WIN32
 #include <SDL_ttf.h>
+#else
+#include <SDL2/SDL_ttf.h>
+#endif
 
 using PGUPV::TextureTextBuilder;
 using PGUPV::TextureText;

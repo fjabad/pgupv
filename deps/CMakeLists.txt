@@ -34,10 +34,6 @@ FetchContent_Declare(SDL_ttf
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(SDL_ttf)
-
-else()
-find_package(SDL2 REQUIRED)
-find_package(SDL2_ttf REQUIRED)
 endif()
 
 
@@ -80,6 +76,7 @@ FetchContent_Declare(json
 )
 FetchContent_MakeAvailable(json)
 
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 set(GLI_TEST_ENABLE OFF)
 FetchContent_Declare(gli
@@ -148,16 +145,19 @@ set_target_properties(${libname} PROPERTIES
 set(EXTRA_LIBS ${EXTRA_LIBS} ${libname})
 endforeach()
 
+set (EXTRA_LIBS ${EXTRA_LIBS} SDL2::SDL2)
+set (EXTRA_LIBS ${EXTRA_LIBS} SDL2_ttf::SDL2_ttf)
 
 else()
 find_package(FREEIMAGE REQUIRED)
-
-find_package(FFMPEG)
-set(EXTRA_LIBS ${FFMPEG_LIBRARIES})
+find_package(FFMPEG REQUIRED)
+find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)
+set(EXTRA_LIBS ${FFMPEG_LIBRARIES} SDL2 SDL2_ttf)
 endif()
 
 add_library(PG-deps INTERFACE)
-target_link_libraries(PG-deps INTERFACE SDL2::SDL2 assimp::assimp SDL2_ttf::SDL2_ttf freeimage 
+target_link_libraries(PG-deps INTERFACE assimp::assimp freeimage 
 	nlohmann_json::nlohmann_json gli_lib ${EXTRA_LIBS} par_lib)
 
 add_library(PG-public-deps INTERFACE)

@@ -1,7 +1,8 @@
-if (MSVC) 
-else()
+if (NOT MSVC) 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 endif()
 
 find_package(OpenGL REQUIRED)

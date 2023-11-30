@@ -1,8 +1,13 @@
 #pragma once
 
 #include <string>
+#ifdef WIN32
 #include <SDL_events.h>
 #include <SDL_video.h>
+#else
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_video.h>
+#endif
 
 #include <glm/fwd.hpp>
 #include <glm/vec2.hpp>
