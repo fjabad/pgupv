@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 include(FetchContent)
 
 set(OpenGL_GL_PREFERENCE "GLVND")
+find_package(OpenGL REQUIRED)
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
@@ -141,20 +142,17 @@ set_target_properties(${libname} PROPERTIES
 			 INTERFACE_INCLUDE_DIRECTORIES ${FFmpeg_INCLUDE_DIR}
              IMPORTED_LOCATION ${DLL}
 			 IMPORTED_IMPLIB ${LIBFILE}
-set(EXTRA_LIBS ${EXTRA_LIBS} ${libname})
 )
+set(EXTRA_LIBS ${EXTRA_LIBS} ${libname})
 endforeach()
 
 
 else()
 find_package(FREEIMAGE REQUIRED)
-find_package(OpenGL REQUIRED)
+
 find_package(FFMPEG)
 set(EXTRA_LIBS ${FFMPEG_LIBRARIES})
-message("EXTRA_LIBS:")
-message("${EXTRA_LIBS}")
 endif()
-
 
 add_library(PG-deps INTERFACE)
 target_link_libraries(PG-deps INTERFACE SDL3::SDL3 assimp::assimp SDL3_ttf::SDL3_ttf freeimage 
