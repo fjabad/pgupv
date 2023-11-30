@@ -8,7 +8,7 @@
 #include "guipg.h"
 
 #include "imgui.h"
-#include "imgui_impl_sdl3.h"
+#include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
 #include "imGuIZMOquat.h"
 
@@ -39,7 +39,7 @@ bool GUILib::initGUI(SDL_Window* window, SDL_GLContext *gl_context, const std::s
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
 
-	ImGui_ImplSDL3_InitForOpenGL(window, gl_context);
+	ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
 	ImGui_ImplOpenGL3_Init(glsl_version.c_str());
 
 	io.Fonts->AddFontDefault();
@@ -61,12 +61,12 @@ bool GUILib::initGUI(SDL_Window* window, SDL_GLContext *gl_context, const std::s
 }
 
 bool GUILib::processEvent(SDL_Event *event) {
-	ImGui_ImplSDL3_ProcessEvent(event);
+	ImGui_ImplSDL2_ProcessEvent(event);
 
 	auto io = ImGui::GetIO();
-	if (io.WantCaptureKeyboard && (event->type >= SDL_EVENT_KEY_DOWN && event->type <= SDL_EVENT_KEYMAP_CHANGED))
+	if (io.WantCaptureKeyboard && (event->type >= SDL_KEYDOWN && event->type <= SDL_KEYMAPCHANGED))
 		return true;
-	if (io.WantCaptureMouse && (event->type >= SDL_EVENT_MOUSE_MOTION && event->type <= SDL_EVENT_MOUSE_WHEEL))
+	if (io.WantCaptureMouse && (event->type >= SDL_MOUSEMOTION && event->type <= SDL_MOUSEWHEEL))
 		return true;
 	return false;
 }
@@ -74,7 +74,7 @@ bool GUILib::processEvent(SDL_Event *event) {
 void GUILib::startFrame(SDL_Window *window) {
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL3_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 }
 
@@ -91,7 +91,7 @@ void GUILib::renderFrame() {
 void GUILib::shutdown() {
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplSDL3_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 }
 
@@ -305,7 +305,7 @@ void GUILib::NextItemGrowWidth(float pct)
 	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x * pct);
 }
 
-float GUILib::GetAvailableWidth()
+float PGUPV::GUILib::GetAvailableWidth()
 {
 	return ImGui::GetContentRegionAvail().x;
 }

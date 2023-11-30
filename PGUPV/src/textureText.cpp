@@ -7,7 +7,7 @@
 #include "log.h"
 #include "app.h"
 
-#include <SDL3_ttf/SDL_ttf.h>
+#include <SDL_ttf.h>
 
 using PGUPV::TextureTextBuilder;
 using PGUPV::TextureText;
@@ -123,5 +123,5 @@ TextureText::TextureText(const std::string& t, std::shared_ptr<Font> font, uint 
 	  ERRT("Formato de imagen no soportado");
 	  */
 
-	SDL_DestroySurface(textSurface);
+	SDL_FreeSurface(textSurface);
 }

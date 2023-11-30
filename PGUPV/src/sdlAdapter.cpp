@@ -7,7 +7,7 @@
 //
 
 #ifndef _WIN32
-#include <SDL3/SDL.h>
+#include <SDL2/SDL.h>
 #else
 #include <SDL_keycode.h>
 #endif
@@ -229,15 +229,17 @@ HW::~HW() {
 }
 
 void HW::moveMousePointerInWindow(int x, int y) {
-	SDL_WarpMouseInWindow(nullptr, static_cast<float>(x), static_cast<float>(y));
+	SDL_WarpMouseInWindow(nullptr, x, y);
 }
 
+#if SDL_VERSION_ATLEAST(2, 0, 4)
 void HW::moveMousePointerTo(int x, int y) {
-	SDL_WarpMouseGlobal(static_cast<float>(x), static_cast<float>(y));
+	SDL_WarpMouseGlobal(x, y);
 }
+#endif
 
 GamepadHW::GamepadHW(size_t gamepad) {
-	gameController = SDL_OpenJoystick(gsl::narrow<int>(gamepad));
+	gameController = SDL_JoystickOpen(gsl::narrow<int>(gamepad));
 	if (gameController == nullptr) {
 		ERRT(std::string("No se ha podido usar el joystick. Error SDL: ") + SDL_GetError());
 	}
@@ -245,37 +247,40 @@ GamepadHW::GamepadHW(size_t gamepad) {
 		INFO(std::string("Joystick (") + getName() + "): " +
 			std::to_string(getNumAxes()) + " ejes, " +
 			std::to_string(getNumButtons()) + " botones, " +
-			std::to_string(getNumHats()) + " hats, ");
+			std::to_string(getNumHats()) + " hats, " +
+			std::to_string(getNumBalls()) + " trackballs");
 	}
 }
 
 GamepadHW::~GamepadHW() {
 	if (gameController) {
-		INFO(std::string("Destruyendo el joystick ") + SDL_GetJoystickName(gameController));
-		SDL_CloseJoystick(gameController);
+		INFO(std::string("Destruyendo el joystick ") + SDL_JoystickName(gameController));
+		SDL_JoystickClose(gameController);
 	}
 }
 
 std::string GamepadHW::getName() const {
-	return std::string(SDL_GetJoystickName(gameController));
+	return std::string(SDL_JoystickName(gameController));
 }
 
 size_t GamepadHW::getNumAxes() const {
-	return SDL_GetNumJoystickAxes(gameController);
+	return SDL_JoystickNumAxes(gameController);
 }
 
 size_t GamepadHW::getNumButtons() const {
-	return SDL_GetNumJoystickButtons(gameController);
+	return SDL_JoystickNumButtons(gameController);
 }
 
 size_t GamepadHW::getNumHats() const {
-	return SDL_GetNumJoystickHats(gameController);
+	return SDL_JoystickNumHats(gameController);
+}
+
+size_t GamepadHW::getNumBalls() const {
+	return SDL_JoystickNumBalls(gameController);
 }
 
 size_t HW::getNumGamepads() {
-	int count;
-	SDL_GetJoysticks(&count);
-	return count;
+	return SDL_NumJoysticks();
 }
 
 uint64_t HW::currentMillis() {
@@ -345,8 +350,12 @@ static std::string decipherSDLWindowFlags(Uint32 flags) {
 
 	if (flags & SDL_WINDOW_FULLSCREEN)
 		os << "SDL_WINDOW_FULLSCREEN ";
+	if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP)
+		os << "SDL_WINDOW_FULLSCREEN_DESKTOP ";
 	if (flags & SDL_WINDOW_OPENGL)
 		os << "SDL_WINDOW_OPENGL ";
+	if (flags & SDL_WINDOW_SHOWN)
+		os << "SDL_WINDOW_SHOWN ";
 	if (flags & SDL_WINDOW_HIDDEN)
 		os << "SDL_WINDOW_HIDDEN ";
 	if (flags & SDL_WINDOW_BORDERLESS)
@@ -357,17 +366,18 @@ static std::string decipherSDLWindowFlags(Uint32 flags) {
 		os << "SDL_WINDOW_MINIMIZED ";
 	if (flags & SDL_WINDOW_MAXIMIZED)
 		os << "SDL_WINDOW_MAXIMIZED ";
-	if (flags & SDL_WINDOW_MOUSE_GRABBED)
-		os << "SDL_WINDOW_MOUSE_GRABBED ";
+	if (flags & SDL_WINDOW_INPUT_GRABBED)
+		os << "SDL_WINDOW_INPUT_GRABBED ";
 	if (flags & SDL_WINDOW_INPUT_FOCUS)
 		os << "SDL_WINDOW_INPUT_FOCUS ";
 	if (flags & SDL_WINDOW_MOUSE_FOCUS)
 		os << "SDL_WINDOW_MOUSE_FOCUS ";
-	if (flags & SDL_WINDOW_HIGH_PIXEL_DENSITY)
-		os << "SDL_WINDOW_HIGH_PIXEL_DENSITY ";
-	if (flags & SDL_WINDOW_EXTERNAL)
-		os << "SDL_WINDOW_EXTERNAL";
-
+	if (flags & SDL_WINDOW_FOREIGN)
+		os << "SDL_WINDOW_FOREIGN";
+#if SDL_VERSION_ATLEAST(2, 0, 1)
+	if (flags & SDL_WINDOW_ALLOW_HIGHDPI)
+		os << "SDL_WINDOW_ALLOW_HIGHDPI ";
+#endif
 	return os.str();
 }
 
@@ -444,20 +454,8 @@ std::shared_ptr<WindowHW> WindowHW::createWindow(Window *container, const std::s
 	if (flags & DEBUG)
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
-	auto prop = SDL_CreateProperties();
-	SDL_SetStringProperty(prop, "title", title.c_str());
-	SDL_SetNumberProperty(prop, "x", posx);
-	SDL_SetNumberProperty(prop, "y", posx);
-	SDL_SetNumberProperty(prop, "width", width);
-	SDL_SetNumberProperty(prop, "height", height);
-	SDL_SetBooleanProperty(prop, "opengl", true);
-	if (flags & FULLSCREEN)
-		SDL_SetBooleanProperty(prop, "fullscreen", true);
-	else
-		SDL_SetBooleanProperty(prop, "resizable", true);
-
-	window->_mainwindow = SDL_CreateWindowWithProperties(prop);
-	SDL_DestroyProperties(prop);
+	window->_mainwindow = SDL_CreateWindow(title.c_str(), posx, posy, width, height,
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | ((flags & FULLSCREEN) ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_RESIZABLE));
 	if (!(window->_mainwindow)) {
 		ERRT("Unable to create window for " + window->reqGLVersion + ". SDL Error: " +
 			SDL_GetError());
@@ -512,7 +510,7 @@ void WindowHW::setFullScreen(bool fs) {
 	if (fs == _fullscreen)
 		return;
 	if (fs) {
-		SDL_SetWindowFullscreen(_mainwindow, SDL_WINDOW_FULLSCREEN);
+		SDL_SetWindowFullscreen(_mainwindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
 	else {
 		SDL_SetWindowFullscreen(_mainwindow, 0);
@@ -539,14 +537,11 @@ WindowHW::~WindowHW() {
 
 
 void WindowHW::setMousePosition(uint x, uint y) {
-	SDL_WarpMouseInWindow(_mainwindow, static_cast<float>(x), static_cast<float>(y));
+	SDL_WarpMouseInWindow(_mainwindow, x, y);
 }
 
 void WindowHW::showMouseCursor(bool show) {
-	if (show) 
-		SDL_ShowCursor();
-	else
-		SDL_HideCursor();
+	SDL_ShowCursor(show ? SDL_ENABLE : SDL_DISABLE);
 }
 
 void WindowHW::setTitle(const std::string &title) {
@@ -758,30 +753,34 @@ bool translateWindowCloseEvent(const SDL_Event &in, WindowClosedEvent &out) {
 
 bool translateSDLEventToPGUPV(const SDL_Event &in, PGUPV::Event &out) {
 	switch (in.type) {
-	case SDL_EVENT_KEY_UP:
-	case SDL_EVENT_KEY_DOWN:
+	case SDL_KEYUP:
+	case SDL_KEYDOWN:
 		return translateKeyboardEvent(in, (KeyboardEvent &)out);
-	case SDL_EVENT_MOUSE_BUTTON_DOWN:
-	case SDL_EVENT_MOUSE_BUTTON_UP:
+	case SDL_MOUSEBUTTONDOWN:
+	case SDL_MOUSEBUTTONUP:
 		return translateMouseButtonEvent(in, (MouseButtonEvent &)out);
-	case SDL_EVENT_MOUSE_MOTION:
+	case SDL_MOUSEMOTION:
 		return translateMouseMotionEvent(in, (MouseMotionEvent &)out);
-	case SDL_EVENT_MOUSE_WHEEL:
+	case SDL_MOUSEWHEEL:
 		return translateMouseWheelEvent(in, (MouseWheelEvent &)out);
-	case SDL_EVENT_JOYSTICK_AXIS_MOTION:
+	case SDL_JOYAXISMOTION:
 		return translateJoyAxisMotionEvent(in, (JoystickMotionEvent &)out);
-	case SDL_EVENT_JOYSTICK_HAT_MOTION:
+	case SDL_JOYHATMOTION:
 		return translateJoyHatMotionEvent(in, (JoystickHatMotionEvent &)out);
-	case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
-	case SDL_EVENT_JOYSTICK_BUTTON_UP:
+	case SDL_JOYBUTTONDOWN:
+	case SDL_JOYBUTTONUP:
 		return translateJoyButtonEvent(in, (JoystickButtonEvent &)out);
-	case SDL_EVENT_TEXT_INPUT:
+	case SDL_TEXTINPUT:
 		return translateTextInputEvent(in, (TextInputEvent &)out);
-	case SDL_EVENT_WINDOW_RESIZED:
-		return translateWindowResizedEvent(in, (WindowResizedEvent &)out);
-	case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-		return translateWindowCloseEvent(in, (WindowClosedEvent &)out);
-	case SDL_EVENT_QUIT:
+	case SDL_WINDOWEVENT:
+		if (in.window.event == SDL_WINDOWEVENT_RESIZED) {
+			return translateWindowResizedEvent(in, (WindowResizedEvent &)out);
+		}
+		else if (in.window.event == SDL_WINDOWEVENT_CLOSE) {
+			return translateWindowCloseEvent(in, (WindowClosedEvent &)out);
+		}
+		break;
+	case SDL_QUIT:
 		out.quit.type = EventType::QuitEvent;
 		return true;
 	default:

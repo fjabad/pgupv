@@ -1,5 +1,5 @@
 #include <string>
-#include <SDL3_ttf/SDL_ttf.h>
+#include <SDL_ttf.h>
 
 #include "font.h"
 #include "log.h"

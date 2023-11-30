@@ -5,7 +5,7 @@
 #include <map>
 
 #ifndef _WIN32
-#include <SDL3/SDL.h>
+#include <SDL2/SDL.h>
 #else
 #include <SDL.h>
 #endif
@@ -41,7 +41,7 @@ namespace PGUPV {
     /**
     \return El número de milisegundos transcurridos desde el inicio de la aplicación
     */
-    uint64_t currentMillis();
+	uint64_t currentMillis();
     /**
     Pausa la ejecución el número de milisegundos indicados
     ¡Cuidado! Esta pausa detiene todo el procesado de eventos y la aplicación se queda
@@ -55,10 +55,14 @@ namespace PGUPV {
     */
     static void moveMousePointerInWindow(int x, int y);
 
+    // Esto se romperá eventualmente (p.e. 3.0.0), pero para esos entonces sólo habrá que quitar 
+    // la guarda
+#if SDL_MAJOR_VERSION>=2 && SDL_MINOR_VERSION>= 0 && SDL_PATCHLEVEL>=4
     /**
     Mueve el puntero del ratón a la posición de la pantalla indicada
     */
     static void moveMousePointerTo(int x, int y);
+#endif
     /**
     Devuelve la versión de la librería subyacente, en forma de:
 
@@ -150,6 +154,7 @@ namespace PGUPV {
     size_t getNumAxes() const;
     size_t getNumButtons() const;
     size_t getNumHats() const;
+    size_t getNumBalls() const;
   private:
     SDL_Joystick *gameController;
   };

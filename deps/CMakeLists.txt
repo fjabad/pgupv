@@ -2,22 +2,21 @@ cmake_minimum_required(VERSION 3.14)
 
 include(FetchContent)
 
-set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL REQUIRED)
 
-set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
+if (MSVC)
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(SDL_TESTS OFF)
 set(SDL_TEST_LIBRARY OFF)
 
-FetchContent_Declare(SDL
+FetchContent_Declare(SDL2
     GIT_REPOSITORY "https://github.com/libsdl-org/SDL"
-    GIT_TAG "main"
+    GIT_TAG "release-2.28.5"
     GIT_SHALLOW ON
 )
-FetchContent_MakeAvailable(SDL)
+FetchContent_MakeAvailable(SDL2)
 
-if (MSVC)
 add_library(freetype STATIC IMPORTED)
 set (FREETYPE_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/freetype-2.13.2/objs/freetype.lib)
 set(FREETYPE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/freetype-2.13.2/include)
@@ -27,16 +26,19 @@ set_target_properties(freetype PROPERTIES
 			 IMPORTED_IMPLIB ${FREETYPE_LIBRARY}
 )
 
-else()
-endif()
-
-set(SDL3TTF_VENDORED OFF)
+set(SDL2TTF_VENDORED OFF)
+set(SDL2TTF_INSTALL OFF)
 FetchContent_Declare(SDL_ttf
     GIT_REPOSITORY "https://github.com/libsdl-org/SDL_ttf.git"
-    GIT_TAG "3958dc2192fcb6c32ea236c8f980131512364e95"
+    GIT_TAG "release-2.20.2"
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(SDL_ttf)
+
+else()
+find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)
+endif()
 
 
 FetchContent_Declare(glm
@@ -155,7 +157,7 @@ set(EXTRA_LIBS ${FFMPEG_LIBRARIES})
 endif()
 
 add_library(PG-deps INTERFACE)
-target_link_libraries(PG-deps INTERFACE SDL3::SDL3 assimp::assimp SDL3_ttf::SDL3_ttf freeimage 
+target_link_libraries(PG-deps INTERFACE SDL2::SDL2 assimp::assimp SDL2_ttf::SDL2_ttf freeimage 
 	nlohmann_json::nlohmann_json gli_lib ${EXTRA_LIBS} par_lib)
 
 add_library(PG-public-deps INTERFACE)
@@ -169,7 +171,7 @@ target_link_libraries(glew PUBLIC OpenGL::GL)
 
 set(imdir ${imgui_SOURCE_DIR})
 
-add_library(dearimgui STATIC ${imdir}/imgui.cpp ${imdir}/imgui_draw.cpp ${imdir}/imgui_tables.cpp ${imdir}/imgui_widgets.cpp ${imdir}/backends/imgui_impl_sdl3.cpp ${imdir}/backends/imgui_impl_opengl3.cpp)
+add_library(dearimgui STATIC ${imdir}/imgui.cpp ${imdir}/imgui_draw.cpp ${imdir}/imgui_tables.cpp ${imdir}/imgui_widgets.cpp ${imdir}/backends/imgui_impl_sdl2.cpp ${imdir}/backends/imgui_impl_opengl3.cpp)
 target_include_directories(dearimgui PUBLIC ${imdir}/ ${imdir}/backends)
 target_compile_definitions(dearimgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW GLM_ENABLE_EXPERIMENTAL IMGUI_DISABLE_OBSOLETE_FUNCTIONS IMGUIZMO_IMGUI_FOLDER= IMGUI_DEFINE_MATH_OPERATORS)
-target_link_libraries(dearimgui PRIVATE SDL3::SDL3)
+target_link_libraries(dearimgui PRIVATE SDL2::SDL2)
