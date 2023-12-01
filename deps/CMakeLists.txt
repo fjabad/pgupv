@@ -121,13 +121,14 @@ set(FFmpeg_BIN_DIR ${FFmpeg_ROOT}/bin)
 
 file(GLOB FF_LIBS ${FFmpeg_ROOT}/lib/*.lib)
 
+set(EXTRA_LIBS "")
+
 foreach (LIBFILE ${FF_LIBS})
 get_filename_component(module ${LIBFILE} NAME_WE)
 set(libname lib${module})
-message("Building " ${libname})
 
 # find the dll
-file(GLOB DLL ${FFmpeg_BIN_DIR}/${module}*.dll)
+file(GLOB DLL ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${module}*.dll)
 
 add_library(${libname} SHARED IMPORTED)
 set_target_properties(${libname} PROPERTIES
@@ -165,7 +166,7 @@ target_link_libraries(dearimgui PRIVATE SDL2::SDL2)
 
 if (MSVC)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_target_properties(assimp gli_dummy glm_shared dearimgui distclean GLEW sdl_headers_copy SDL2 SDL2_ttf SDL2main SDL2-static uninstall zlibstatic UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTIES FOLDER "deps")
+set_target_properties(assimp gli_dummy glm_shared dearimgui GLEW sdl_headers_copy SDL2 SDL2_ttf SDL2main SDL2-static uninstall zlibstatic UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTIES FOLDER "deps")
 set_target_properties(PROPERTIES FOLDER "deps")
 set_target_properties(PROPERTIES FOLDER "deps")
 set_target_properties(glm_shared PROPERTIES FOLDER "deps")

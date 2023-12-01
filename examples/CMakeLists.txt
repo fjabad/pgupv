@@ -9,7 +9,6 @@ set_target_properties(${NAME} PROPERTIES
 endfunction()
 
 file(GLOB dirs LIST_DIRECTORIES true RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "ej*")
-message("${dirs}")
 
 foreach (proj ${dirs})
 add_subdirectory(${proj})
