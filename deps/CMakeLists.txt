@@ -111,7 +111,10 @@ add_library(dirent_lib INTERFACE)
 target_include_directories(dirent_lib INTERFACE ${dirent_SOURCE_DIR}/include)
 set(EXTRA_LIBS "dirent_lib")
 
-
+add_library(GLEW STATIC glew-2.2.0/src/glew.c)
+target_include_directories(GLEW PUBLIC glew-2.2.0/include)
+target_compile_definitions(GLEW PUBLIC GLEW_STATIC)
+target_link_libraries(GLEW PUBLIC OpenGL::GL)
 
 set(FreeImageDLL ${CMAKE_CURRENT_SOURCE_DIR}/FreeImage/Dist/x64/FreeImage.dll)
 add_library(freeimage SHARED IMPORTED)
@@ -153,21 +156,15 @@ find_package(FREEIMAGE REQUIRED)
 find_package(FFMPEG REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
+find_package(GLEW REQUIRED)
 set(EXTRA_LIBS ${FFMPEG_LIBRARIES} SDL2 SDL2_ttf)
 endif()
 
 add_library(PG-deps INTERFACE)
-target_link_libraries(PG-deps INTERFACE assimp::assimp freeimage 
-	nlohmann_json::nlohmann_json gli_lib ${EXTRA_LIBS} par_lib)
+target_link_libraries(PG-deps INTERFACE assimp::assimp freeimage nlohmann_json::nlohmann_json gli_lib ${EXTRA_LIBS} par_lib)
 
 add_library(PG-public-deps INTERFACE)
 target_link_libraries(PG-deps INTERFACE glm::glm)
-
-add_library(glew STATIC glew-2.2.0/src/glew.c)
-target_include_directories(glew PUBLIC glew-2.2.0/include)
-target_compile_definitions(glew PUBLIC GLEW_STATIC)
-target_link_libraries(glew PUBLIC OpenGL::GL)
-
 
 set(imdir ${imgui_SOURCE_DIR})
 
