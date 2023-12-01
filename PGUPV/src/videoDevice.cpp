@@ -86,7 +86,7 @@ void runFFMPEG(const std::string &params, const std::string &outputFile) {
 	auto res = system(("ffmpeg  " + params + " 2> " + tmpFile).c_str());
 	PGUPV::changeCurrentDir(cwd);
 
-	if (res != 1) {
+	if (res != 0) {
 		ERRT("Error al ejecutar ffmpeg");
 	}
 }
