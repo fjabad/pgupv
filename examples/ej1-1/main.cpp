@@ -99,8 +99,7 @@ void MyRender::setup() {
   program.addAttributeLocation(2, "vertcolor");
   // Cargar los shaders que componen el programa (todos los shaders se llaman
   // igual, con distintas extensiones
-  INFO("CWD: " + PGUPV::getCurrentWorkingDir());
-  program.loadFiles("../examples/ej1-1/passthrough");
+  program.loadFiles(App::examplesDir() + "ej1-1/passthrough");
   // Compilar el programa
   program.compile();
 }

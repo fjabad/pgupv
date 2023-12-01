@@ -79,7 +79,7 @@ void MyRender::setup() {
   mats = GLMatrices::build();
   program->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
 
-  program->loadFiles("../examples/ej3-2/ej3-2");
+  program->loadFiles(App::examplesDir() + "ej3-2/ej3-2");
   program->compile();
 
   // Localización del uniform con la unidad de textura

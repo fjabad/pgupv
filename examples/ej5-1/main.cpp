@@ -48,7 +48,7 @@ void MyRender::setup() {
 	mats = GLMatrices::build();
 	program->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
 
-	program->loadFiles("../examples/ej5-1/textureReplace2");
+	program->loadFiles(App::examplesDir() + "ej5-1/textureReplace2");
 	program->compile();
 
 	// Localización del uniform con la unidad de textura

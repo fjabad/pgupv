@@ -66,7 +66,7 @@ void MyRender::setup() {
 
   ashader.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
 
-  ashader.loadFiles("../examples/ej3-3/texture2DArray");
+  ashader.loadFiles(App::examplesDir() + "ej3-3/texture2DArray");
   ashader.compile();
 
   // Localización de los uniform (unidad de textura y capa del array a mostrar)
