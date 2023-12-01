@@ -6,7 +6,7 @@
 
 #include <string>    // for string
 
-#define DEFAULT_FONT "../recursos/fuentes/FreeSans.ttf"
+#define DEFAULT_FONT App::assetsDir() + "fonts/FreeSans.ttf"
 #define DEFAULT_TEXT_SIZE 12
 
 struct _TTF_Font;

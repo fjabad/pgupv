@@ -522,6 +522,16 @@ int App::getWindowIndex(const Window * w) const
 	return -1;
 }
 
+std::string PGUPV::App::examplesDir()
+{
+	return std::string("../examples/");
+}
+
+std::string PGUPV::App::assetsDir()
+{
+	return std::string("../assets/");
+}
+
 void App::processEvents() {
 	auto sw = stats->makeStopWatch();
 	eventProcessor->dispatchPendingEvents();

@@ -22,7 +22,7 @@ TextOverlay::TextOverlay(const std::string &text) : maxWidth(0) {
 
 void TextOverlay::setText(const std::string &text) {
   PGUPV::TextureTextBuilder tb;
-  textHelp = tb.text(text).font(Font::loadFont("../recursos/fuentes/FreeSans.ttf", 14)).wrapWidth(400).
+  textHelp = tb.text(text).font(Font::loadFont(App::assetsDir() + "fonts/FreeSans.ttf", 14)).wrapWidth(400).
     foregroundColor(glm::vec4(.9f, .9f, .9f, 1.0f)).build();
   float invAspectRatio = float(textHelp->getHeight()) / textHelp->getWidth();
   textWidth = textHelp->getWidth();

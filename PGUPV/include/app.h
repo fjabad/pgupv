@@ -360,6 +360,8 @@ namespace PGUPV {
 		return _elapsed;
 	}
     
+	static std::string examplesDir();
+	static std::string assetsDir();
   private:
     void processEvents();
     void update(uint64_t elapsedMs);

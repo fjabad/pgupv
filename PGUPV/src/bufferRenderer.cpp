@@ -13,7 +13,7 @@ using namespace PGUPV;
 BufferRenderer::BufferRenderer(Window &window)
     : _window(window) {
   _shader.addAttributeLocation(Mesh::VERTICES, "position");
-  _shader.loadFiles("../recursos/shaders/showDepthStencil");
+  _shader.loadFiles(App::assetsDir() + "shaders/showDepthStencil");
   _shader.compile();
   _showStencilLoc = _shader.getUniformLocation("showStencil");
   _stencilOrDepthUnitLoc = _shader.getUniformLocation("stencilOrDepthUnit");
