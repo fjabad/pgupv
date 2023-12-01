@@ -8,6 +8,8 @@
 
 #include "font.h"
 #include "log.h"
+#include "app.h"
+
 
 using PGUPV::Font;
 
