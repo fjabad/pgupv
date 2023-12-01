@@ -75,6 +75,7 @@ protected:
 	std::vector<std::shared_ptr<Mesh>> tempMeshes;
 };
 
+Assimp::Importer AssimpWrapper::AssimpWrapperImpl::importer;
 
 static std::string printMaterialInfo(const aiMaterial* mat);
 static std::string printMeshInfo(const aiScene* scene, size_t n);
