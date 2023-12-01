@@ -101,19 +101,6 @@ target_include_directories(par_lib INTERFACE ${par_SOURCE_DIR})
 
 
 if (MSVC)
-set (DIRENT_BUILD_TESTS OFF)
-FetchContent_Declare(dirent
-    GIT_REPOSITORY "https://github.com/tronkko/dirent.git"
-#    GIT_TAG "v3.11.2"
-    GIT_SHALLOW ON
-)
-FetchContent_MakeAvailable(dirent)
-
-set (DIRENT_BUILD_TESTS OFF)
-add_library(dirent_lib INTERFACE)
-target_include_directories(dirent_lib INTERFACE ${dirent_SOURCE_DIR}/include)
-set(EXTRA_LIBS "dirent_lib")
-
 add_library(GLEW STATIC glew-2.2.0/src/glew.c)
 target_include_directories(GLEW PUBLIC glew-2.2.0/include)
 target_compile_definitions(GLEW PUBLIC GLEW_STATIC)
