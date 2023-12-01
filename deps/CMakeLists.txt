@@ -7,7 +7,7 @@ find_package(OpenGL REQUIRED)
 
 if (MSVC)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-set(SDL_TESTS OFF)
+set(SDL_TEST OFF)
 set(SDL_TEST_LIBRARY OFF)
 
 FetchContent_Declare(SDL2
@@ -28,6 +28,7 @@ set_target_properties(freetype PROPERTIES
 
 set(SDL2TTF_VENDORED OFF)
 set(SDL2TTF_INSTALL OFF)
+set(SDL2TTF_SAMPLES OFF)
 FetchContent_Declare(SDL_ttf
     GIT_REPOSITORY "https://github.com/libsdl-org/SDL_ttf.git"
     GIT_TAG "release-2.20.2"
@@ -53,13 +54,14 @@ FetchContent_Declare(imgui
 FetchContent_MakeAvailable(imgui)
 
 
+set(ASSIMP_BUILD_TESTS OFF)
+set(ASSIMP_INSTALL OFF)
 FetchContent_Declare(assimp
     GIT_REPOSITORY "https://github.com/assimp/assimp.git"
     GIT_TAG "v5.3.1" 
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(assimp)
-
 
 FetchContent_Declare(GSL
     GIT_REPOSITORY "https://github.com/microsoft/GSL"
@@ -107,6 +109,7 @@ FetchContent_Declare(dirent
 )
 FetchContent_MakeAvailable(dirent)
 
+set (DIRENT_BUILD_TESTS OFF)
 add_library(dirent_lib INTERFACE)
 target_include_directories(dirent_lib INTERFACE ${dirent_SOURCE_DIR}/include)
 set(EXTRA_LIBS "dirent_lib")
@@ -172,3 +175,12 @@ add_library(dearimgui STATIC ${imdir}/imgui.cpp ${imdir}/imgui_draw.cpp ${imdir}
 target_include_directories(dearimgui PUBLIC ${imdir}/ ${imdir}/backends)
 target_compile_definitions(dearimgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW GLM_ENABLE_EXPERIMENTAL IMGUI_DISABLE_OBSOLETE_FUNCTIONS IMGUIZMO_IMGUI_FOLDER= IMGUI_DEFINE_MATH_OPERATORS)
 target_link_libraries(dearimgui PRIVATE SDL2::SDL2)
+
+if (MSVC)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_target_properties(assimp gli_dummy glm_shared dearimgui distclean GLEW sdl_headers_copy SDL2 SDL2_ttf SDL2main SDL2-static uninstall zlibstatic UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTIES FOLDER "deps")
+set_target_properties(PROPERTIES FOLDER "deps")
+set_target_properties(PROPERTIES FOLDER "deps")
+set_target_properties(glm_shared PROPERTIES FOLDER "deps")
+
+endif()
