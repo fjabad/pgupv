@@ -1,6 +1,5 @@
 
 function(config_example NAME)
-
 target_link_libraries(${NAME} PGUPV)
 set_target_properties(${NAME} PROPERTIES 
 	DEBUG_POSTFIX "d"

@@ -532,6 +532,11 @@ std::string PGUPV::App::assetsDir()
 	return std::string("../assets/");
 }
 
+std::string PGUPV::App::solsDir()
+{
+	return std::string("../../sols/");
+}
+
 void App::processEvents() {
 	auto sw = stats->makeStopWatch();
 	eventProcessor->dispatchPendingEvents();
