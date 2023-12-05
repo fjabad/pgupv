@@ -58,8 +58,7 @@ namespace PGUPV {
     NodePath selectedNodePath;
 
 #ifdef TESTING
-#include <../googletest/googletest/include/gtest/gtest_prod.h>
-    FRIEND_TEST(SceneGraphEditorTest, FindsNodepaths);
+    friend class SceneGraphEditorTest_FindsNodepaths_Test;
 #endif
 
   };

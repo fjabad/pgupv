@@ -470,8 +470,7 @@ namespace PGUPV {
 		void setBones(std::shared_ptr<UBOBones> b);
 
 #ifdef TESTING
-#include <../googletest/googletest/include/gtest/gtest_prod.h>
-		FRIEND_TEST(MySweepClassTest, EmptyMesh);
+		friend class MySweepClassTest_EmptyMesh_Test;
 #endif
 
 	};

@@ -138,9 +138,8 @@ namespace PGUPV {
 		std::unique_ptr<ImageImpl> impl;
 
 #ifdef TESTING
-#include <../googletest/googletest/include/gtest/gtest_prod.h>
-		FRIEND_TEST(DummyImageTestClass, TestSwapRB24BPP);
-		FRIEND_TEST(DummyImageTestClass, TestSwapRB32BPP);
+		friend class DummyImageTestClass_TestSwapRB24BPP_Test;
+		friend class DummyImageTestClass_TestSwapRB32BPP_Test;
 #endif
 	};
 };
