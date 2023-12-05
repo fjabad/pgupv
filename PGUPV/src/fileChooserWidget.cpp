@@ -14,7 +14,7 @@ FileChooserWidget::FileChooserWidget() :
 			setDirectory(newDir);
 		}
 	}), 
-	filenames("", {}), 
+	filenames("##filenames", {}), 
 		showOnlyThisExtensions(std::vector<std::string>{ "*.*" }), 
 		searchInSubfolders(false), 
 		mustRefresh(true)
@@ -91,5 +91,5 @@ void FileChooserWidget::refresh()
 		value.notify("");
 	}
 	mustRefresh = false;
-	filenames.setLabel(label);
+	filenames.setLabel(label.empty() ? "##filenames" : label);
 }

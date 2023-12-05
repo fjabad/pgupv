@@ -12,7 +12,7 @@ public:
 	void setup(void) override;
 	void render(void) override;
 	void reshape(uint w, uint h) override;
-	void update(uint) override;
+	void update(uint64_t) override;
 private:
 	void buildModels();
 	std::shared_ptr<GLMatrices> mats;
@@ -98,7 +98,7 @@ void MyRender::reshape(uint w, uint h) {
 // Este método se ejecuta una vez por frame, antes de llamada a render. Recibe el 
 // número de milisegundos que han pasado desde la última vez que se llamó, y se suele
 // usar para hacer animaciones o comprobar el estado de los dispositivos de entrada
-void MyRender::update(uint) {
+void MyRender::update(uint64_t) {
 	// Si el usuario ha pulsado el espacio, ponemos la cámara en su posición inicial
 	if (App::isKeyUp(PGUPV::KeyCode::Space)) {
 		getCameraHandler()->resetView();
