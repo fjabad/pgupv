@@ -7,12 +7,12 @@ using PGUPV::IntSliderWidget;
 using PGUPV::Program;
 
 IntSliderWidget::IntSliderWidget(const std::string &label, int value, int v_min, int v_max) :
-	IntWidget(label, value, v_min, v_max), displayFormat("%.0f") {
+	IntWidget(label, value, v_min, v_max), displayFormat("%d") {
 };
 
 IntSliderWidget::IntSliderWidget(const std::string &label, int value, int min, int max,
 	std::shared_ptr<Program> program, const std::string &uniform) :
-	IntWidget(label, value, min, max, program, uniform), displayFormat("%.0f") {
+	IntWidget(label, value, min, max, program, uniform), displayFormat("%d") {
 }
 
 void IntSliderWidget::setDisplayFormat(const std::string &format) {
