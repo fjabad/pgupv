@@ -298,6 +298,11 @@ namespace PGUPV {
 		*/
 		void render();
 		/**
+		 * @brief Este método permite lanzar un conjunto de órdenes de dibujado sobre la malla
+		 * @param drawCommands 
+		*/
+		void render(std::vector<DrawCommand *> &drawCommands);
+		/**
 		\return el número de vértices de la malla (cuidado! NO el número de
 		 índices)
 		*/
@@ -469,7 +474,7 @@ namespace PGUPV {
 
 		void setBones(std::shared_ptr<UBOBones> b);
 
-#ifdef TESTING
+#ifdef PG_TESTING
 		friend class MySweepClassTest_EmptyMesh_Test;
 #endif
 

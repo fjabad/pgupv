@@ -38,7 +38,7 @@ namespace PGUPV {
 	\return si existía y se borró
 	*/
 	bool remove(const std::string &prop);
-#ifdef TESTING
+#ifdef PG_TESTING
     bool isDirty() const { return dirty; }
 #endif
 	//! Devuelve el número de propiedades almacenadas

@@ -88,7 +88,7 @@ void Log::writeErrorLog(const std::string &str, const char *file, int line,
 void Log::writeErrorLogAndMessageBox(const std::string &str, const char *file, int line,
 	int level) {
 	writeErrorLog(str, file, line, level);
-#ifndef TESTING
+#ifndef PG_TESTING
 	// Clamp the number of lines in the dialog to MAX_LINES_IN_ERROR_DIALOG
 	std::stringstream ss(str);
 	std::string to, out;

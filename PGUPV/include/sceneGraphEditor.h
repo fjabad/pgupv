@@ -57,7 +57,7 @@ namespace PGUPV {
     void editNode(const NodePath &np);
     NodePath selectedNodePath;
 
-#ifdef TESTING
+#ifdef PG_TESTING
     friend class SceneGraphEditorTest_FindsNodepaths_Test;
 #endif
 

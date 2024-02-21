@@ -193,7 +193,7 @@ std::string App::collectLibVersions() {
 #else 
 		<< " Release"
 #endif
-#ifdef TESTING
+#ifdef PG_TESTING
 		<< " for Testing"
 #endif
 		<< " TRUNK"
@@ -529,7 +529,11 @@ std::string PGUPV::App::examplesDir()
 
 std::string PGUPV::App::assetsDir()
 {
+#ifdef PG_TESTING
+	return std::string("../../pgupv/assets/");
+#else
 	return std::string("../assets/");
+#endif
 }
 
 std::string PGUPV::App::solsDir()
