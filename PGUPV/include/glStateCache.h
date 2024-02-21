@@ -163,6 +163,19 @@ namespace PGUPV {
 	};
 
 	/**
+	\class CullFaceState
+	Captura el estado del cull face y lo restaura
+	*/
+	class CullFaceState {
+	public:
+		void capture();
+		void restore();
+	private:
+		GLboolean enabled;
+		GLint cullFaceMode;
+	};
+
+	/**
 	\class ScissorTestState
 	Captura el estado del test de la tijera y lo restaura
 	*/
