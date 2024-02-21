@@ -14,10 +14,10 @@ Sólo necesitas tener instalado el Visual Studio 2022, junto con el paquete de s
 Es *muy* importante actualizar el driver de la tarjeta gráfica de tu ordenador, para asegurarte de tener acceso a toda la capacidad del hardware.
 
 * Prácticas:
-El paquete de las prácticas contiene todas las bibliotecas necesarias. Hay que usar CMake para construir los ficheros de la solución de Visual Studio.
+El paquete de las prácticas contiene todas las bibliotecas necesarias, y también se baja algunas la primera vez. Hay que usar CMake para construir los ficheros de la solución de Visual Studio.
 Para ello, instala CMake desde https://cmake.org/download/) y sigue los siguientes pasos:
 
-1. Baja el código de las prácticas, usando git o bajando el ZIP desde la página de Github.
+1. Baja el código de las prácticas, usando git o bajando el ZIP desde la página de Github (https://github.com/fjabad/pgupv.git)
 2. Si usas el interfaz gráfico de CMake (cmake-gui), sigue leyendo. Si prefieres usar la consola, lee las instrucciones de Linux más abajo.
    Selecciona el directorio raíz del proyecto (el que contiene este fichero) en la caja "Where is the source code"
    Escribe un directorio nuevo (por ejemplo, llamado build dentro del directorio anterior) en "Where to build the binaries"
