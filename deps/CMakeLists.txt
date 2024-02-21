@@ -38,9 +38,11 @@ FetchContent_MakeAvailable(SDL_ttf)
 endif()
 
 
+set(GLM_BUILD_TESTS OFF)
+set(BUILD_SHARED_LIBS OFF)
 FetchContent_Declare(glm
     GIT_REPOSITORY "https://github.com/g-truc/glm"
-    GIT_TAG "586a402397dd35d66d7a079049856d1e2cbab300" 
+    GIT_TAG "1.0.0" 
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(glm)
@@ -166,9 +168,9 @@ target_link_libraries(dearimgui PRIVATE SDL2::SDL2)
 
 if (MSVC)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_target_properties(assimp gli_dummy glm_shared dearimgui GLEW sdl_headers_copy SDL2 SDL2_ttf SDL2main SDL2-static uninstall zlibstatic UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTIES FOLDER "deps")
+set_target_properties(assimp gli_dummy glm dearimgui GLEW sdl_headers_copy SDL2 SDL2_ttf SDL2main SDL2-static uninstall zlibstatic UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTIES FOLDER "deps")
 set_target_properties(PROPERTIES FOLDER "deps")
 set_target_properties(PROPERTIES FOLDER "deps")
-set_target_properties(glm_shared PROPERTIES FOLDER "deps")
+#set_target_properties(glm_shared PROPERTIES FOLDER "deps")
 
 endif()
