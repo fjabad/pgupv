@@ -143,9 +143,13 @@ public:
 			token = str_.substr(pos_);
 			pos_ = p;
 		}
+		else if (p == pos_) {
+			token = str_.substr(pos_, 1);
+			pos_ = p + 1;
+		}
 		else {
 			token = str_.substr(pos_, p - pos_);
-			pos_ = p + 1;
+			pos_ = p;
 		}
 		if (!keep_empty_tokens_ && token.length() == 0) return next(token);
 		return true;

@@ -39,7 +39,7 @@ using glm::mat4;
 #define PI glm::pi<float>()
 #define TWO_PI glm::two_pi<float>()
 
-const Camera &CameraHandler::getCamera() {
+const Camera& CameraHandler::getCamera() {
 	return *camera;
 }
 
@@ -56,10 +56,10 @@ void CameraHandler::resized(uint width, uint height) {
 		}
 		else {
 			float fov, near, far;
-				fov = camera->getFOV();
-				near = camera->getNear();
-				far = camera->getFar();
-				camera->setProjMatrix(glm::perspective(fov, ar, near, far));
+			fov = camera->getFOV();
+			near = camera->getNear();
+			far = camera->getFar();
+			camera->setProjMatrix(glm::perspective(fov, ar, near, far));
 		}
 	}
 }
@@ -85,7 +85,7 @@ void OrbitCameraHandler::resetView() {
 	updateMatrix();
 }
 
-bool OrbitCameraHandler::mouse_move(const MouseMotionEvent &e) {
+bool OrbitCameraHandler::mouse_move(const MouseMotionEvent& e) {
 
 	if (e.state) {
 		uint width = e.wsrc->width();
@@ -105,7 +105,7 @@ bool OrbitCameraHandler::mouse_move(const MouseMotionEvent &e) {
 	return false;
 }
 
-bool OrbitCameraHandler::mouse_wheel(const MouseWheelEvent &e) {
+bool OrbitCameraHandler::mouse_wheel(const MouseWheelEvent& e) {
 	float scale = WHEEL_SCALE;
 	if (App::isKeyPressed(PGUPV::KeyCode::LeftShift)) {
 		scale *= 10.0f;
@@ -160,14 +160,14 @@ void OrbitCameraHandler::moveRelative(float ddelta, float longDelta,
 	updateMatrix();
 }
 
-void OrbitCameraHandler::setPointOfInterest(const glm::vec3 & poi)
+void OrbitCameraHandler::setPointOfInterest(const glm::vec3& poi)
 {
 	_center = poi;
 	updateMatrix();
 }
 
 
-void OrbitCameraHandler::setProjMatrix(const glm::mat4 &matrix) {
+void OrbitCameraHandler::setProjMatrix(const glm::mat4& matrix) {
 	camera->setProjMatrix(matrix);
 }
 
@@ -182,7 +182,7 @@ void OrbitCameraHandler::updateMatrix() {
 	camera->setViewMatrix(view);
 }
 
-bool OrbitCameraHandler::keyboard(const PGUPV::KeyboardEvent &e) {
+bool OrbitCameraHandler::keyboard(const PGUPV::KeyboardEvent& e) {
 	if (e.key == KeyCode::Space) {
 		if (e.state == ButtonState::Pressed)
 			resetView();
@@ -195,7 +195,7 @@ bool OrbitCameraHandler::keyboard(const PGUPV::KeyboardEvent &e) {
 /**
 Guarda el estado actual de la cámara en el flujo indicado
 */
-void OrbitCameraHandler::saveStatus(std::ostream &stream) {
+void OrbitCameraHandler::saveStatus(std::ostream& stream) {
 	json j;
 	j["orbitcamera"] = true;
 	j["long"] = _long;
@@ -209,7 +209,7 @@ void OrbitCameraHandler::saveStatus(std::ostream &stream) {
 	stream << j.dump() << std::endl;
 }
 
-static json readJsonFromFile(std::istream &stream) {
+static json readJsonFromFile(std::istream& stream) {
 	json j;
 	std::string str;
 	if (j.empty()) {
@@ -219,7 +219,7 @@ static json readJsonFromFile(std::istream &stream) {
 			if (stream.eof()) ERR("No se ha podido abrir el fichero para leer el estado de la cámara");
 			j = json::parse(str);
 		}
-		catch (const std::exception&e)
+		catch (const std::exception& e)
 		{
 			ERRT(std::string("Error leyendo el fichero del estado de la cámara: ") + e.what());
 		}
@@ -231,7 +231,7 @@ static json readJsonFromFile(std::istream &stream) {
 /**
 restaura el estado de la cámara al que se encuentra en el flujo
 */
-void OrbitCameraHandler::loadStatus(std::istream &stream) {
+void OrbitCameraHandler::loadStatus(std::istream& stream) {
 	json j = readJsonFromFile(stream);
 
 	if (!j["orbitcamera"]) {
@@ -272,7 +272,7 @@ void XYPanZoomCamera::updateView() {
 		vec3(_center, 0.0f), vec3(0.0f, 1.0f, 0.0f)));
 }
 
-bool XYPanZoomCamera::mouse_move(const MouseMotionEvent &e) {
+bool XYPanZoomCamera::mouse_move(const MouseMotionEvent& e) {
 	if (e.state) {
 		uint width = e.wsrc->width();
 		// Botón izquierdo: pan
@@ -293,8 +293,8 @@ bool XYPanZoomCamera::mouse_move(const MouseMotionEvent &e) {
 	return false;
 }
 
-bool XYPanZoomCamera::mouse_wheel(const MouseWheelEvent &e) {
-	_width = _width + (float)e.y * _width * _wheel_speed / e.wsrc->width();
+bool XYPanZoomCamera::mouse_wheel(const MouseWheelEvent& e) {
+	_width = _width + (float)e.y * _width * 0.1f;
 	updateProj();
 	return true;
 }
@@ -312,7 +312,7 @@ void XYPanZoomCamera::resized(uint width, uint height) {
 }
 
 
-void XYPanZoomCamera::saveStatus(std::ostream &stream) {
+void XYPanZoomCamera::saveStatus(std::ostream& stream) {
 
 	json j;
 	j["xypanzoomcamera"] = true;
@@ -326,7 +326,7 @@ void XYPanZoomCamera::saveStatus(std::ostream &stream) {
 }
 
 
-void XYPanZoomCamera::loadStatus(std::istream &stream) {
+void XYPanZoomCamera::loadStatus(std::istream& stream) {
 	json j = readJsonFromFile(stream);
 
 	if (!j["xypanzoomcamera"]) {
@@ -348,7 +348,7 @@ void XYPanZoomCamera::loadStatus(std::istream &stream) {
 
 
 
-WalkCameraHandler::WalkCameraHandler(float h, const glm::vec4 &pos, float yaw,
+WalkCameraHandler::WalkCameraHandler(float h, const glm::vec3& pos, float yaw,
 	float pitch) {
 	_inith = h;
 	_initpos = pos;
@@ -371,7 +371,7 @@ void WalkCameraHandler::releaseMouse() {
 }
 
 void WalkCameraHandler::captureMouse() {
-	Window &w = App::getInstance().getWindow();
+	Window& w = App::getInstance().getWindow();
 
 	w.showMouseCursor(false);
 	w.setMousePosition(w.width() / 2, w.height() / 2);
@@ -388,19 +388,19 @@ void WalkCameraHandler::resetView() {
 	updateMatrix();
 }
 
-bool WalkCameraHandler::mouse_wheel(const MouseWheelEvent &e) {
+bool WalkCameraHandler::mouse_wheel(const MouseWheelEvent& e) {
 
 	_pos.y -= _deltah * e.y / 2.0f; /// 120.f;
 	updateMatrix();
 	return true;
 }
 
-bool WalkCameraHandler::mouse_move(const MouseMotionEvent &e) {
+bool WalkCameraHandler::mouse_move(const MouseMotionEvent& e) {
 
 	if (!mouseCaptured)
 		return true;
 
-	Window &theWindow = App::getInstance().getWindow();
+	Window& theWindow = App::getInstance().getWindow();
 	int halfwidth = theWindow.width() / 2;
 	int halfheight = theWindow.height() / 2;
 
@@ -425,6 +425,11 @@ bool WalkCameraHandler::mouse_move(const MouseMotionEvent &e) {
 	return true;
 }
 
+void PGUPV::WalkCameraHandler::setProjMatrix(const glm::mat4& matrix)
+{
+		camera->setProjMatrix(matrix);
+}
+
 void WalkCameraHandler::updateMatrix() {
 	mat4 m(glm::rotate(glm::mat4(1.0f), -_pitch, vec3(1.0f, 0.0f, 0.0f)));
 	m = glm::rotate(m, -_yaw, vec3(0.0f, 1.0f, 0.0f));
@@ -435,8 +440,8 @@ void WalkCameraHandler::updateMatrix() {
 
 void WalkCameraHandler::advance(float delta) {
 	// Avanzar o retroceder
-	vec4 ahead = vec4(0.f, 0.f, -1.f, 1.f);
-	ahead = glm::rotate(glm::mat4(1.0f), _yaw, vec3(0.0f, 1.0f, 0.0f)) * ahead;
+	auto ahead = vec3(0.f, 0.f, -1.f);
+	ahead = glm::rotate(glm::mat4(1.0f), _yaw, vec3(0.0f, 1.0f, 0.0f)) * glm::vec4{ ahead, 0.0f };
 	ahead = ahead * (_walkSpeed * delta / 1000.0f);
 	_pos = _pos + ahead;
 }
@@ -457,11 +462,13 @@ void WalkCameraHandler::update(uint64_t ms) {
 	if ((leftPressed || rightPressed) &&
 		!(leftPressed && rightPressed)) {
 		// Pasos laterales
-		vec4 ahead = vec4(0.f, 0.f, -1.f, 1.f);
+		auto ahead = vec3(0.f, 0.f, -1.f);
 		if (leftPressed)
-			ahead = glm::rotate(glm::mat4(1.0f), _yaw + glm::radians(90.0f), vec3(0.f, 1.f, 0.f)) * ahead;
+			ahead = glm::rotate(glm::mat4(1.0f), _yaw + glm::radians(90.0f), { 0.f, 1.f, 0.f })
+			* glm::vec4{ ahead, 0.0f };
 		else
-			ahead = glm::rotate(glm::mat4(1.0f), _yaw - glm::radians(90.0f), vec3(0.f, 1.f, 0.f)) * ahead;
+			ahead = glm::rotate(glm::mat4(1.0f), _yaw - glm::radians(90.0f), { 0.f, 1.f, 0.f })
+			* glm::vec4{ ahead, 0.0f };
 		ahead = ahead * (_walkSpeed * ms / 1000.0f);
 		_pos = _pos + ahead;
 	}
@@ -475,7 +482,7 @@ void WalkCameraHandler::setHeight(float height) {
 	updateMatrix();
 }
 // Establece la posición de la cámara
-void WalkCameraHandler::setPos(const glm::vec4 &pos) {
+void WalkCameraHandler::setPos(const glm::vec3& pos) {
 	_pos = pos;
 	updateMatrix();
 }
@@ -499,7 +506,7 @@ void WalkCameraHandler::setSpeeds(float deltah, float deltayaw,
 /**
 Guarda el estado actual de la cámara en el flujo indicado
 */
-void WalkCameraHandler::saveStatus(std::ostream &stream) {
+void WalkCameraHandler::saveStatus(std::ostream& stream) {
 
 	json j;
 	j["walkcamera"] = true;
@@ -525,7 +532,7 @@ void WalkCameraHandler::saveStatus(std::ostream &stream) {
 /**
 restaura el estado de la cámara al que se encuentra en el flujo
 */
-void WalkCameraHandler::loadStatus(std::istream &stream) {
+void WalkCameraHandler::loadStatus(std::istream& stream) {
 	json j = readJsonFromFile(stream);
 
 	if (!j["walkcamera"]) {

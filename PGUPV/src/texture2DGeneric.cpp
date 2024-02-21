@@ -104,8 +104,10 @@ void Texture2DGeneric::updateImageFromMemory(void *pixels, uint width, uint heig
 
 
 bool Texture2DGeneric::loadImage(const Image &image, GLenum internalFormat) {
+	auto format = image.getGLFormatType();
+	auto type = image.getGLPixelBaseType();
 	loadImageFromMemory(image.getPixels(), image.getWidth(), image.getHeight(),
-		image.getGLFormatType(), image.getGLPixelBaseType(), internalFormat);
+		format, type, internalFormat);
 	return _ready;
 }
 

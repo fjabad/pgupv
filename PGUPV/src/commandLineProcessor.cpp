@@ -106,7 +106,7 @@ static void processSnapShots(std::list<std::string> &args, PGUPV::App &instance)
 		ERRT("La lista de intervalos se debe definir entre llaves: " + line);
 	}
 
-	string clean = line.substr(open + 1, close);
+	string clean = line.substr(open + 1, close - open  - 1);
 
 	PGUPV::Intervals ints = PGUPV::readIntervalsFromString(clean);
 	instance.captureSnapshots(ints);

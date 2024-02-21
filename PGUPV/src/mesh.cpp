@@ -559,6 +559,11 @@ bool Mesh::removeStaticAttributeValue(GLint index) {
 }
 
 void Mesh::render() {
+	render(drawCommands);
+}
+
+void Mesh::render(std::vector<DrawCommand*>& drawCommands)
+{
 	vao.bind();
 	if (material) material->use();
 	if (bones) bones->use();

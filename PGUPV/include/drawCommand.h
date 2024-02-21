@@ -224,14 +224,14 @@ namespace PGUPV {
 
       \warning Este objeto hace una copia de los arrays pasados. Puedes liberar los originales
       */
-    MultiDrawArrays(GLenum mode, const GLint *first, const GLint *count, GLsizei primcount);
+    MultiDrawArrays(GLenum mode, const GLint *first, const GLsizei*count, GLsizei primcount);
     virtual void renderFunc() override {
       glMultiDrawArrays(mode, &first[0], &count[0], primcount);
     }
   private:
     GLsizei primcount;
     std::vector<GLint> first;
-    std::vector<GLint> count;
+    std::vector<GLsizei> count;
   };
 
   /**
