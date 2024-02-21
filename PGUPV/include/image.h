@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #include <memory>
 #include "common.h"
+#include "geoTiff.h"
 
 
 namespace PGUPV {
@@ -23,7 +24,7 @@ namespace PGUPV {
 		Image& operator=(const Image&) = delete;
 
 		// Carga la imagen desde el fichero indicado
-		explicit Image(const std::string &filename);
+		explicit Image(const std::string& filename);
 		// Crea una imagen con el tamaño indicado. Opcionalmente, copia la información
 		// apuntada por data
 		Image(uint width, uint height, uint bpp, void* data = NULL);
@@ -133,11 +134,18 @@ namespace PGUPV {
 		\return Información sobre la versión de la biblioteca de carga de imágenes utilizada
 		*/
 		static const std::string getLibraryInfo();
+
+		/**
+		 * @brief If the loaded image is a GeoTIFF, returns its metadata
+		 * @return 
+		*/
+		std::optional<GeoTiffMetadata> getGeoTiffMetadata() const;
 	private:
 		class ImageImpl;
 		std::unique_ptr<ImageImpl> impl;
 
-#ifdef TESTING
+#ifdef PG_TESTING
+		void swapRB(uint frame) const;
 		friend class DummyImageTestClass_TestSwapRB24BPP_Test;
 		friend class DummyImageTestClass_TestSwapRB32BPP_Test;
 #endif
