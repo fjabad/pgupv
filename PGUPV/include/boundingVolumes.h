@@ -102,6 +102,7 @@ namespace PGUPV {
   std::ostream &operator<<(std::ostream &os, const BoundingBox &s);
   std::ostream &operator<<(std::ostream &os, const BoundingSphere &s);
 
+  BoundingBox computeBoundingBox(const std::vector<glm::vec3> &vtcs);
   BoundingBox computeBoundingBox(const float *v, uint ncomponents, size_t n);
   BoundingSphere computeBoundingSphere(const float *v, uint ncomponents, size_t n);
 

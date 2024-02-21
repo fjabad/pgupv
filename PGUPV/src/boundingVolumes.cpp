@@ -20,6 +20,11 @@ using PGUPV::BoundingBox;
 using PGUPV::BoundingSphere;
 using glm::vec3;
 
+BoundingBox PGUPV::computeBoundingBox(const std::vector<glm::vec3>& vtcs)
+{
+    return computeBoundingBox(&vtcs[0].x, 3, vtcs.size());
+}
+
 BoundingBox PGUPV::computeBoundingBox(const float *v, uint ncomponents, size_t n) {
 	BoundingBox bb;
 
