@@ -1,132 +1,105 @@
+
 #include <PGUPV.h>
 #include <GUI3.h>
+#include <iomanip>
 
 using namespace PGUPV;
 
-using glm::vec3;
-using std::vector;
 
 class MyRender : public Renderer {
 public:
-	MyRender() = default;
+	MyRender() : axes(500.0f) {};
 	void setup(void) override;
 	void render(void) override;
 	void reshape(uint w, uint h) override;
-	void update(uint64_t) override;
+	bool mouse_move(const MouseMotionEvent&) override;
 private:
-	void buildModels();
-	std::shared_ptr<GLMatrices> mats;
-	Axes axes;
-	std::vector<std::shared_ptr<Model>> models;
-	
 	void buildGUI();
-	std::shared_ptr<IntSliderWidget> modelSelector;
+	std::shared_ptr<GLMatrices> mats;
+	std::unique_ptr<PGUPV::Mesh> boundary;
+	std::shared_ptr<Label> cursorPos;
+	glm::uvec2 windowSize{ 0 };
+
+	Axes axes;
 };
 
-/**
-Construye tus modelos y añádelos al vector models (quita los ejemplos siguientes). Recuerda
-que no puedes usar directamente las clases predefinidas (tienes que construir los meshes y los
-models a base de vértices, colores, etc.)
-*/
-void MyRender::buildModels()
-{
 
-	auto caja1 = std::make_shared<Box>(0.8f, 0.8f, 0.8f, glm::vec4(0.8f, 0.2f, 0.2f, 1.0f));
-	models.push_back(caja1);
-	auto caja2 = std::make_shared<Box>(0.9f, 0.9f, 0.9f, glm::vec4(0.2f, 0.8f, 0.2f, 1.0f));
-	models.push_back(caja2);
-	auto caja3 = std::make_shared<Box>(0.7f, 0.7f, 0.7f, glm::vec4(0.2f, 0.2f, 0.8f, 1.0f));
-	models.push_back(caja3);
+/**
+ * @brief Aquí se define el panel de control de la aplicación
+*/
+void MyRender::buildGUI() {
+	// Creamos un panel nuevo donde introducir nuestros controles, llamado Configuracion
+	auto panel = addPanel("Location");
+	// Tamaño del panel y posición del panel
+	panel->setSize(260, 100);
+	panel->setPosition(530, 10);
+
+	panel->addWidget(std::make_shared<Label>("Cursor pos: "));
+	cursorPos = std::make_shared<Label>("");
+	panel->addWidget(cursorPos);
+
+	App::getInstance().getWindow().showGUI(true);
 }
 
+/**
+ * @brief Este método se llama cada vez que el ratón se mueve
+ * @param me información sobre el evento de movimiento del ratón
+ * @return devolver true si se quiere capturar el evento
+*/
+bool MyRender::mouse_move(const MouseMotionEvent& me) {
+	auto cam = std::static_pointer_cast<XYPanZoomCamera>(getCameraHandler());
+	auto center = cam->getCenter();
+	auto viewportSize = glm::vec2{ cam->getWidth(), cam->getHeight() };
+
+	std::ostringstream os;
+	os << std::fixed << std::setprecision(2) << me.x << " " << me.y;
+	cursorPos->setText(os.str());
+	return false;
+}
 
 void MyRender::setup() {
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-	// Habilitamos el z-buffer
-	glEnable(GL_DEPTH_TEST);
-	// Habilitamos el back face culling. ¡Cuidado! Si al dibujar un objeto hay 
-	// caras que desaparecen o el modelo se ve raro, puede ser que estés 
-	// definiendo los vértices del polígono del revés (en sentido horario)
-	// Si ese es el caso, invierte el orden de los vértices.
-	// Puedes activar/desactivar el back face culling en cualquier aplicación 
-	// PGUPV pulsando las teclas CTRL+B
-	glEnable(GL_CULL_FACE);
+	glClearColor(0.6f, 0.6f, 0.9f, 1.0f);
+	mats = GLMatrices::build();
 
-	mats = PGUPV::GLMatrices::build();
-
-	// Activamos un shader que dibuja cada vértice con su atributo color
-	ConstantIllumProgram::use();
-
-	buildModels();
-
-	// Establecemos una cámara que nos permite explorar el objeto desde cualquier
-	// punto
-	setCameraHandler(std::make_shared<OrbitCameraHandler>());
-
-	// Construimos la interfaz de usuario
 	buildGUI();
+
+	// Creamos un cuadrado para que la escena no esté vacía. Lo puedes usar para mostrar
+	// los límites de la ciudad.
+	boundary = std::make_unique<PGUPV::Mesh>();
+	auto ll = glm::vec2{ -50.f, -50.0f};
+	auto ur = glm::vec2{ 50.f, 50.0f};
+	boundary->addVertices(
+		{ ll,
+		glm::vec2{ur.x, ll.y}, 
+		ur,	
+		glm::vec2{ll.x, ur.y}});
+	boundary->addDrawCommand(new PGUPV::DrawArrays(GL_LINE_LOOP, 0, 4));
+
+	setCameraHandler(std::make_shared<XYPanZoomCamera>(
+		1000.0f, glm::vec3{ 0.0f}));
 }
 
 void MyRender::render() {
-	// Borramos el buffer de color y el zbuffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// Le pedimos a la cámara que nos de la matriz de la vista, que codifica la
-	// posición y orientación actuales de la cámara.
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	mats->setMatrix(GLMatrices::PROJ_MATRIX, getCamera().getProjMatrix());
 	mats->setMatrix(GLMatrices::VIEW_MATRIX, getCamera().getViewMatrix());
 
-
-	// Dibujamos los ejes
-	axes.render();
-
-	// Dibujamos los objetos
-	if (!models.empty()) {
-		models[modelSelector->get()]->render();
-	}
-
-	// Si la siguiente llamada falla, quiere decir que OpenGL se encuentra en
-	// estado erróneo porque alguna de las operaciones que ha ejecutado
-	// recientemente (después de la última llamada a CHECK_GL) ha tenido algún
-	// problema. Revisa tu código.
-	CHECK_GL();
+	ConstantUniformColorProgram::use();
+	ConstantUniformColorProgram::setColor(glm::vec4{ 0.8f, 0.1f, 0.1f, 1.0f });
+	boundary->render();
 }
+
 
 void MyRender::reshape(uint w, uint h) {
 	glViewport(0, 0, w, h);
-	mats->setMatrix(GLMatrices::PROJ_MATRIX, getCamera().getProjMatrix());
-}
-
-// Este método se ejecuta una vez por frame, antes de llamada a render. Recibe el 
-// número de milisegundos que han pasado desde la última vez que se llamó, y se suele
-// usar para hacer animaciones o comprobar el estado de los dispositivos de entrada
-void MyRender::update(uint64_t) {
-	// Si el usuario ha pulsado el espacio, ponemos la cámara en su posición inicial
-	if (App::isKeyUp(PGUPV::KeyCode::Space)) {
-		getCameraHandler()->resetView();
-	}
-}
-
-
-/**
-En éste método construimos los widgets que definen la interfaz de usuario. En esta
-práctica no tienes que modificar esta función.
-*/
-void MyRender::buildGUI() {
-	auto panel = addPanel("Modelos");
-	modelSelector = std::make_shared<IntSliderWidget>("Model", 0, 0, static_cast<int>(models.size()-1));
-
-	if (models.size() <= 1) {
-		panel->addWidget(std::make_shared<Label>("Introduce algún modelo más en el vector models..."));
-	}
-	else {
-		panel->addWidget(modelSelector);
-	}
-	App::getInstance().getWindow().showGUI();
+	windowSize = glm::uvec2{ w, h };
+	// El manejador de cámara define una cámara perspectiva con la misma razón de aspecto que la ventana
 }
 
 int main(int argc, char* argv[]) {
 	App& myApp = App::getInstance();
-	myApp.initApp(argc, argv, PGUPV::DOUBLE_BUFFER | PGUPV::DEPTH_BUFFER |
-		PGUPV::MULTISAMPLE);
+	myApp.initApp(argc, argv, PGUPV::DOUBLE_BUFFER);
 	myApp.getWindow().setRenderer(std::make_shared<MyRender>());
 	return myApp.run();
 }
