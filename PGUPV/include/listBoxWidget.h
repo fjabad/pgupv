@@ -14,6 +14,24 @@
 \class ListBoxWidget
 
 Clase para seleccionar un elemento de una lista.  Ejemplo de uso:
+
+auto list = std::make_shared<ListBoxWidget<>>("Lista de elementos", {"uno", "dos", "tres"});
+panel->addWidget(list);
+
+[...]
+
+auto index = list->getSelected(); // para obtener el índice del elemento seleccionado
+auto label = list->getSelectedElement();  // para obtener la etiqueta del elemento seleccionado
+
+También se puede asociar un segundo valor a cada elemento de la lista, que no es visible para el usuario. 
+Por ejemplo:
+
+auto list = std::make_shared<ListBoxWidget<float>>("Lista de elementos", {"uno", "dos", "tres"});
+list->setUserData({1.0f, 2.0f, 3.0f});
+
+auto value = list->getSelectedUserData(); // para obtener el valor asociado al elemento seleccionado
+
+
 */
 
 namespace PGUPV {
