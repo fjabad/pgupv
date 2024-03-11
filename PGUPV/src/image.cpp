@@ -828,7 +828,7 @@ void Image::ImageImpl::loadFrameFromMulti(const unsigned int frame) const {
 	assert(frame < _nAnimationFrames);
 	FIBITMAP* dib = FreeImage_LockPage(freeimageMultiImage, frame);
 	if (dib) {
-		_data.push_back(FreeImage_GetBits(dib));
+		_data[frame]= FreeImage_GetBits(dib);
 #if FREEIMAGE_COLORORDER==FREEIMAGE_COLORORDER_BGR
 		swapRB(frame);
 #endif
