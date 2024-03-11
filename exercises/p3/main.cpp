@@ -67,7 +67,7 @@ void MyRender::buildGUI() {
 	// Al seleccionar un fichero, lo cargamos
 	tilesList->getValue().addListener([this](const int&) {
 		if (tilesList->hasSelection())
-			loadGeoTif(tilesFolder + "\\" + tilesList->getSelectedElement());
+			loadGeoTif(tilesFolder + "/" + tilesList->getSelectedElement());
 	});
 	panel->addWidget(tilesList);
 
