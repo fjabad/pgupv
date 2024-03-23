@@ -102,6 +102,13 @@ add_library(par_lib INTERFACE)
 target_include_directories(par_lib INTERFACE ${par_SOURCE_DIR})
 
 
+FetchContent_Declare(openpnp-capture 
+    GIT_REPOSITORY "https://github.com/openpnp/openpnp-capture"
+    GIT_TAG "v0.0.28"
+    GIT_SHALLOW ON
+)
+FetchContent_MakeAvailable(openpnp-capture)
+
 if (MSVC)
 add_library(GLEW STATIC glew-2.2.0/src/glew.c)
 target_include_directories(GLEW PUBLIC glew-2.2.0/include)
@@ -154,10 +161,10 @@ set(EXTRA_LIBS ${FFMPEG_LIBRARIES} SDL2 SDL2_ttf)
 endif()
 
 add_library(PG-deps INTERFACE)
-target_link_libraries(PG-deps INTERFACE assimp::assimp freeimage nlohmann_json::nlohmann_json gli_lib ${EXTRA_LIBS} par_lib)
+target_link_libraries(PG-deps INTERFACE assimp::assimp freeimage nlohmann_json::nlohmann_json gli_lib ${EXTRA_LIBS} par_lib openpnp-capture)
 
 add_library(PG-public-deps INTERFACE)
-target_link_libraries(PG-deps INTERFACE glm::glm)
+target_link_libraries(PG-public-deps INTERFACE glm::glm GLEW guipg Microsoft.GSL::GSL)
 
 set(imdir ${imgui_SOURCE_DIR})
 

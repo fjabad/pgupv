@@ -11,6 +11,9 @@ extern "C"
 #pragma warning(pop)
 #endif
 }
+
+#include <openpnp-capture.h>
+
 #include <fstream>
 #include <string>
 #include <algorithm>
@@ -180,6 +183,64 @@ std::multimap<std::string, VideoDevice::Range> VideoDevice::listOptions(unsigned
 }
 
 void findAvailableCameras(std::vector<std::string>& list) {
+	
+
+	Cap_installCustomLogFunction(myCustomLogFunction);
+
+	printf("==============================\n");
+	printf(" OpenPNP Capture Test Program\n");
+	printf(" %s\n", Cap_getLibraryVersion());
+	printf("==============================\n");
+	Cap_setLogLevel(8);
+
+	if (argc == 1)
+	{
+		printf("Usage: openpnp-capture-test <camera ID> <frame format ID>\n");
+		printf("\n..continuing with default camera parameters.\n\n");
+	}
+
+	if (argc >= 2)
+	{
+		deviceID = atoi(argv[1]);
+	}
+
+	if (argc >= 3)
+	{
+		deviceFormatID = atoi(argv[2]);
+	}
+
+	CapContext ctx = Cap_createContext();
+
+	uint32_t deviceCount = Cap_getDeviceCount(ctx);
+	printf("Number of devices: %d\n", deviceCount);
+	for (uint32_t i = 0; i < deviceCount; i++)
+	{
+		printf("ID %d -> %s\n", i, Cap_getDeviceName(ctx, i));
+		printf("Unique:  %s\n", Cap_getDeviceUniqueID(ctx, i));
+
+		// show all supported frame buffer formats
+		int32_t nFormats = Cap_getNumFormats(ctx, i);
+
+		printf("  Number of formats: %d\n", nFormats);
+
+		std::string fourccString;
+		for (int32_t j = 0; j < nFormats; j++)
+		{
+			CapFormatInfo finfo;
+			Cap_getFormatInfo(ctx, i, j, &finfo);
+			fourccString = FourCCToString(finfo.fourcc);
+
+			printf("  Format ID %d: %d x %d pixels  FOURCC=%s\n",
+				j, finfo.width, finfo.height, fourccString.c_str());
+		}
+	}
+
+	CapResult result1 = Cap_releaseContext(ctx);
+
+
+
+	return;
+	
 	const std::string tmpFileName = "_ffmpeg.txt";
 
 	runFFMPEG("-f dshow -list_devices true -i dummy", tmpFileName);
@@ -393,7 +454,7 @@ std::multimap<std::string, VideoDevice::Range> VideoDevice::listOptions(unsigned
 #endif
 
 
-const std::vector<std::string> media::VideoDevice::getAvailableCameras()
+const std::vector<std::string> VideoDevice::getAvailableCameras()
 {
 	if (!libavInitialized) {
 		initializeLibAv();
