@@ -177,9 +177,9 @@ void VideoDevice::openDevice(const VideoDevice::CameraInfo& ci, size_t optsId) {
 	//Linux
 	AVInputFormat* ifmt = av_find_input_format("video4linux2");
 	if (avformat_open_input(&pFormatCtx, ci.name.c_str(), ifmt, &options) != 0) {
-		ERRT("No se ha podido abrir la cámara " + availableCameras[index]);
+		ERRT("No se ha podido abrir la cámara " + ci.name);
 	}
-	INFO("Cámara " + availableCameras[index] + " abierta correctamente");
+	INFO("Cámara " + ci.name + " abierta correctamente");
 #else
 	static_assert(false, "Not implemented");
 #endif
