@@ -10,11 +10,8 @@ namespace media {
 	class VideoDevice : public Media {
 	public:
 		// Abre la cámara con la configuración indicada
-		VideoDevice(unsigned int camId, unsigned int optsId = 0, float fps = MAX_FPS);
+		VideoDevice(unsigned int camId, unsigned int optsId = 0);
 		~VideoDevice();
-
-		// Constante que indica usar la velocidad mayor
-		static const float MAX_FPS;
 
 		struct VideoFormat {
 			uint32_t width;     ///< width in pixels

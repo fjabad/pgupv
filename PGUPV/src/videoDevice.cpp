@@ -33,9 +33,7 @@ using namespace std::string_literals;
 
 bool VideoDevice::libavInitialized = false;
 
-const float VideoDevice::MAX_FPS = 1e6f;
-
-VideoDevice::VideoDevice(unsigned int camId, unsigned int optsId, float fps) {
+VideoDevice::VideoDevice(unsigned int camId, unsigned int optsId) {
 	
 	auto cams = getAvailableCameras();
 	if (camId >= cams.size())
@@ -188,11 +186,6 @@ void VideoDevice::openDevice(const VideoDevice::CameraInfo& ci, size_t optsId) {
 	static_assert(false, "Not implemented");
 #endif
 	INFO("Cámara " + ci.name + " abierta correctamente");
-/*	if (avformat_open_input(&pFormatCtx, ci.name.c_str(), ifmt, &options) != 0) {
-		ERRT("No se ha podido abrir la cámara " + ci.name);
-	}
-	INFO("Cámara " + ci.name + " abierta correctamente");
-	*/
 	// Ignored options
 	AVDictionaryEntry* t = nullptr;
 	while ((t = av_dict_get(options, "", t, AV_DICT_IGNORE_SUFFIX)) != nullptr) {
