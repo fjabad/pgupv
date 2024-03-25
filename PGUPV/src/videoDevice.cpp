@@ -88,7 +88,14 @@ std::vector<VideoDevice::CameraInfo> VideoDevice::getAvailableCameras() {
 	{
 		VideoDevice::CameraInfo info;
 		info.name = Cap_getDeviceName(ctx, i);
+		#ifdef _WIN32
 		info.devicePath = Cap_getDeviceUniqueID(ctx, i);
+		#elif __linux__
+		info.devicePath = "/dev/video" + std::to_string(i);
+		#else
+		static_assert(false, "Unsupported");
+		#endif
+		
 
 		// show all supported frame buffer formats
 		int32_t nFormats = Cap_getNumFormats(ctx, i);
@@ -133,7 +140,7 @@ void VideoDevice::openDevice(const VideoDevice::CameraInfo& ci, size_t optsId) {
 
 	// adapt pix format from openpnp to ffmpeg
 	std::string var, val;
-	if (opt.fourcc == "YUY2")
+	if (opt.fourcc == "YUY2" || opt.fourcc == "YUYV")
 	{
 		var = "pixel_format";
 		val = "yuyv422";
@@ -168,21 +175,24 @@ void VideoDevice::openDevice(const VideoDevice::CameraInfo& ci, size_t optsId) {
 #ifdef _WIN32
 	// First, we will try to use dshow
 	const AVInputFormat* ifmt = av_find_input_format("dshow");
-	//Set own video device's name
 	if (avformat_open_input(&pFormatCtx, ("video=" + ci.name).c_str(), ifmt, &options) != 0) {
 		ERRT("No se ha podido abrir la cámara " + ci.name);
 	}
-	INFO("Cámara " + ci.name + " abierta correctamente");
 #elif __linux__
 	//Linux
 	AVInputFormat* ifmt = av_find_input_format("video4linux2");
-	if (avformat_open_input(&pFormatCtx, ci.name.c_str(), ifmt, &options) != 0) {
+	if (avformat_open_input(&pFormatCtx, ci.devicePath.c_str(), ifmt, &options) != 0) {
 		ERRT("No se ha podido abrir la cámara " + ci.name);
 	}
-	INFO("Cámara " + ci.name + " abierta correctamente");
 #else
 	static_assert(false, "Not implemented");
 #endif
+	INFO("Cámara " + ci.name + " abierta correctamente");
+/*	if (avformat_open_input(&pFormatCtx, ci.name.c_str(), ifmt, &options) != 0) {
+		ERRT("No se ha podido abrir la cámara " + ci.name);
+	}
+	INFO("Cámara " + ci.name + " abierta correctamente");
+	*/
 	// Ignored options
 	AVDictionaryEntry* t = nullptr;
 	while ((t = av_dict_get(options, "", t, AV_DICT_IGNORE_SUFFIX)) != nullptr) {
