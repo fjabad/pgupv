@@ -17,10 +17,10 @@ using std::vector;
 class MyRender : public Renderer {
 public:
   MyRender() : ashader(std::shared_ptr<Program>(new Program())) {};
-  void setup(void);
-  void render(void);
-  void reshape(uint w, uint h);
-  void update(uint ms);
+  void setup(void) override;
+  void render(void) override;
+  void reshape(uint w, uint h) override;
+  void update(uint64_t ms) override;
 private:
   std::shared_ptr<GLMatrices> mats;
   std::shared_ptr<Program> ashader;
@@ -78,7 +78,7 @@ void MyRender::reshape(uint w, uint h) {
 }
 
 
-void MyRender::update(uint ms) {
+void MyRender::update(uint64_t ms) {
 }
 
 
