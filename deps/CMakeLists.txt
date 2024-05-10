@@ -147,8 +147,7 @@ set_target_properties(${libname} PROPERTIES
 set(EXTRA_LIBS ${EXTRA_LIBS} ${libname})
 endforeach()
 
-set (EXTRA_LIBS ${EXTRA_LIBS} SDL2::SDL2)
-set (EXTRA_LIBS ${EXTRA_LIBS} SDL2_ttf)
+set (EXTRA_LIBS ${EXTRA_LIBS} SDL2::SDL2 SDL2_ttf)
 
 else()
 find_package(FREEIMAGE REQUIRED)
