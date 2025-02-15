@@ -9,7 +9,7 @@
  * @brief Clase de utilidad para leer la información de los edificios de un fichero GML, 
  con el formato del Catastro Español: 
  
- https://www.catastro.minhap.es/webinspire/documentos/Conjuntos%20de%20datos.pdf
+ https://www.catastro.hacienda.gob.es/webinspire/documentos/Conjuntos%20de%20datos.pdf
  .
 */
 
