@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(p6)
+project(p06)
 
 file (GLOB SOURCES "*.cpp" "*.h" "*.hpp" "*.vert" "*.frag")
 
-add_executable(p6 ${SOURCES})
+add_executable(p06 ${SOURCES})
 
-target_link_libraries(p6 PGUPV)
+target_link_libraries(p06 PGUPV)
 
-config_exercise(p6)
+config_exercise(p06)
 

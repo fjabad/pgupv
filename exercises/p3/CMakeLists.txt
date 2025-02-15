@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(p3)
+project(p03)
 
 # enable FetchContent
 include(FetchContent)
@@ -17,11 +17,11 @@ FetchContent_MakeAvailable(pugixml)
 
 file (GLOB SOURCES "*.cpp" "*.h" "*.hpp")
 
-add_executable(p3 ${SOURCES})
+add_executable(p03 ${SOURCES})
 
-target_include_directories(p3 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(p3 PGUPV pugixml)
+target_include_directories(p03 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(p03 PGUPV pugixml)
 
 
-config_exercise(p3)
+config_exercise(p03)
 
