@@ -55,15 +55,12 @@ namespace PGUPV {
     */
     static void moveMousePointerInWindow(int x, int y);
 
-    // Esto se romperá eventualmente (p.e. 3.0.0), pero para esos entonces sólo habrá que quitar 
-    // la guarda
-#if SDL_MAJOR_VERSION>=2 && SDL_MINOR_VERSION>= 0 && SDL_PATCHLEVEL>=4
     /**
     Mueve el puntero del ratón a la posición de la pantalla indicada
     */
     static void moveMousePointerTo(int x, int y);
-#endif
-    /**
+
+/**
     Devuelve la versión de la librería subyacente, en forma de:
 
     \<Librería\>: version,

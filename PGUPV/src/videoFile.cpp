@@ -20,11 +20,11 @@ VideoFile::VideoFile(const std::string &filepath) : filepath(filepath) {
 
 	prepareForReading();
     
-    INFO("VideoFile creado (" + filepath + ") " + std::to_string(reinterpret_cast<std::uint64_t>(this)));
+    INFO("VideoFile creado (" + filepath + ") " + std::to_string(reinterpret_cast<uint64_t>(this)));
 }
 
 VideoFile::~VideoFile() {
-    INFO("VideoFile destruido (" + filepath + ") " + std::to_string(reinterpret_cast<std::uint64_t>(this)));
+    INFO("VideoFile destruido (" + filepath + ") " + std::to_string(reinterpret_cast<uint64_t>(this)));
 }
 
 void VideoFile::rewind() {

@@ -56,15 +56,6 @@ FetchContent_Declare(imgui
 FetchContent_MakeAvailable(imgui)
 
 
-set(ASSIMP_BUILD_TESTS OFF)
-set(ASSIMP_INSTALL OFF)
-FetchContent_Declare(assimp
-    GIT_REPOSITORY "https://github.com/assimp/assimp.git"
-    GIT_TAG "v5.3.1" 
-    GIT_SHALLOW ON
-)
-FetchContent_MakeAvailable(assimp)
-
 FetchContent_Declare(GSL
     GIT_REPOSITORY "https://github.com/microsoft/GSL"
     GIT_TAG "v4.0.0"
@@ -106,6 +97,15 @@ add_subdirectory(openpnp-capture)
 # set the include dir
 target_include_directories(openpnp-capture PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/openpnp-capture/include>)
 
+
+set(ASSIMP_BUILD_TESTS OFF)
+set(ASSIMP_INSTALL OFF)
+FetchContent_Declare(assimp
+    GIT_REPOSITORY "https://github.com/assimp/assimp.git"
+    GIT_TAG "v5.3.1" 
+    GIT_SHALLOW ON
+)
+FetchContent_MakeAvailable(assimp)
 
 
 if (MSVC)
@@ -177,5 +177,6 @@ set_target_properties(assimp gli_dummy glm dearimgui GLEW sdl_headers_copy SDL2_
 set_target_properties(PROPERTIES FOLDER "deps")
 set_target_properties(PROPERTIES FOLDER "deps")
 #set_target_properties(glm_shared PROPERTIES FOLDER "deps")
-
 endif()
+
+

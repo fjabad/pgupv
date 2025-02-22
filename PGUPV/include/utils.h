@@ -7,6 +7,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <cstring>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <time.h>
