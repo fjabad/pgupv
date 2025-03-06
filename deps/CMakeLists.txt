@@ -42,7 +42,7 @@ set(GLM_BUILD_TESTS OFF)
 set(BUILD_SHARED_LIBS OFF)
 FetchContent_Declare(glm
     GIT_REPOSITORY "https://github.com/g-truc/glm"
-    GIT_TAG "1.0.0" 
+#    GIT_TAG "1.0.1" 
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(glm)
@@ -66,7 +66,7 @@ FetchContent_MakeAvailable(GSL)
 
 FetchContent_Declare(json 
     GIT_REPOSITORY "https://github.com/nlohmann/json"
-    GIT_TAG "v3.11.2"
+    GIT_TAG "v3.11.3"
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(json)
@@ -74,14 +74,17 @@ FetchContent_MakeAvailable(json)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 set(GLI_TEST_ENABLE OFF)
-FetchContent_Declare(gli
-    GIT_REPOSITORY "https://github.com/g-truc/gli.git"
+#FetchContent_Declare(gli
+#    GIT_REPOSITORY "https://github.com/g-truc/gli.git"
 #    GIT_TAG "v3.11.2"
-    GIT_SHALLOW ON
-)
-FetchContent_MakeAvailable(gli)
+#    GIT_SHALLOW ON
+#)
+#FetchContent_MakeAvailable(gli)
+
+add_subdirectory(gli-master)
 add_library(gli_lib INTERFACE)
 target_include_directories(gli_lib INTERFACE ${gli_SOURCE_DIR})
+
 
 FetchContent_Declare(par
     GIT_REPOSITORY "https://github.com/prideout/par.git"
@@ -102,7 +105,7 @@ set(ASSIMP_BUILD_TESTS OFF)
 set(ASSIMP_INSTALL OFF)
 FetchContent_Declare(assimp
     GIT_REPOSITORY "https://github.com/assimp/assimp.git"
-    GIT_TAG "v5.3.1" 
+    GIT_TAG "v5.4.3" 
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(assimp)
@@ -173,7 +176,7 @@ target_link_libraries(dearimgui PRIVATE SDL2::SDL2)
 
 if (MSVC)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_target_properties(assimp gli_dummy glm dearimgui GLEW sdl_headers_copy SDL2_ttf SDL2main SDL2 uninstall zlibstatic UpdateAssimpLibsDebugSymbolsAndDLLs openpnp-capture openpnp-capture-test PROPERTIES FOLDER "deps")
+set_target_properties(assimp gli_dummy glm dearimgui GLEW sdl_headers_copy SDL2_ttf SDL2main SDL2 uninstall zlibstatic UpdateAssimpLibsDebugSymbolsAndDLLs openpnp-capture PROPERTIES FOLDER "deps")
 set_target_properties(PROPERTIES FOLDER "deps")
 set_target_properties(PROPERTIES FOLDER "deps")
 #set_target_properties(glm_shared PROPERTIES FOLDER "deps")

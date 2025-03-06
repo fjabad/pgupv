@@ -10,7 +10,7 @@
 # Author: Niels A. Moseley, Jason von Nieda
 #
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.6...3.14 FATAL_ERROR)
 project (openpnp-capture)
 set(OPENPNP_CAPTURE_LIB_VERSION "0.0.28" CACHE STRING "openpnp-capture library version")
 set(OPENPNP_CAPTURE_LIB_SOVERSION "0" CACHE STRING "openpnp-capture library soversion")
@@ -89,7 +89,7 @@ IF (WIN32)
     target_link_libraries(openpnp-capture strmiids)
 
     # add windows-specific test application
-    add_subdirectory(win/tests)
+    ###add_subdirectory(win/tests)
 
 ELSEIF(APPLE)
     # set the platform identification string
@@ -110,7 +110,7 @@ ELSEIF(APPLE)
         )
 
     # add mac specific test application
-    add_subdirectory(mac/tests)
+    ###add_subdirectory(mac/tests)
 
 ELSEIF(UNIX)
     # install path resolving
@@ -152,7 +152,7 @@ ELSEIF(UNIX)
     endif()
 
     # add linux-specific test application
-    add_subdirectory(linux/tests)
+    ###add_subdirectory(linux/tests)
 
     # install lib and headers
     install(FILES include/openpnp-capture.h

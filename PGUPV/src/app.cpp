@@ -223,7 +223,7 @@ std::string App::collectLibVersions() {
 	vs << GUILib::getVersion() << "\n";
 
 	// GLM
-	vs << GLM_VERSION_MESSAGE << "\n";
+	vs << GLM_VERSION_COMPLETE << "\n";
 
 	return vs.str();
 }
