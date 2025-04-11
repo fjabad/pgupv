@@ -80,9 +80,8 @@ void main()
         float NdotL = max(dot(N, L), 0.0);
         float HdotV = max(dot(H, V), 0.0);
 
-        // De manera realista, deberíamos usar exclusivamente una atenuación con el cuadrado de la distancia,
-        // pero así damos más libertad al diseñador
-        float attenuation = min(1.0, 1.0 / (distance * distance * lights[i].attenuation.x + distance * lights[i].attenuation.y + lights[i].attenuation.z));
+        // Atenuación con el cuadrado de la distancia
+        float attenuation = 1.0 / (distance * distance);
         vec3 radiance = lights[i].scaledColor * attenuation;
 
         // Cook-Torrance BRDF

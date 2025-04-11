@@ -29,7 +29,6 @@ const Strings UBOPBRLightSources::definition{
 	"  vec3 spotDirectionEye;",
 	"  int enabled;",
 	"  float spotExponent, spotCutoff, spotCosCutoff;",
-	"  vec3 attenuation;",
 	"  vec3 scaledColor;"
 	"};",
 
@@ -138,6 +137,5 @@ std::ostream &PGUPV::operator<<(std::ostream &os,
 	os << "spotExponent: " << lsp.spotExponent << std::endl;
 	os << "spotCutoff: " << lsp.spotCutoff << std::endl;
 	os << "spotCosCutoff: " << lsp.spotCosCutoff << std::endl;
-	os << "attenuation: " << PGUPV::to_string(lsp.attenuation, 1) << std::endl;
 	return os;
 }

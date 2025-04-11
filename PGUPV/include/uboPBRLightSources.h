@@ -36,7 +36,6 @@ namespace PGUPV {
 		\param spotExponent Exponente especular (por defecto, 50)
 		\param spotCutoff Ángulo de apertura del foco (por defecto, 180.0, es decir,
 		no hay foco)
-		\param attenuation Coeficientes de atenuación
 		\param enabled true si esta luz está encendida
 		*/
 		PBRLightSourceParameters(
@@ -46,14 +45,12 @@ namespace PGUPV {
 			bool directional = false,
 			const glm::vec3 &spotDirection = glm::vec3(0.0, 0.0, -1.0),
 			float spotExponent = 50.0, float spotCutoff = 180.0,
-			const glm::vec3 &attenuation = glm::vec3(1.0, 0.0, 0.0),
 			bool enabled = true) {
 			this->color = color;
 			this->intensity = intensity;
 			this->scaledColor = color * intensity;
 			this->positionWorld = position;
 			this->spotDirectionWorld = spotDirection;
-			this->attenuation = attenuation;
 			this->spotExponent = spotExponent;
 			this->spotCutoff = spotCutoff;
 			this->spotCosCutoff = (float)cos(M_PI * spotCutoff / 180.0);
@@ -63,8 +60,6 @@ namespace PGUPV {
 				_pad1[i] = 0;
 			for (uint i = 0; i < sizeof(_pad2); ++i)
 				_pad2[i] = 0;
-			for (uint i = 0; i < sizeof(_pad3); ++i)
-				_pad3[i] = 0;
 		}
 		glm::vec3 color;
 		float intensity;
@@ -77,10 +72,8 @@ namespace PGUPV {
 		GLfloat spotExponent, spotCutoff, spotCosCutoff;
 		unsigned char _pad1[sizeof(glm::vec4) - 3 * sizeof(GLfloat)];
 		// .x: constant, .y: linear, .z: quadratic
-		glm::vec3 attenuation;
-		unsigned char _pad2[sizeof(glm::vec4) - sizeof(glm::vec3)];
 		glm::vec3 scaledColor; 
-		unsigned char _pad3[sizeof(glm::vec4) - sizeof(glm::vec3)];
+		unsigned char _pad2[sizeof(glm::vec4) - sizeof(glm::vec3)];
 	private:
 		friend std::ostream &operator<<(std::ostream &os,
 			const PBRLightSourceParameters &lsp);

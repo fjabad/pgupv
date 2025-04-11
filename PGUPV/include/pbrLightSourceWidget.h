@@ -33,10 +33,6 @@ namespace PGUPV {
       posSelector->render();
 
       if (!isDirectional->get()) {
-        // If it is directional, the attenuation is not used
-
-        attenuation->render();
-
         // and the spotlight parameters are not used either
         separator.render();
 
@@ -59,7 +55,7 @@ namespace PGUPV {
     Separator separator;
     Label sourceColorLabel, posDirLabel, spotLightLabel;
     std::shared_ptr<DirectionWidget> dirSelector, spotDirSelector;
-    std::shared_ptr<Vec3SliderWidget> posSelector, attenuation;
+    std::shared_ptr<Vec3SliderWidget> posSelector;
     std::shared_ptr<FloatSliderWidget> spotAngle;
     std::shared_ptr<IntSliderWidget> spotExponentSelector;
 
@@ -112,9 +108,6 @@ namespace PGUPV {
       dirSelector->setVisible(false);
       dirSelector->getValue().addListener(vec3UBOUpdater);
 
-      attenuation = std::make_shared<Vec3SliderWidget>("Atenuación", glm::vec3(0.0f), 0.f, 5.f);
-      attenuation->getValue().addListener(vec3UBOUpdater);
-
       //// Cosas del foco
 
       spotLightLabel.setText("Foco");
@@ -149,7 +142,6 @@ namespace PGUPV {
       spotDirSelector->set(lsp.spotDirectionWorld);
       spotAngle->set(lsp.spotCutoff);
       spotExponentSelector->set((int)lsp.spotExponent);
-      attenuation->set(lsp.attenuation);
     }
 
     void updateUBO() {
@@ -173,7 +165,6 @@ namespace PGUPV {
       lsp.spotCutoff = spotAngle->get();
       lsp.spotExponent = (float)spotExponentSelector->get();
       lsp.spotCosCutoff = (float)cos(lsp.spotCutoff * M_PI / 180.0);
-      lsp.attenuation = attenuation->get();
       lightSources->setLightSource(selectedLightSource->getSelected(), lsp);
     }
   };
