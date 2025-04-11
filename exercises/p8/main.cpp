@@ -23,7 +23,8 @@ class MyRender : public Renderer {
 public:
 	MyRender()
 		: ci(vec4(0.0, 0.0, 1.0, 1.0), vec4(1.5, 0.0, 1.0, 1.0),
-		vec3(0.0, 0.0, 1.0), 4),
+			vec3(0.0, 0.0, 1.0), 4),
+		tower{ 0.5f, 0.5f, 1.f },
 		lightBulb(.05f, 5, 5, vec4(1.0f, 1.0f, 0.0f, 1.0f)) {}
 	void setup(void) override;
 	void render(void) override;
@@ -34,7 +35,8 @@ private:
 	std::shared_ptr<UBOLightSources> lights;
 	std::shared_ptr<Program> ashader;
 	Axes axes;
-	Rect plane;
+	Rect wall;
+	Cylinder tower;
 	std::shared_ptr<CheckBoxWidget> showAxis;
 	CircularInterpolator ci;
 	Sphere lightBulb;
@@ -69,21 +71,30 @@ void MyRender::setup() {
 	// Cargamos las texturas desde fichero
 	auto tcolor = std::make_shared<Texture2D>();
 	tcolor->loadImage(App::assetsDir() + "images/rocas-color.png");
-  auto tbrillo = std::make_shared<Texture2D>();
+	auto tbrillo = std::make_shared<Texture2D>();
 	tbrillo->loadImage(App::assetsDir() + "images/rocas-gloss.png");
-  auto tnormales = std::make_shared<Texture2D>();
+	auto tnormales = std::make_shared<Texture2D>();
 	tnormales->loadImage(App::assetsDir() + "images/rocas-normales.png");
 
 	// Asociamos las texturas a un material
-  auto material = std::make_shared<Material>("bump-mapping");
-  material->setDiffuseTexture(tcolor);
-  material->setSpecularTexture(tbrillo);
-  material->setNormalMapTexture(tnormales);
+	auto material = std::make_shared<Material>("bump-mapping");
+	material->setDiffuseTexture(tcolor);
+	material->setSpecularTexture(tbrillo);
+	material->setNormalMapTexture(tnormales);
 
-  // Asignamos el material a todas las mallas
-  plane.accept([material](Mesh &m) { m.setMaterial(material); });
+	// Asignamos el material a todas las mallas
+	wall.accept([material](Mesh& m) { m.setMaterial(material); });
 
-  buildGUI();
+	// Ajustamos las coordenadas de textura del cilindro para que haya tres copias en la dirección original
+	// (si no, los ladrillos quedan estirados horizontalmente)
+	auto& towerM = tower.getMesh(0); // sólo hay una malla
+	auto tc = towerM.getTexCoords();  // obtenemos sus coordenadas de textura
+	for (auto& t : tc) {
+		t *= glm::vec2{ 3, 1 };   // las modificamos
+	}
+	towerM.addTexCoord(0, tc);   // las volvemos a añadir
+
+	buildGUI();
 	App::getInstance().getWindow().showGUI();
 
 	setCameraHandler(std::make_shared<OrbitCameraHandler>(1.5f));
@@ -106,13 +117,22 @@ void MyRender::render() {
 	lights->setLightSource(0, light);
 
 	mats->pushMatrix(GLMatrices::MODEL_MATRIX);
-	mats->translate(GLMatrices::MODEL_MATRIX, -0.5, 0, 0);
-	plane.render();
-	mats->translate(GLMatrices::MODEL_MATRIX, 1.0, 0, 0);
-	plane.render();
+
+	mats->translate(GLMatrices::MODEL_MATRIX, -1.5, 0, 0);
+	tower.render();
+
+	mats->translate(GLMatrices::MODEL_MATRIX, 1, 0, 0);
+	wall.render();
+
+	mats->translate(GLMatrices::MODEL_MATRIX, 1, 0, 0);
+	wall.render();
+
+	mats->translate(GLMatrices::MODEL_MATRIX, 1, 0, 0);
+	tower.render();
+
 	mats->popMatrix(GLMatrices::MODEL_MATRIX);
 
-  ConstantIllumProgram::use();
+	ConstantIllumProgram::use();
 
 	if (showAxis->get()) {
 		// Dibujamos los ejes de coordenadas
@@ -130,7 +150,7 @@ void MyRender::render() {
 
 void MyRender::reshape(uint w, uint h) {
 	glViewport(0, 0, w, h);
-    mats->setMatrix(GLMatrices::PROJ_MATRIX, getCamera().getProjMatrix());
+	mats->setMatrix(GLMatrices::PROJ_MATRIX, getCamera().getProjMatrix());
 }
 
 void MyRender::buildGUI() {
@@ -142,11 +162,11 @@ void MyRender::buildGUI() {
 	showAxis = std::make_shared<CheckBoxWidget>("Mostrar ejes", false);
 	panel->addWidget(showAxis);
 
-	
+
 }
 
-int main(int argc, char *argv[]) {
-	App &myApp = App::getInstance();
+int main(int argc, char* argv[]) {
+	App& myApp = App::getInstance();
 	myApp.setInitWindowSize(800, 600);
 	myApp.initApp(argc, argv, PGUPV::DOUBLE_BUFFER | PGUPV::DEPTH_BUFFER |
 		PGUPV::MULTISAMPLE);
