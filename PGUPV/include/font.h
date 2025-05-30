@@ -9,8 +9,7 @@
 #define DEFAULT_FONT App::assetsDir() + "fonts/FreeSans.ttf"
 #define DEFAULT_TEXT_SIZE 12
 
-struct _TTF_Font;
-typedef _TTF_Font TTF_Font;
+struct TTF_Font;
 
 namespace PGUPV {
 class Font {

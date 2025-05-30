@@ -6,11 +6,7 @@
 //
 //
 
-#ifndef _WIN32
-#include <SDL2/SDL.h>
-#else
-#include <SDL_keycode.h>
-#endif
+#include <SDL3/SDL.h>
 
 #include <algorithm>
 #include <sstream>
@@ -46,7 +42,7 @@ using PGUPV::Window;
 using PGUPV::WindowHW;
 
 
-std::map<Uint32, Window *> WindowHW::windowIdToWindow;
+std::map<Uint32, Window*> WindowHW::windowIdToWindow;
 
 // Values under EPSILON are considered 0
 #define JOYSTICK_EPSILON 500
@@ -66,12 +62,12 @@ static SDLKeyCodeToPGUPVKeyCode translationTable[]{
   { SDLK_TAB, KeyCode::Tab },
   { SDLK_SPACE, KeyCode::Space },
   { SDLK_EXCLAIM, KeyCode::Exclamation },
-  { SDLK_QUOTEDBL, KeyCode::DblQuotes },
+  { SDLK_DBLAPOSTROPHE, KeyCode::DblQuotes },
   { SDLK_HASH, KeyCode::Hash },
   { SDLK_PERCENT, KeyCode::Percent },
   { SDLK_DOLLAR, KeyCode::Dollar },
   { SDLK_AMPERSAND, KeyCode::Ampersand },
-  { SDLK_QUOTE, KeyCode::Quote },
+  { SDLK_APOSTROPHE, KeyCode::Quote },
   { SDLK_LEFTPAREN, KeyCode::LeftParen },
   { SDLK_RIGHTPAREN, KeyCode::RightParen },
   { SDLK_ASTERISK, KeyCode::Asterisk },
@@ -103,33 +99,33 @@ static SDLKeyCodeToPGUPVKeyCode translationTable[]{
   { SDLK_RIGHTBRACKET, KeyCode::RightBracket },
   { SDLK_CARET, KeyCode::Caret },
   { SDLK_UNDERSCORE, KeyCode::Underscore },
-  { SDLK_BACKQUOTE, KeyCode::BackQuote },
-  { SDLK_a, KeyCode::A },
-  { SDLK_b, KeyCode::B },
-  { SDLK_c, KeyCode::C },
-  { SDLK_d, KeyCode::D },
-  { SDLK_e, KeyCode::E },
-  { SDLK_f, KeyCode::F },
-  { SDLK_g, KeyCode::G },
-  { SDLK_h, KeyCode::H },
-  { SDLK_i, KeyCode::I },
-  { SDLK_j, KeyCode::J },
-  { SDLK_k, KeyCode::K },
-  { SDLK_l, KeyCode::L },
-  { SDLK_m, KeyCode::M },
-  { SDLK_n, KeyCode::N },
-  { SDLK_o, KeyCode::O },
-  { SDLK_p, KeyCode::P },
-  { SDLK_q, KeyCode::Q },
-  { SDLK_r, KeyCode::R },
-  { SDLK_s, KeyCode::S },
-  { SDLK_t, KeyCode::T },
-  { SDLK_u, KeyCode::U },
-  { SDLK_v, KeyCode::V },
-  { SDLK_w, KeyCode::W },
-  { SDLK_x, KeyCode::X },
-  { SDLK_y, KeyCode::Y },
-  { SDLK_z, KeyCode::Z },
+  { SDLK_GRAVE, KeyCode::BackQuote },
+  { SDLK_A, KeyCode::A },
+  { SDLK_B, KeyCode::B },
+  { SDLK_C, KeyCode::C },
+  { SDLK_D, KeyCode::D },
+  { SDLK_E, KeyCode::E },
+  { SDLK_F, KeyCode::F },
+  { SDLK_G, KeyCode::G },
+  { SDLK_H, KeyCode::H },
+  { SDLK_I, KeyCode::I },
+  { SDLK_J, KeyCode::J },
+  { SDLK_K, KeyCode::K },
+  { SDLK_L, KeyCode::L },
+  { SDLK_M, KeyCode::M },
+  { SDLK_N, KeyCode::N },
+  { SDLK_O, KeyCode::O },
+  { SDLK_P, KeyCode::P },
+  { SDLK_Q, KeyCode::Q },
+  { SDLK_R, KeyCode::R },
+  { SDLK_S, KeyCode::S },
+  { SDLK_T, KeyCode::T },
+  { SDLK_U, KeyCode::U },
+  { SDLK_V, KeyCode::V },
+  { SDLK_W, KeyCode::W },
+  { SDLK_X, KeyCode::X },
+  { SDLK_Y, KeyCode::Y },
+  { SDLK_Z, KeyCode::Z },
 
   { SDLK_CAPSLOCK, KeyCode::CapsLock },
   { SDLK_F1, KeyCode::F1 },
@@ -191,36 +187,31 @@ static SDLKeyCodeToPGUPVKeyCode translationTable[]{
 
 HW::HW() {
 	// Inicializar SDL
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_JOYSTICK) != 0)
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK))
 		ERRT("Unable to initialize SDL");
 
 	// Ordenar la tabla de traducción de códigos de tecla para poder usar luego una búsqueda binaria
 	const size_t sizeTranslationElem = sizeof(translationTable[0]);
 	std::qsort(translationTable, (sizeof(translationTable) / sizeTranslationElem), sizeTranslationElem, [](const void* a, const void* b)
-	{
-		const SDLKeyCodeToPGUPVKeyCode *arg1 = static_cast<const SDLKeyCodeToPGUPVKeyCode*>(a);
-		const SDLKeyCodeToPGUPVKeyCode *arg2 = static_cast<const SDLKeyCodeToPGUPVKeyCode*>(b);
+		{
+			const SDLKeyCodeToPGUPVKeyCode* arg1 = static_cast<const SDLKeyCodeToPGUPVKeyCode*>(a);
+			const SDLKeyCodeToPGUPVKeyCode* arg2 = static_cast<const SDLKeyCodeToPGUPVKeyCode*>(b);
 
-		if (arg1->from < arg2->from) return -1;
-		if (arg1->from > arg2->from) return 1;
-		return 0;
-	});
+			if (arg1->from < arg2->from) return -1;
+			if (arg1->from > arg2->from) return 1;
+			return 0;
+		});
 }
 
 std::string HW::getLibVersionString() {
 
-	SDL_version compiled, current;
-	SDL_VERSION(&compiled);
-	SDL_GetVersion(&current);
+	auto compiled = SDL_VERSION;
+	auto current = SDL_GetVersion();
 
 	std::string version = "SDL: Runtime: " +
-		std::to_string((int)current.major) + "." +
-		std::to_string((int)current.minor) + "." +
-		std::to_string((int)current.patch) +
+		std::to_string(current) +
 		" Compiled: " +
-		std::to_string((int)current.major) + "." +
-		std::to_string((int)current.minor) + "." +
-		std::to_string((int)current.patch);
+		std::to_string(compiled);
 	return version;
 }
 
@@ -228,18 +219,18 @@ HW::~HW() {
 
 }
 
-void HW::moveMousePointerInWindow(int x, int y) {
+void HW::moveMousePointerInWindow(float x, float y) {
 	SDL_WarpMouseInWindow(nullptr, x, y);
 }
 
 #if SDL_VERSION_ATLEAST(2, 0, 4)
-void HW::moveMousePointerTo(int x, int y) {
+void HW::moveMousePointerTo(float x, float y) {
 	SDL_WarpMouseGlobal(x, y);
 }
 #endif
 
 GamepadHW::GamepadHW(size_t gamepad) {
-	gameController = SDL_JoystickOpen(gsl::narrow<int>(gamepad));
+	gameController = SDL_OpenJoystick(gsl::narrow<int>(gamepad));
 	if (gameController == nullptr) {
 		ERRT(std::string("No se ha podido usar el joystick. Error SDL: ") + SDL_GetError());
 	}
@@ -254,33 +245,35 @@ GamepadHW::GamepadHW(size_t gamepad) {
 
 GamepadHW::~GamepadHW() {
 	if (gameController) {
-		INFO(std::string("Destruyendo el joystick ") + SDL_JoystickName(gameController));
-		SDL_JoystickClose(gameController);
+		INFO(std::string("Destruyendo el joystick ") + SDL_GetJoystickName(gameController));
+		SDL_CloseJoystick(gameController);
 	}
 }
 
 std::string GamepadHW::getName() const {
-	return std::string(SDL_JoystickName(gameController));
+	return std::string(SDL_GetJoystickName(gameController));
 }
 
 size_t GamepadHW::getNumAxes() const {
-	return SDL_JoystickNumAxes(gameController);
+	return SDL_GetNumJoystickAxes(gameController);
 }
 
 size_t GamepadHW::getNumButtons() const {
-	return SDL_JoystickNumButtons(gameController);
+	return SDL_GetNumJoystickButtons(gameController);
 }
 
 size_t GamepadHW::getNumHats() const {
-	return SDL_JoystickNumHats(gameController);
+	return SDL_GetNumJoystickHats(gameController);
 }
 
 size_t GamepadHW::getNumBalls() const {
-	return SDL_JoystickNumBalls(gameController);
+	return SDL_GetNumJoystickBalls(gameController);
 }
 
 size_t HW::getNumGamepads() {
-	return SDL_NumJoysticks();
+	int count;
+	SDL_GetJoysticks(&count);
+	return count;
 }
 
 uint64_t HW::currentMillis() {
@@ -296,7 +289,7 @@ void HW::terminate(void) {
 }
 
 
-int HW::showMessageBox(DialogType type, const std::string &title, const std::string &body) {
+int HW::showMessageBox(DialogType type, const std::string& title, const std::string& body) {
 	Uint32 sdlType;
 	switch (type) {
 	case DialogType::DLG_WARNING:
@@ -345,39 +338,35 @@ int HW::showMessageBox(DialogType type, const std::string &title, const std::str
 
 
 
-static std::string decipherSDLWindowFlags(Uint32 flags) {
+static std::string decipherSDLWindowFlags(Uint64 flags) {
 	std::ostringstream os;
 
-	if (flags & SDL_WINDOW_FULLSCREEN)
-		os << "SDL_WINDOW_FULLSCREEN ";
-	if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP)
-		os << "SDL_WINDOW_FULLSCREEN_DESKTOP ";
-	if (flags & SDL_WINDOW_OPENGL)
-		os << "SDL_WINDOW_OPENGL ";
-	if (flags & SDL_WINDOW_SHOWN)
-		os << "SDL_WINDOW_SHOWN ";
-	if (flags & SDL_WINDOW_HIDDEN)
-		os << "SDL_WINDOW_HIDDEN ";
-	if (flags & SDL_WINDOW_BORDERLESS)
-		os << "SDL_WINDOW_BORDERLESS ";
-	if (flags & SDL_WINDOW_RESIZABLE)
-		os << "SDL_WINDOW_RESIZABLE ";
-	if (flags & SDL_WINDOW_MINIMIZED)
-		os << "SDL_WINDOW_MINIMIZED ";
-	if (flags & SDL_WINDOW_MAXIMIZED)
-		os << "SDL_WINDOW_MAXIMIZED ";
-	if (flags & SDL_WINDOW_INPUT_GRABBED)
-		os << "SDL_WINDOW_INPUT_GRABBED ";
-	if (flags & SDL_WINDOW_INPUT_FOCUS)
-		os << "SDL_WINDOW_INPUT_FOCUS ";
-	if (flags & SDL_WINDOW_MOUSE_FOCUS)
-		os << "SDL_WINDOW_MOUSE_FOCUS ";
-	if (flags & SDL_WINDOW_FOREIGN)
-		os << "SDL_WINDOW_FOREIGN";
-#if SDL_VERSION_ATLEAST(2, 0, 1)
-	if (flags & SDL_WINDOW_ALLOW_HIGHDPI)
-		os << "SDL_WINDOW_ALLOW_HIGHDPI ";
-#endif
+#define FLAG(F) if (flags & F) os << #F " ";
+	FLAG(SDL_WINDOW_FULLSCREEN)
+	FLAG(SDL_WINDOW_OPENGL)
+	FLAG(SDL_WINDOW_OCCLUDED)
+	FLAG(SDL_WINDOW_HIDDEN)
+	FLAG(SDL_WINDOW_BORDERLESS)
+	FLAG(SDL_WINDOW_RESIZABLE)
+	FLAG(SDL_WINDOW_MINIMIZED)
+	FLAG(SDL_WINDOW_MAXIMIZED)
+	FLAG(SDL_WINDOW_MOUSE_GRABBED)
+	FLAG(SDL_WINDOW_INPUT_FOCUS)
+	FLAG(SDL_WINDOW_MOUSE_FOCUS)
+	FLAG(SDL_WINDOW_EXTERNAL)
+	FLAG(SDL_WINDOW_MODAL)
+	FLAG(SDL_WINDOW_HIGH_PIXEL_DENSITY)
+	FLAG(SDL_WINDOW_MOUSE_CAPTURE)
+	FLAG(SDL_WINDOW_MOUSE_RELATIVE_MODE)
+	FLAG(SDL_WINDOW_ALWAYS_ON_TOP)
+	FLAG(SDL_WINDOW_UTILITY)
+	FLAG(SDL_WINDOW_TOOLTIP)
+	FLAG(SDL_WINDOW_POPUP_MENU)
+	FLAG(SDL_WINDOW_KEYBOARD_GRABBED)
+	FLAG(SDL_WINDOW_VULKAN)
+	FLAG(SDL_WINDOW_METAL)
+	FLAG(SDL_WINDOW_TRANSPARENT)
+	FLAG(SDL_WINDOW_NOT_FOCUSABLE)
 	return os.str();
 }
 
@@ -406,7 +395,7 @@ static std::string decipherWindowProperties(std::shared_ptr<WindowHW> window) {
 
 
 
-std::shared_ptr<WindowHW> WindowHW::createWindow(Window *container, const std::string &title, uint flags, uint posx,
+std::shared_ptr<WindowHW> WindowHW::createWindow(Window* container, const std::string& title, uint flags, uint posx,
 	uint posy, uint width, uint height, uint glMajor, uint glMinor, bool glCompatibility) {
 	// Request the opengl context. SDL doesn't have the ability to choose which
 	// profile at this time of writing, but it should default to the core profile
@@ -454,12 +443,14 @@ std::shared_ptr<WindowHW> WindowHW::createWindow(Window *container, const std::s
 	if (flags & DEBUG)
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
-	window->_mainwindow = SDL_CreateWindow(title.c_str(), posx, posy, width, height,
-		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | ((flags & FULLSCREEN) ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_RESIZABLE));
+	window->_mainwindow = SDL_CreateWindow(title.c_str(), width, height,
+		SDL_WINDOW_OPENGL | ((flags & FULLSCREEN) ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_RESIZABLE));
 	if (!(window->_mainwindow)) {
 		ERRT("Unable to create window for " + window->reqGLVersion + ". SDL Error: " +
 			SDL_GetError());
 	}
+
+	SDL_SetWindowPosition(window->_mainwindow, posx, posy);
 
 	/* Create our opengl context and attach it to our window */
 	window->_maincontext = SDL_GL_CreateContext(window->_mainwindow);
@@ -487,7 +478,7 @@ std::shared_ptr<WindowHW> WindowHW::createWindow(Window *container, const std::s
 		window->setFullScreen(true);
 
 	INFO("Window Properties: " + decipherWindowProperties(window));
-	Uint32 got = SDL_GetWindowFlags(window->_mainwindow);
+	auto got = SDL_GetWindowFlags(window->_mainwindow);
 	INFO("SDL Window flags: " + decipherSDLWindowFlags(got));
 	int contextFlags;
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_FLAGS, &contextFlags);
@@ -496,8 +487,8 @@ std::shared_ptr<WindowHW> WindowHW::createWindow(Window *container, const std::s
 	windowIdToWindow[SDL_GetWindowID(window->_mainwindow)] = container;
 
 	PGUPV::GUILib::initGUI(window->_mainwindow, &(window->_maincontext), "#version 410");
-  if (App::getInstance().isForgetGUIState()) 
-    PGUPV::GUILib::forgetState();
+	if (App::getInstance().isForgetGUIState())
+		PGUPV::GUILib::forgetState();
 
 	return window;
 }
@@ -510,7 +501,7 @@ void WindowHW::setFullScreen(bool fs) {
 	if (fs == _fullscreen)
 		return;
 	if (fs) {
-		SDL_SetWindowFullscreen(_mainwindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		SDL_SetWindowFullscreen(_mainwindow, SDL_WINDOW_FULLSCREEN);
 	}
 	else {
 		SDL_SetWindowFullscreen(_mainwindow, 0);
@@ -526,7 +517,7 @@ WindowHW::~WindowHW() {
 	/* Delete our opengl context, destroy our window, and shutdown SDL */
 	if (_maincontext) {
 		GUILib::shutdown();
-		SDL_GL_DeleteContext(_maincontext);
+		SDL_GL_DestroyContext(_maincontext);
 		_maincontext = nullptr;
 	}
 	if (_mainwindow) {
@@ -536,19 +527,22 @@ WindowHW::~WindowHW() {
 }
 
 
-void WindowHW::setMousePosition(uint x, uint y) {
+void WindowHW::setMousePosition(float x, float y) {
 	SDL_WarpMouseInWindow(_mainwindow, x, y);
 }
 
 void WindowHW::showMouseCursor(bool show) {
-	SDL_ShowCursor(show ? SDL_ENABLE : SDL_DISABLE);
+	if (show)
+		SDL_ShowCursor();
+	else
+		SDL_HideCursor();
 }
 
-void WindowHW::setTitle(const std::string &title) {
+void WindowHW::setTitle(const std::string& title) {
 	SDL_SetWindowTitle(_mainwindow, title.c_str());
 }
 
-void WindowHW::getSize(uint &w, uint &h) {
+void WindowHW::getSize(uint& w, uint& h) {
 	int width, height;
 	SDL_GetWindowSize(_mainwindow, &width, &height);
 	assert(width > 0 && height > 0);
@@ -557,7 +551,7 @@ void WindowHW::getSize(uint &w, uint &h) {
 }
 
 
-Window *WindowHW::getWindowFromId(Uint32 id) {
+Window* WindowHW::getWindowFromId(Uint32 id) {
 	return windowIdToWindow[id];
 }
 
@@ -573,7 +567,7 @@ void WindowHW::minimize() {
 	SDL_MinimizeWindow(_mainwindow);
 }
 
-void WindowHW::getWindowPos(int &x, int &y) {
+void WindowHW::getWindowPos(int& x, int& y) {
 	SDL_GetWindowPosition(_mainwindow, &x, &y);
 }
 
@@ -582,7 +576,7 @@ void WindowHW::restore() {
 }
 
 
-bool translateKeyboardEvent(const SDL_Event &in, KeyboardEvent &out) {
+bool translateKeyboardEvent(const SDL_Event& in, KeyboardEvent& out) {
 
 	// Ignoramos la repetición (sólo nos interesan los eventos de pulsación y liberación)
 	if (in.key.repeat) return false;
@@ -592,11 +586,11 @@ bool translateKeyboardEvent(const SDL_Event &in, KeyboardEvent &out) {
 
 	out.wsrc = w;
 	out.type = EventType::KeyboardEvent;
-	out.state = (in.key.state == SDL_PRESSED ?
+	out.state = (in.key.down ?
 		PGUPV::ButtonState::Pressed :
 		PGUPV::ButtonState::Released);
 
-	out.mod = in.key.keysym.mod;
+	out.mod = in.key.mod;
 
 	const size_t nelem = (sizeof(translationTable) / sizeof(translationTable[0]));
 	size_t low = 0, high = nelem - 1;
@@ -604,12 +598,12 @@ bool translateKeyboardEvent(const SDL_Event &in, KeyboardEvent &out) {
 	while (low <= high)
 	{
 		size_t midpoint = low + (high - low) / 2;
-		if (in.key.keysym.sym == translationTable[midpoint].from)
+		if (in.key.key == translationTable[midpoint].from)
 		{
 			out.key = translationTable[midpoint].to;
 			break;
 		}
-		else if (in.key.keysym.sym < translationTable[midpoint].from)
+		else if (in.key.key < translationTable[midpoint].from)
 			high = midpoint - 1;
 		else
 			low = midpoint + 1; //when key is > array[midpoint]
@@ -617,21 +611,21 @@ bool translateKeyboardEvent(const SDL_Event &in, KeyboardEvent &out) {
 	return true;
 }
 
-bool translateMouseButtonEvent(const SDL_Event &in, MouseButtonEvent &out) {
+bool translateMouseButtonEvent(const SDL_Event& in, MouseButtonEvent& out) {
 
 	auto w = WindowHW::getWindowFromId(in.key.windowID);
 	if (w == nullptr) return false;
 
 	out.wsrc = w;
 	out.type = EventType::MouseButtonEvent;
-	out.state = (in.button.state == SDL_PRESSED ? PGUPV::ButtonState::Pressed : PGUPV::ButtonState::Released);
+	out.state = (in.button.down ? PGUPV::ButtonState::Pressed : PGUPV::ButtonState::Released);
 	out.x = in.button.x;
 	out.y = in.button.y;
 	out.button = in.button.button;
 	return true;
 }
 
-bool translateMouseMotionEvent(const SDL_Event &in, MouseMotionEvent &out) {
+bool translateMouseMotionEvent(const SDL_Event& in, MouseMotionEvent& out) {
 	auto w = WindowHW::getWindowFromId(in.key.windowID);
 	if (w == nullptr) return false;
 
@@ -645,7 +639,7 @@ bool translateMouseMotionEvent(const SDL_Event &in, MouseMotionEvent &out) {
 	return true;
 }
 
-bool translateMouseWheelEvent(const SDL_Event &in, MouseWheelEvent &out) {
+bool translateMouseWheelEvent(const SDL_Event& in, MouseWheelEvent& out) {
 	auto w = WindowHW::getWindowFromId(in.key.windowID);
 	if (w == nullptr) return false;
 
@@ -656,7 +650,7 @@ bool translateMouseWheelEvent(const SDL_Event &in, MouseWheelEvent &out) {
 	return true;
 }
 
-bool translateJoyAxisMotionEvent(const SDL_Event &in, JoystickMotionEvent &out) {
+bool translateJoyAxisMotionEvent(const SDL_Event& in, JoystickMotionEvent& out) {
 	out.type = EventType::JoystickMotionEvent;
 	out.joystickId = in.jaxis.which;
 	out.axis = in.jaxis.axis;
@@ -669,7 +663,7 @@ bool translateJoyAxisMotionEvent(const SDL_Event &in, JoystickMotionEvent &out) 
 	return true;
 }
 
-bool translateJoyHatMotionEvent(const SDL_Event &in, JoystickHatMotionEvent &out) {
+bool translateJoyHatMotionEvent(const SDL_Event& in, JoystickHatMotionEvent& out) {
 	out.type = EventType::JoystickHatMotionEvent;
 	out.joystickId = in.jhat.which;
 	out.hatId = in.jhat.hat;
@@ -705,16 +699,16 @@ bool translateJoyHatMotionEvent(const SDL_Event &in, JoystickHatMotionEvent &out
 	return true;
 }
 
-bool translateJoyButtonEvent(const SDL_Event &in, JoystickButtonEvent& out) {
+bool translateJoyButtonEvent(const SDL_Event& in, JoystickButtonEvent& out) {
 	out.type = EventType::JoystickButtonEvent;
 	out.joystickId = in.jbutton.which;
 	out.button = in.jbutton.button;
-	out.state = (in.jbutton.state == SDL_PRESSED ? PGUPV::ButtonState::Pressed : PGUPV::ButtonState::Released);;
+	out.state = (in.jbutton.down ? PGUPV::ButtonState::Pressed : PGUPV::ButtonState::Released);;
 	return true;
 }
 
 
-bool translateTextInputEvent(const SDL_Event &in, TextInputEvent& out) {
+bool translateTextInputEvent(const SDL_Event& in, TextInputEvent& out) {
 	auto w = WindowHW::getWindowFromId(in.key.windowID);
 	if (w == nullptr) return false;
 
@@ -729,7 +723,7 @@ bool translateTextInputEvent(const SDL_Event &in, TextInputEvent& out) {
 }
 
 
-bool translateWindowResizedEvent(const SDL_Event &in, WindowResizedEvent &out) {
+bool translateWindowResizedEvent(const SDL_Event& in, WindowResizedEvent& out) {
 	auto w = WindowHW::getWindowFromId(in.key.windowID);
 	if (w == nullptr) return false;
 
@@ -741,7 +735,7 @@ bool translateWindowResizedEvent(const SDL_Event &in, WindowResizedEvent &out) {
 	return true;
 }
 
-bool translateWindowCloseEvent(const SDL_Event &in, WindowClosedEvent &out) {
+bool translateWindowCloseEvent(const SDL_Event& in, WindowClosedEvent& out) {
 	auto w = WindowHW::getWindowFromId(in.key.windowID);
 	if (w == nullptr) return false;
 
@@ -751,36 +745,32 @@ bool translateWindowCloseEvent(const SDL_Event &in, WindowClosedEvent &out) {
 }
 
 
-bool translateSDLEventToPGUPV(const SDL_Event &in, PGUPV::Event &out) {
+bool translateSDLEventToPGUPV(const SDL_Event& in, PGUPV::Event& out) {
 	switch (in.type) {
-	case SDL_KEYUP:
-	case SDL_KEYDOWN:
-		return translateKeyboardEvent(in, (KeyboardEvent &)out);
-	case SDL_MOUSEBUTTONDOWN:
-	case SDL_MOUSEBUTTONUP:
-		return translateMouseButtonEvent(in, (MouseButtonEvent &)out);
-	case SDL_MOUSEMOTION:
-		return translateMouseMotionEvent(in, (MouseMotionEvent &)out);
-	case SDL_MOUSEWHEEL:
-		return translateMouseWheelEvent(in, (MouseWheelEvent &)out);
-	case SDL_JOYAXISMOTION:
-		return translateJoyAxisMotionEvent(in, (JoystickMotionEvent &)out);
-	case SDL_JOYHATMOTION:
-		return translateJoyHatMotionEvent(in, (JoystickHatMotionEvent &)out);
-	case SDL_JOYBUTTONDOWN:
-	case SDL_JOYBUTTONUP:
-		return translateJoyButtonEvent(in, (JoystickButtonEvent &)out);
-	case SDL_TEXTINPUT:
-		return translateTextInputEvent(in, (TextInputEvent &)out);
-	case SDL_WINDOWEVENT:
-		if (in.window.event == SDL_WINDOWEVENT_RESIZED) {
-			return translateWindowResizedEvent(in, (WindowResizedEvent &)out);
-		}
-		else if (in.window.event == SDL_WINDOWEVENT_CLOSE) {
-			return translateWindowCloseEvent(in, (WindowClosedEvent &)out);
-		}
-		break;
-	case SDL_QUIT:
+	case SDL_EVENT_KEY_UP:
+	case SDL_EVENT_KEY_DOWN:
+		return translateKeyboardEvent(in, (KeyboardEvent&)out);
+	case SDL_EVENT_MOUSE_BUTTON_DOWN:
+	case SDL_EVENT_MOUSE_BUTTON_UP:
+		return translateMouseButtonEvent(in, (MouseButtonEvent&)out);
+	case SDL_EVENT_MOUSE_MOTION:
+		return translateMouseMotionEvent(in, (MouseMotionEvent&)out);
+	case SDL_EVENT_MOUSE_WHEEL:
+		return translateMouseWheelEvent(in, (MouseWheelEvent&)out);
+	case SDL_EVENT_JOYSTICK_AXIS_MOTION:
+		return translateJoyAxisMotionEvent(in, (JoystickMotionEvent&)out);
+	case SDL_EVENT_JOYSTICK_HAT_MOTION:
+		return translateJoyHatMotionEvent(in, (JoystickHatMotionEvent&)out);
+	case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+	case SDL_EVENT_JOYSTICK_BUTTON_UP:
+		return translateJoyButtonEvent(in, (JoystickButtonEvent&)out);
+	case SDL_EVENT_TEXT_INPUT:
+		return translateTextInputEvent(in, (TextInputEvent&)out);
+	case SDL_EVENT_WINDOW_RESIZED:
+		return translateWindowResizedEvent(in, (WindowResizedEvent&)out);
+	case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+		return translateWindowCloseEvent(in, (WindowClosedEvent&)out);
+	case SDL_EVENT_QUIT:
 		out.quit.type = EventType::QuitEvent;
 		return true;
 	default:
@@ -789,10 +779,10 @@ bool translateSDLEventToPGUPV(const SDL_Event &in, PGUPV::Event &out) {
 	return false;
 }
 
-bool EventSourceHW::getEvent(Event &pgEvent) {
+bool EventSourceHW::getEvent(Event& pgEvent) {
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
-		if (!GUILib::processEvent(&e)) 
+		if (!GUILib::processEvent(&e))
 			if (translateSDLEventToPGUPV(e, pgEvent))
 				return true;
 	}

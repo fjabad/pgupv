@@ -8,11 +8,7 @@
 #include "app.h"
 
 
-#ifdef WIN32
-#include <SDL_ttf.h>
-#else
-#include <SDL2/SDL_ttf.h>
-#endif
+#include <SDL3_ttf/SDL_ttf.h>
 
 using PGUPV::TextureTextBuilder;
 using PGUPV::TextureText;
@@ -60,7 +56,15 @@ std::shared_ptr<TextureText> TextureTextBuilder::build() {
 	return result;
 }
 
-
+bool hasPalette(SDL_PixelFormat f) {
+	return f == SDL_PIXELFORMAT_INDEX1LSB ||
+		f == SDL_PIXELFORMAT_INDEX1MSB ||
+		f == SDL_PIXELFORMAT_INDEX2LSB ||
+		f == SDL_PIXELFORMAT_INDEX2MSB ||
+		f == SDL_PIXELFORMAT_INDEX4LSB ||
+		f == SDL_PIXELFORMAT_INDEX4MSB ||
+		f == SDL_PIXELFORMAT_INDEX8;
+}
 
 TextureText::TextureText(const std::string& t, std::shared_ptr<Font> font, uint wrapWidth, const glm::vec4& fgcolor, const glm::vec4& bgcolor) :
 	Texture2D(GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE) {
@@ -74,15 +78,15 @@ TextureText::TextureText(const std::string& t, std::shared_ptr<Font> font, uint 
 	SDL_Surface* textSurface;
 
 	if (wrapWidth == 0) {
-		textSurface = TTF_RenderUTF8_Shaded(font->getTTFFont(), t.c_str(), sdlFGColor, sdlBGColor);
+		textSurface = TTF_RenderText_Shaded(font->getTTFFont(), t.c_str(), t.length(), sdlFGColor, sdlBGColor);
 	}
 	else {
-		textSurface = TTF_RenderUTF8_Blended_Wrapped(font->getTTFFont(), t.c_str(), sdlFGColor, wrapWidth);
+		textSurface = TTF_RenderText_Blended_Wrapped(font->getTTFFont(), t.c_str(), t.length(), sdlFGColor, wrapWidth);
 	}
 
 
 	if (textSurface == NULL)
-		ERRT(std::string("No se ha podido generar el texto. Error SDL_ttf: ") + TTF_GetError());
+		ERRT(std::string("No se ha podido generar el texto. Error SDL_ttf: ") + SDL_GetError());
 
 #ifdef _DEBUG
 	assert(textSurface->pitch % 4 == 0);
@@ -90,7 +94,8 @@ TextureText::TextureText(const std::string& t, std::shared_ptr<Font> font, uint 
 
 	uint32_t width, height;
 	std::vector<uchar> temp;
-	if (textSurface->format->palette) {
+	if (hasPalette(textSurface->format)) {
+		auto palette = SDL_GetSurfacePalette(textSurface);
 		width = textSurface->w;
 		height = textSurface->h;
 		temp.resize(width * height * 4);
@@ -98,7 +103,7 @@ TextureText::TextureText(const std::string& t, std::shared_ptr<Font> font, uint 
 		for (uint32_t i = 0; i < height; i++) {
 			rtemp = ((uchar*)textSurface->pixels) + (height - i - 1) * textSurface->pitch;
 			for (uint32_t j = 0; j < width; j++) {
-				memcpy(wtemp, &textSurface->format->palette->colors[*rtemp].r, 4);
+				memcpy(wtemp, &palette->colors[*rtemp].r, 4);
 				wtemp += 4;
 				rtemp++;
 			}
@@ -128,5 +133,5 @@ TextureText::TextureText(const std::string& t, std::shared_ptr<Font> font, uint 
 	  ERRT("Formato de imagen no soportado");
 	  */
 
-	SDL_FreeSurface(textSurface);
+	SDL_DestroySurface(textSurface);
 }
