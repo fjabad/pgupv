@@ -210,7 +210,9 @@ Rect::Rect(float width, float height, const glm::vec4 &color, uint nVertX,
 
 Disk::Disk(float r_in, float r_out, uint slices, uint rings, const glm::vec4 &color) {
 
+#ifndef NDEBUG
 	uint total_unique_vertices = slices * (rings + 1);
+#endif
 	std::vector<vec3> vertices;
 	std::vector<vec3> normals;
 	std::vector<vec2> tex_coord;
@@ -323,7 +325,9 @@ Cylinder::Cylinder(float r_bottom, float r_top, float height, uint stacks,
 	auto m = std::make_shared<Mesh>();;
 	addMesh(m);
 
+#ifndef NDEBUG
 	uint total_unique_vertices = (slices + 1) * (stacks + 1);
+#endif
 	std::vector<vec3> vertices;
 	std::vector<vec3> normals;
 	std::vector<vec2> tex_coord;
@@ -356,8 +360,9 @@ Cylinder::Cylinder(float r_bottom, float r_top, float height, uint stacks,
 	//  a triangle strip requires 2 + #triangles = 2 + 2*slices
 	//  we end each slice with a -1 index to ask OpenGL to start a new
 	//  tri-strip (+1)
+#ifndef NDEBUG
 	uint indices_per_stack = 2 + 2 * slices + 1;
-
+#endif
 	std::vector<GLuint> indices;
 
 	for (uint j = 0; j < stacks; j++) {

@@ -5,7 +5,7 @@
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable: 4458 4100)
+#pragma warning(disable: 4458 4100 4244 4189)
 #else
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wignored-qualifiers"

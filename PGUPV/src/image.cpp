@@ -12,7 +12,7 @@
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable: 4458 4100)
+#pragma warning(disable: 4458 4100 4244 4189)
 #else
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wignored-qualifiers"
@@ -885,7 +885,7 @@ bool Image::save(const std::string&/*filename*/, uint /*width*/, uint /*height*/
 	ERRT("No implementado. Habla con Paco");
 }
 
-bool Image::saveHDR(const std::string& filename, uint32_t width, uint32_t height, uint32_t bpp, const float* bytes)
+bool Image::saveHDR(const std::string& /*filename*/, uint32_t /*width*/, uint32_t /*height*/, uint32_t /*bpp*/, const float* /*bytes*/)
 {
 	ERRT("No implementado. Habla con Paco");
 }

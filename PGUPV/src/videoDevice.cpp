@@ -113,7 +113,7 @@ std::vector<VideoDevice::CameraInfo> VideoDevice::getAvailableCameras() {
 		result.push_back(info);
 	}
 
-	CapResult result1 = Cap_releaseContext(ctx);
+	Cap_releaseContext(ctx);
 	return result;
 }
 

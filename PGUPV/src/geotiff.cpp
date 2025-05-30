@@ -51,7 +51,7 @@ PGUPV::BoundingBox GeoTiffMetadata::getBB() const
 	using PGUPV::GeoTiffMetadata;
 
 	void PGUPV::processGeoKeyDirectory(const PGUPV::GeoKeyDirectory & gkd,
-		const uint16_t * geoShortParams, const double* geoDoubleParams, const char* asciiParams,
+		const uint16_t * /*geoShortParams*/, const double* geoDoubleParams, const char* asciiParams,
 		GeoTiffMetadata & md) {
 
 		for (const auto& key : gkd.keys) {

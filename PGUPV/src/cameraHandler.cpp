@@ -374,7 +374,7 @@ void WalkCameraHandler::captureMouse() {
 	Window& w = App::getInstance().getWindow();
 
 	w.showMouseCursor(false);
-	w.setMousePosition(w.width() / 2, w.height() / 2);
+	w.setMousePosition(w.width() / 2.f, w.height() / 2.f);
 	mouseCaptured = true;
 }
 
@@ -401,16 +401,14 @@ bool WalkCameraHandler::mouse_move(const MouseMotionEvent& e) {
 		return true;
 
 	Window& theWindow = App::getInstance().getWindow();
-	int halfwidth = theWindow.width() / 2;
-	int halfheight = theWindow.height() / 2;
-
-	int xrel, yrel;
+	auto halfwidth = theWindow.width() / 2.f;
+	auto halfheight = theWindow.height() / 2.f;
 
 	if (halfwidth == e.x && halfheight == e.y)
 		return true;
 
-	xrel = e.x - halfwidth;
-	yrel = e.y - halfheight;
+	auto xrel = e.x - halfwidth;
+	auto yrel = e.y - halfheight;
 
 	_yaw -= (xrel * PI) / (_deltayaw * halfwidth);
 	_pitch -= (yrel * PI) / (_deltapitch * halfheight);

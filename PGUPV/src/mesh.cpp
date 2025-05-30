@@ -562,7 +562,7 @@ void Mesh::render() {
 	render(drawCommands);
 }
 
-void Mesh::render(const std::vector<DrawCommand*>& drawCommands)
+void Mesh::render(const std::vector<DrawCommand*>& commands)
 {
 	vao.bind();
 	if (material) material->use();
@@ -573,11 +573,11 @@ void Mesh::render(const std::vector<DrawCommand*>& drawCommands)
 		glVertexAttrib4fv(i->attrIndex, &i->value.x);
 
 #ifdef _DEBUG
-	if (drawCommands.empty()) {
+	if (commands.empty()) {
 		WARN("Intentando dibujar un Mesh sin comandos de dibujo (no se dibujará nada)");
 	}
 #endif
-	for (auto d : drawCommands)
+	for (auto d : commands)
 		d->render();
 	CHECK_GL();
 }
