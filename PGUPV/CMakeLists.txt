@@ -14,7 +14,4 @@ target_link_libraries(PGUPV PRIVATE assimp::assimp freeimage nlohmann_json::nloh
 target_link_libraries(PGUPV PRIVATE par_lib openpnp-capture SDL3_ttf::SDL3_ttf-shared)
 target_link_libraries(PGUPV PRIVATE avdevice avformat avutil avcodec swscale)
 
-message(STATUS "FFMPEGLIBS")
-message(STATUS ${FFMPEG_LIBS})
-
 target_link_libraries(PGUPV PUBLIC glm::glm GLEW guipg Microsoft.GSL::GSL)
