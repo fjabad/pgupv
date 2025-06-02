@@ -178,7 +178,7 @@ void VideoDevice::openDevice(const VideoDevice::CameraInfo& ci, size_t optsId) {
 	}
 #elif __linux__
 	//Linux
-	const AVInputFormat* ifmt = av_find_input_format("video4linux2");
+	auto ifmt = av_find_input_format("video4linux2");
 	if (avformat_open_input(&pFormatCtx, ci.devicePath.c_str(), ifmt, &options) != 0) {
 		ERRT("No se ha podido abrir la cámara " + ci.name);
 	}

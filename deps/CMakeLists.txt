@@ -5,7 +5,6 @@ include(FetchContent)
 find_package(OpenGL REQUIRED)
 
 
-if (MSVC)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(SDL_TEST OFF)
 set(SDL_TEST_LIBRARY OFF)
@@ -20,13 +19,12 @@ FetchContent_MakeAvailable(SDL3)
 set(SDL3TTF_VENDORED OFF)
 set(SDL3TTF_INSTALL OFF)
 set(SDL3TTF_SAMPLES OFF)
-FetchContent_Declare(SDL_ttf
+FetchContent_Declare(SDL3_ttf
     GIT_REPOSITORY "https://github.com/libsdl-org/SDL_ttf.git"
     GIT_TAG "release-3.2.2"
     GIT_SHALLOW ON
 )
-FetchContent_MakeAvailable(SDL_ttf)
-endif()
+FetchContent_MakeAvailable(SDL3_ttf)
 
 
 set(GLM_BUILD_TESTS OFF)
@@ -65,13 +63,6 @@ FetchContent_MakeAvailable(json)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 set(GLI_TEST_ENABLE OFF)
-#FetchContent_Declare(gli
-#    GIT_REPOSITORY "https://github.com/g-truc/gli.git"
-#    GIT_TAG "v3.11.2"
-#    GIT_SHALLOW ON
-#)
-#FetchContent_MakeAvailable(gli)
-
 add_subdirectory(gli-master)
 add_library(gli_lib INTERFACE)
 target_include_directories(gli_lib INTERFACE ${gli_SOURCE_DIR})
@@ -105,13 +96,11 @@ FetchContent_MakeAvailable(assimp)
 # enable FetchContent
 include(FetchContent)
 
-# declare Catch2
 FetchContent_Declare(pugixml                              # name of the content
   GIT_REPOSITORY https://github.com/zeux/pugixml  # the repository
   GIT_TAG        v1.14                                 # the tag
   )
 
-# make available
 FetchContent_MakeAvailable(pugixml)
 
 if (MSVC)
@@ -133,8 +122,6 @@ set(FFmpeg_INCLUDE_DIR ${FFmpeg_ROOT}/include)
 
 file(GLOB FF_LIBS ${FFmpeg_ROOT}/lib/*.lib)
 
-set(tFFMPEG_LIBS "")
-
 foreach (LIBFILE ${FF_LIBS})
 	get_filename_component(module ${LIBFILE} NAME_WE)
 	set(libname lib${module})
@@ -148,24 +135,11 @@ foreach (LIBFILE ${FF_LIBS})
 				 IMPORTED_LOCATION ${DLL}
 				 IMPORTED_IMPLIB ${LIBFILE}
 	)
-	set(tFFMPEG_LIBS ${tFFMPEG_LIBS} ${libname})
-	
-	MESSAGE(STATUS "-----------")
-	MESSAGE(STATUS ${libname})
-	MESSAGE(STATUS ${FFmpeg_INCLUDE_DIR})
-	MESSAGE(STATUS ${DLL})
-	MESSAGE(STATUS ${LIBFILE})
-	
 endforeach()
-
-set(FFMPEG_LIBS ${tFFMPEG_LIBS} PARENT_SCOPE)
 else()
 find_package(FREEIMAGE REQUIRED)
 find_package(FFMPEG REQUIRED)
-find_package(SDL3 REQUIRED)
-find_package(SDL3_ttf REQUIRED)
 find_package(GLEW REQUIRED)
-set(EXTRA_LIBS ${FFMPEG_LIBRARIES} SDL3 SDL3_ttf)
 endif()
 
 set(imdir ${imgui_SOURCE_DIR})

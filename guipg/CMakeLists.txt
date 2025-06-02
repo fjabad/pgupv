@@ -1,7 +1,6 @@
 if (NOT MSVC) 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-find_package(SDL3 REQUIRED)
 endif()
 
 find_package(OpenGL REQUIRED)
