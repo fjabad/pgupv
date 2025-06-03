@@ -351,9 +351,9 @@ Dada la ruta de una textura, intenta buscar el fichero, en el siguiente orden:
 \param filename La ruta por donde empezar la búsqueda
 \return La ruta completa de un fichero que se puede abrir, o filename, si no existe
 */
-std::string findTexture(const std::filesystem::path& filename, const std::filesystem::path& modelfilename) {
+std::filesystem::path findTexture(const std::filesystem::path& filename, const std::filesystem::path& modelfilename) {
 	// First, try to load the texture filename as given by the model file
-	std::ifstream f(filename.c_str());
+	std::ifstream f(filename);
 	if (f) {
 		f.close();
 		return filename;
@@ -361,7 +361,7 @@ std::string findTexture(const std::filesystem::path& filename, const std::filesy
 
 	// If it does not work, then try removing the directory and use only the filename
 	// it will work only if the texture file is in the current working directory
-	std::string name = filename.filename();
+	auto name = filename.filename();
 	f.open(name);
 	if (f) {
 		f.close();
@@ -386,7 +386,7 @@ std::string findTexture(const std::filesystem::path& filename, const std::filesy
 	}
 
 	// Finally, search in all the subdirectories inside the directory that contains the model
-	auto res = PGUPV::listFiles(PGUPV::getDirectory(modelfilename), true, std::vector<std::string> {PGUPV::getFilenameFromPath(filename)});
+	auto res = PGUPV::listFiles(modelfilename.parent_path(), true, std::vector<std::string> {filename.filename().string()});
 	if (res.size() == 1) {
 		return res[0];
 	}

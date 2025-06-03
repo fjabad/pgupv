@@ -36,7 +36,7 @@ public:
      (es el valor por defecto), o NULL, para no generar ningún error.
   \return true en caso de haber podido cargar la imagen.
   */
-  bool loadImage(GLenum face, std::string filename, bool flipV = true,
+  bool loadImage(GLenum face, const std::filesystem::path &filename, bool flipV = true,
                  std::ostream *error_output = &std::cerr);
   /**
   Función para cargar todas las imágenes del mapa cúbico de una vez. Hay que

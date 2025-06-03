@@ -1,7 +1,7 @@
 
 
 #include <glm/gtc/matrix_transform.hpp>
-
+#include <filesystem>
 #include "PGUPV.h"
 #include "GUI3.h"
 
@@ -37,7 +37,7 @@ public:
   void applyTextureParams();
 
 private:
-  std::vector<std::string> filenames;
+  std::vector<std::filesystem::path> filenames;
   std::shared_ptr<GLMatrices> mats;
   std::shared_ptr<Program> program;
   Rect plane;
@@ -151,7 +151,7 @@ void MyRender::buildGUI() {
   // Mostramos únicamente el nombre del fichero, no la ruta
   std::vector<std::string> names;
   for (auto name : filenames) {
-    names.push_back(getFilenameFromPath(name));
+    names.push_back(name.filename().string());
   }
   textureSelector = std::make_shared < ListBoxWidget<> >("Textura", names);
   textureSelector->getValue().addListener(updater);

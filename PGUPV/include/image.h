@@ -4,6 +4,7 @@
 #include <string>
 #include <GL/glew.h>
 #include <memory>
+#include <filesystem>
 #include "common.h"
 #include "geoTiff.h"
 
@@ -24,7 +25,7 @@ namespace PGUPV {
 		Image& operator=(const Image&) = delete;
 
 		// Carga la imagen desde el fichero indicado
-		explicit Image(const std::string& filename);
+		explicit Image(const std::filesystem::path & filename);
 		// Crea una imagen con el tamaño indicado. Opcionalmente, copia la información
 		// apuntada por data
 		Image(uint width, uint height, uint bpp, void* data = NULL);

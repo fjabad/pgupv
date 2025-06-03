@@ -423,7 +423,7 @@ std::shared_ptr<Scene> FileLoader::load(const std::string& path, AssimpWrapper::
 
 
 	auto extraMaterialProps = PGUPV::removeExtension(path) + ".pgmat";
-	if (!fileExists(extraMaterialProps)) {
+	if (!std::filesystem::exists(extraMaterialProps)) {
 		// No hay un fichero extra de materiales: crear una plantilla
 		createTemplatePGMAT(extraMaterialProps, scene);
 	}

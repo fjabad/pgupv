@@ -30,7 +30,7 @@ TextureCubeMap::TextureCubeMap(GLenum minfilter, GLenum magfilter,
 	loadedFaces = 0;
 }
 
-bool TextureCubeMap::loadImage(GLenum face, std::string filename, bool flipV,
+bool TextureCubeMap::loadImage(GLenum face, const std::filesystem::path &filename, bool flipV,
 	std::ostream * /* error_output */) {
 	_ready = false;
 
@@ -72,7 +72,7 @@ bool TextureCubeMap::loadImage(GLenum face, std::string filename, bool flipV,
 		_ready = true;
 	}
 
-	_name = PGUPV::getFilenameFromPath(filename);
+	_name = filename.filename().string();
 	return _ready;
 }
 
