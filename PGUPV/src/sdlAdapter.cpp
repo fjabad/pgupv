@@ -527,6 +527,15 @@ WindowHW::~WindowHW() {
 }
 
 
+void WindowHW::captureMouse() {
+	if (SDL_SetWindowRelativeMouseMode(_mainwindow, true) < 0) {
+		ERR("Capturing the mouse is not supported");
+	}
+}
+void WindowHW::releaseMouse() {
+	SDL_SetWindowRelativeMouseMode(_mainwindow, false);
+}
+
 void WindowHW::setMousePosition(float x, float y) {
 	SDL_WarpMouseInWindow(_mainwindow, x, y);
 }

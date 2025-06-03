@@ -106,6 +106,8 @@ namespace PGUPV {
       return _fullscreen;
     }
 
+    void captureMouse();
+    void releaseMouse();
     void setMousePosition(float x, float y);
     void showMouseCursor(bool show);
 

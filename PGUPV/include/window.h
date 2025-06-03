@@ -94,6 +94,10 @@ namespace PGUPV {
 		bool isStatsOpen() const { return _showfps; };
 		// Establecer el título de la ventana
 		void setTitle(const std::string &title);
+		// Captura el ratón (desaparece y sólo devuelve movimientos relativos)
+		void captureMouse();
+		// Libera el ratón
+		void releaseMouse();
 		// Mueve el puntero del ratón a las coordenadas indicadas (cuidado!
 		// genera el evento de movimiento de ratón correspondiente)
 		void setMousePosition(float x, float y);
