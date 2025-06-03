@@ -420,8 +420,6 @@ bool WalkCameraHandler::mouse_move(const MouseMotionEvent& e) {
 
 	updateMatrix();
 
-	WARN("e.x: " + std::to_string(e.x) + "  e.y: " + std::to_string(e.y));
-	WARN("yaw: " + std::to_string(_yaw) + "  pitch: " + std::to_string(_pitch));
 	theWindow.setMousePosition(halfwidth, halfheight);
 	return true;
 }
