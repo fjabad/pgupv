@@ -461,9 +461,16 @@ void Window::update(uint64_t ms) {
 		renderElapsed = 0.0f;
 	}
 
-	for (auto r : renderers) {
+	for (auto &r : renderers) {
 		r.second->update_camera(ms);
 		r.second->update(ms);
+	}
+}
+
+void Window::onReload()
+{
+	for (auto& r : renderers) {
+		r.second->reload();
 	}
 }
 
