@@ -32,7 +32,7 @@ Install a recent Visual Studio (any edition will do, Code, Pro, Enterprise...). 
 First, you will need to install some dependencies. In Ubuntu:
 
 ```
-sudo apt install build-essential git cmake libfreeimage-dev libfreetype-dev pkg-config libgtk-3-dev libglu1-mesa-dev ffmpeg libavcodec-dev libavdevice-dev libavformat-dev libassimp-dev libsdl2-dev libsdl2-ttf-dev libglew-dev
+sudo apt install build-essential git cmake libfreeimage-dev libfreetype-dev pkg-config libgtk-3-dev libglu1-mesa-dev ffmpeg libavcodec-dev libavdevice-dev libavformat-dev libassimp-dev libglew-dev
 ```
 
 1. Get the code, either using git or getting the ZIP file from this page.
