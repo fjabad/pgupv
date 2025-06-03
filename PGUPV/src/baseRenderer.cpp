@@ -52,6 +52,11 @@ std::shared_ptr<Panel> BaseRenderer::addPanel(const std::string &title) {
   return p;
 }
 
+void BaseRenderer::destroyPanels()
+{
+	panels.clear();
+}
+
 void BaseRenderer::postRender() {
   if (useInspectionCameraFlag) {
     userCameraHandler->getCamera().render();

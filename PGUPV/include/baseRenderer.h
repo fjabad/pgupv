@@ -85,6 +85,11 @@ namespace PGUPV {
     */
     size_t getNumPanels() { return panels.size(); };
 
+	/**
+	Destruye todos los paneles de la interfaz de usuario
+	*/
+	void destroyPanels();
+
     /**
     Sobreescribe el siguiente método para almacenar el estado de la aplicación cuando
     el usuario pulse el atajo correspondiente (por ejemplo, Ctrl+F1). La cámara se almacena
