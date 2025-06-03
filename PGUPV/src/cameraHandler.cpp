@@ -357,7 +357,7 @@ WalkCameraHandler::WalkCameraHandler(float h, const glm::vec3& pos, float yaw,
 
 	_deltah = 0.1f;
 	_walkSpeed = 1.0f;
-	_deltayaw = _deltapitch = 1.8f;
+	_deltayaw = _deltapitch = 3.f;
 
 	captureMouse();
 	resetView();

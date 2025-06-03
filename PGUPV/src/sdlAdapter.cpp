@@ -528,7 +528,7 @@ WindowHW::~WindowHW() {
 
 
 void WindowHW::captureMouse() {
-	if (SDL_SetWindowRelativeMouseMode(_mainwindow, true) < 0) {
+	if (!SDL_SetWindowRelativeMouseMode(_mainwindow, true)) {
 		ERR("Capturing the mouse is not supported");
 	}
 }
