@@ -29,7 +29,7 @@ public:
 	void setup(void) override;
 	void render(void) override;
 	void reshape(uint w, uint h) override;
-
+	bool reload() override;
 private:
 	std::shared_ptr<GLMatrices> mats;
 	std::shared_ptr<UBOLightSources> lights;
@@ -47,26 +47,13 @@ void MyRender::setup() {
 	glClearColor(1.f, 1.f, 1.f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 
-	/* Tendrás que implementar el bump mapping y el parallax mapping en este
-	 * shader */
-	program = std::make_shared<Program>();
-	program->addAttributeLocation(Mesh::VERTICES, "position");
-	program->addAttributeLocation(Mesh::NORMALS, "normal");
-	program->addAttributeLocation(Mesh::TEX_COORD0, "texCoord");
-	program->addAttributeLocation(Mesh::TANGENTS, "tangent");
-
 	mats = GLMatrices::build();
-	program->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
 	lights = UBOLightSources::build();
-	program->connectUniformBlock(lights, UBO_LIGHTS_BINDING_INDEX);
 
 	LightSourceParameters lsp(glm::vec4(.2, .2, .2, 1.0),
 		vec4(0.8, 0.7, 0.7, 1.0), vec4(1.0, 1.0, 1.0, 1.0),
 		vec4(0.0, 0.0, 1.0, 0.0));
 	lights->setLightSource(0, lsp);
-
-	program->loadFiles(App::exercisesDir() + "p8/p8");
-	program->compile();
 
 	// Cargamos las texturas desde fichero
 	auto tcolor = std::make_shared<Texture2D>();
@@ -94,10 +81,30 @@ void MyRender::setup() {
 	}
 	towerM.addTexCoord(0, tc);   // las volvemos a añadir
 
-	buildGUI();
+	reload();
+
 	App::getInstance().getWindow().showGUI();
 
 	setCameraHandler(std::make_shared<OrbitCameraHandler>(1.5f));
+}
+
+bool MyRender::reload() {
+	
+	/* Tendrás que implementar el bump mapping y el parallax mapping en este shader */
+	program = std::make_shared<Program>();
+	program->addAttributeLocation(Mesh::VERTICES, "position");
+	program->addAttributeLocation(Mesh::NORMALS, "normal");
+	program->addAttributeLocation(Mesh::TEX_COORD0, "texCoord");
+	program->addAttributeLocation(Mesh::TANGENTS, "tangent");
+	program->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
+	program->connectUniformBlock(lights, UBO_LIGHTS_BINDING_INDEX);
+	program->loadFiles(App::exercisesDir() + "p8/p8");
+	program->compile();
+
+	destroyPanels();
+	buildGUI();
+
+	return true;
 }
 
 void MyRender::render() {
@@ -161,8 +168,6 @@ void MyRender::buildGUI() {
 	panel->addWidget(std::make_shared<CheckBoxWidget>("Parallax", false, program, "useParallax"));
 	showAxis = std::make_shared<CheckBoxWidget>("Mostrar ejes", false);
 	panel->addWidget(showAxis);
-
-
 }
 
 int main(int argc, char* argv[]) {

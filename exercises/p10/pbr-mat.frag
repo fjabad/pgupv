@@ -14,5 +14,4 @@ in vec3 ecNormal;
 void main()
 {		
     FragColor = texture(baseColorMap, TexCoords);
-
 }

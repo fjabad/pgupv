@@ -62,8 +62,7 @@ bool MyRender::reload() {
 	gouraud->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
 	gouraud->connectUniformBlock(luces, UBO_LIGHTS_BINDING_INDEX);
 
-	// Creamos un material temporal para sustituir la declaración del shader
-	gouraud->connectUniformBlock(UBOMaterial::build(), UBO_MATERIALS_BINDING_INDEX);
+	gouraud->replaceString("$" + UBOMaterial::blockName, UBOMaterial::definition);
 
 	// Este shader se encarga de calcular la iluminación, usando
 	// el algoritmo de Gouraud 
