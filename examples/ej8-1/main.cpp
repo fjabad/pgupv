@@ -36,7 +36,7 @@ public:
   void update(uint64_t ms) override;
 private:
   std::shared_ptr<GLMatrices> mats;
-  Program cshader, ashader;
+  Program cshader, program;
   std::shared_ptr<Program> hemiShader;
   GLint lightPosLoc;
   vec3 lightPosWCS;

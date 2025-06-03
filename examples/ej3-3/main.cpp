@@ -26,7 +26,7 @@ public:
 private:
   std::shared_ptr<GLMatrices> mats;
   Axes axes;
-  Program cshader, ashader;
+  Program cshader, program;
   GLint texUnitLoc, frameUnitLoc;
   Rect plane;
   std::shared_ptr<Texture2DArray> texture;
@@ -61,19 +61,19 @@ void MyRender::setup() {
   /* Este shader se encarga dibujar los objetos con las coordenadas de textura
   indicadas. Además, tiene un uniform llamado "frame", que indica qué nivel del
   array de texturas utilizar. */
-  ashader.addAttributeLocation(Mesh::VERTICES, "position");
-  ashader.addAttributeLocation(Mesh::TEX_COORD0, "texCoord");
+  program.addAttributeLocation(Mesh::VERTICES, "position");
+  program.addAttributeLocation(Mesh::TEX_COORD0, "texCoord");
 
-  ashader.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
+  program.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
 
-  ashader.loadFiles(App::examplesDir() + "ej3-3/texture2DArray");
-  ashader.compile();
+  program.loadFiles(App::examplesDir() + "ej3-3/texture2DArray");
+  program.compile();
 
   // Localización de los uniform (unidad de textura y capa del array a mostrar)
-  texUnitLoc = ashader.getUniformLocation("texUnit");
-  frameUnitLoc = ashader.getUniformLocation("frame");
+  texUnitLoc = program.getUniformLocation("texUnit");
+  frameUnitLoc = program.getUniformLocation("frame");
 
-  ashader.use();
+  program.use();
   glUniform1i(texUnitLoc, 0);
   glUniform1i(frameUnitLoc, 0);
 

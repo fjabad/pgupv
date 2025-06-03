@@ -26,7 +26,7 @@ public:
 
 private:
   std::shared_ptr<GLMatrices> mats;
-  Program ashader;
+  Program program;
   std::shared_ptr<Scene> teapot;          // Modelo de una tetera
   float teapotSpin;          // Ángulo de rotación actual de la tetera
   GLint primitive_color_loc; // Localización del uniform que define el color de
@@ -44,16 +44,16 @@ void MyRender::setup() {
 
   // De todos los atributos del modelo teapot, sólo usaremos la posición de los
   // vértices
-  ashader.addAttributeLocation(Mesh::VERTICES, "position");
+  program.addAttributeLocation(Mesh::VERTICES, "position");
 
   mats = GLMatrices::build();
-  ashader.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
-  ashader.loadFiles(App::assetsDir() + "shaders/constantshadinguniform");
-  ashader.compile();
+  program.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
+  program.loadFiles(App::assetsDir() + "shaders/constantshadinguniform");
+  program.compile();
 
   // Obtenemos la localización del uniform que determinará el color de la
   // primitiva
-  primitive_color_loc = ashader.getUniformLocation("primitive_color");
+  primitive_color_loc = program.getUniformLocation("primitive_color");
 
   // La cámara no se mueve
   mats->setMatrix(GLMatrices::VIEW_MATRIX,
@@ -61,7 +61,7 @@ void MyRender::setup() {
                               vec3(0.0f, 1.0f, 0.0f)));
 
   // Sólo tenemos un shader, así que lo activamos aquí
-  ashader.use();
+  program.use();
 }
 
 void MyRender::render() {

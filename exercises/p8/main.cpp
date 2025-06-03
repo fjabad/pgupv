@@ -33,7 +33,7 @@ public:
 private:
 	std::shared_ptr<GLMatrices> mats;
 	std::shared_ptr<UBOLightSources> lights;
-	std::shared_ptr<Program> ashader;
+	std::shared_ptr<Program> program;
 	Axes axes;
 	Rect wall;
 	Cylinder tower;
@@ -49,24 +49,24 @@ void MyRender::setup() {
 
 	/* Tendrás que implementar el bump mapping y el parallax mapping en este
 	 * shader */
-	ashader = std::make_shared<Program>();
-	ashader->addAttributeLocation(Mesh::VERTICES, "position");
-	ashader->addAttributeLocation(Mesh::NORMALS, "normal");
-	ashader->addAttributeLocation(Mesh::TEX_COORD0, "texCoord");
-	ashader->addAttributeLocation(Mesh::TANGENTS, "tangent");
+	program = std::make_shared<Program>();
+	program->addAttributeLocation(Mesh::VERTICES, "position");
+	program->addAttributeLocation(Mesh::NORMALS, "normal");
+	program->addAttributeLocation(Mesh::TEX_COORD0, "texCoord");
+	program->addAttributeLocation(Mesh::TANGENTS, "tangent");
 
 	mats = GLMatrices::build();
-	ashader->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
+	program->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
 	lights = UBOLightSources::build();
-	ashader->connectUniformBlock(lights, UBO_LIGHTS_BINDING_INDEX);
+	program->connectUniformBlock(lights, UBO_LIGHTS_BINDING_INDEX);
 
 	LightSourceParameters lsp(glm::vec4(.2, .2, .2, 1.0),
 		vec4(0.8, 0.7, 0.7, 1.0), vec4(1.0, 1.0, 1.0, 1.0),
 		vec4(0.0, 0.0, 1.0, 0.0));
 	lights->setLightSource(0, lsp);
 
-	ashader->loadFiles(App::exercisesDir() + "p8/p8");
-	ashader->compile();
+	program->loadFiles(App::exercisesDir() + "p8/p8");
+	program->compile();
 
 	// Cargamos las texturas desde fichero
 	auto tcolor = std::make_shared<Texture2D>();
@@ -107,7 +107,7 @@ void MyRender::render() {
 	mats->setMatrix(GLMatrices::VIEW_MATRIX, viewMatrix);
 
 	// Activar el shader que aplica el bump mapping
-	ashader->use();
+	program->use();
 
 	LightSourceParameters light = lights->getLightSource(0);
 	// Posición de la luz (coord. mundo)
@@ -158,7 +158,7 @@ void MyRender::buildGUI() {
 	panel->setPosition(580, 10);
 	panel->setSize(200, 80);
 
-	panel->addWidget(std::make_shared<CheckBoxWidget>("Parallax", false, ashader, "useParallax"));
+	panel->addWidget(std::make_shared<CheckBoxWidget>("Parallax", false, program, "useParallax"));
 	showAxis = std::make_shared<CheckBoxWidget>("Mostrar ejes", false);
 	panel->addWidget(showAxis);
 

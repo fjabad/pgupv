@@ -27,7 +27,7 @@ public:
   void reshape(uint w, uint h) override;
 private:
   std::shared_ptr<GLMatrices> mats;
-  Program ashader;
+  Program program;
   GLint texUnitLoc;
   Rect plane;
   std::shared_ptr<TextureVideo> text;
@@ -57,20 +57,20 @@ void MyRender::setup() {
 
   /* Este shader se encarga de aplicar una textura a los objetos dibujados */
   // Posición de los vértices
-  ashader.addAttributeLocation(Mesh::VERTICES, "position");
+  program.addAttributeLocation(Mesh::VERTICES, "position");
   // Coordenadas de textura
-  ashader.addAttributeLocation(Mesh::TEX_COORD0, "texCoord");
+  program.addAttributeLocation(Mesh::TEX_COORD0, "texCoord");
 
   mats = GLMatrices::build();
-  ashader.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
-  ashader.loadFiles(App::assetsDir() + "shaders/textureReplace");
-  ashader.compile();
+  program.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
+  program.loadFiles(App::assetsDir() + "shaders/textureReplace");
+  program.compile();
 
   // Localización del uniform con la unidad de textura
-  texUnitLoc = ashader.getUniformLocation("texUnit");
+  texUnitLoc = program.getUniformLocation("texUnit");
 
   // Le decimos al shader qué unidad de textura utilizar
-  ashader.use();
+  program.use();
   glUniform1i(texUnitLoc, 0);
 
   buildGUI();
@@ -85,7 +85,7 @@ void MyRender::render() {
   mats->setMatrix(GLMatrices::VIEW_MATRIX, getCamera().getViewMatrix());
 
   // Dibujamos el plano texturado
-  ashader.use();
+  program.use();
   if (text) {
 	  text->bind();
 	  plane.render();

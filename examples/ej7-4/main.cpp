@@ -27,7 +27,7 @@ public:
 
 private:
   std::shared_ptr<GLMatrices> mats;
-  Program ashader;
+  Program program;
   GLint texUnitLoc;
   Model celda;
   Texture2DArray tiles;
@@ -40,20 +40,20 @@ void MyRender::setup() {
   /* Este shader se encarga aplicar una textura a los objetos dibujados
     en cuenta una textura */
   // Posición de los vértices
-  ashader.addAttributeLocation(Mesh::VERTICES, "position");
+  program.addAttributeLocation(Mesh::VERTICES, "position");
   // Coordenadas de textura
-  ashader.addAttributeLocation(Mesh::TEX_COORD0, "texCoord");
+  program.addAttributeLocation(Mesh::TEX_COORD0, "texCoord");
 
   mats = GLMatrices::build();
-  ashader.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
-  ashader.loadFiles(App::examplesDir() + "ej7-4/shader");
-  ashader.compile();
+  program.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
+  program.loadFiles(App::examplesDir() + "ej7-4/shader");
+  program.compile();
 
   // Localización del uniform con la unidad de textura
-  texUnitLoc = ashader.getUniformLocation("texUnit");
+  texUnitLoc = program.getUniformLocation("texUnit");
 
   // Le decimos al shader qué unidad de textura utilizar
-  ashader.use();
+  program.use();
   glUniform1i(texUnitLoc, 0);
 
   // La geometría consiste en un cuadrilátero de lado uno...
@@ -97,7 +97,7 @@ void MyRender::render() {
   mats->setMatrix(GLMatrices::VIEW_MATRIX, getCamera().getViewMatrix());
 
   // Dibujamos el plano texturado
-  ashader.use();
+  program.use();
   mats->pushMatrix(GLMatrices::MODEL_MATRIX);
   mats->scale(GLMatrices::MODEL_MATRIX, 0.2f, 0.2f, 0.2f);
   celda.render();

@@ -34,7 +34,7 @@ public:
 private:
   std::shared_ptr<GLMatrices> mats;
   Axes axes;
-  Program ashader;
+  Program program;
   GLint lightPosLoc;
   vec4 lightPosWCS;
   std::shared_ptr<Scene> teapot;
@@ -55,17 +55,17 @@ void MyRender::setup() {
 
   /* Este shader se encarga de calcular la iluminación (sólo componente
    * difusa)*/
-  ashader.addAttributeLocation(Mesh::VERTICES, "position");
-  ashader.addAttributeLocation(Mesh::NORMALS, "normal");
+  program.addAttributeLocation(Mesh::VERTICES, "position");
+  program.addAttributeLocation(Mesh::NORMALS, "normal");
 
   mats = GLMatrices::build();
-  ashader.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
+  program.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
 
-  ashader.loadFiles(App::examplesDir() + "ej6-4/ej6-4");
-  ashader.compile();
+  program.loadFiles(App::examplesDir() + "ej6-4/ej6-4");
+  program.compile();
 
   // Posiciones de las variables uniform
-  lightPosLoc = ashader.getUniformLocation("lightpos");
+  lightPosLoc = program.getUniformLocation("lightpos");
 
   setCameraHandler(std::make_shared<OrbitCameraHandler>(2.5f, glm::radians(45.0f), glm::radians(30.0f)));
 }
@@ -74,7 +74,7 @@ void MyRender::render() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   mats->setMatrix(GLMatrices::VIEW_MATRIX, getCamera().getViewMatrix());
 
-  ashader.use();
+  program.use();
   // Posición de la fuente en el S.C. de la cámara
   vec4 lp = getCamera().getViewMatrix() * lightPosWCS;
   glUniform3f(lightPosLoc, lp.x, lp.y, lp.z);

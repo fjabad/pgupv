@@ -25,7 +25,7 @@ public:
 
 private:
   std::shared_ptr<GLMatrices> mats;
-  Program ashader, nshader;  // Dos shaders
+  Program program, nshader;  // Dos shaders
   std::shared_ptr<Scene> tetera, bisonte; // Modelos de una tetera y un bisonte
   float teapotSpin;          // Ángulo de rotación actual de la tetera
   vec4 lightPos;             // Posición de la luz en coordenadas del mundo
@@ -54,15 +54,15 @@ void MyRender::setup() {
   mats = GLMatrices::build();
 
   // El shader ambdiff necesita la posición y la normal de cada vértice
-  ashader.addAttributeLocation(Mesh::VERTICES, "position");
-  ashader.addAttributeLocation(Mesh::NORMALS, "normal");
-  ashader.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
+  program.addAttributeLocation(Mesh::VERTICES, "position");
+  program.addAttributeLocation(Mesh::NORMALS, "normal");
+  program.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
   // Insertamos la definición del material
-  ashader.replaceString("$" + UBOMaterial::blockName, UBOMaterial::definition);
-  ashader.loadFiles(App::assetsDir() + "shaders/ambdiff");
-  ashader.compile();
+  program.replaceString("$" + UBOMaterial::blockName, UBOMaterial::definition);
+  program.loadFiles(App::assetsDir() + "shaders/ambdiff");
+  program.compile();
   // Localización del uniform que contiene la posición de la luz
-  lightPosLoc = ashader.getUniformLocation("lightpos");
+  lightPosLoc = program.getUniformLocation("lightpos");
 
   // Este shader hace el trabajo mínimo para dibujar los modelos: dibuja todos
   // los fragmentos a blanco
@@ -71,7 +71,7 @@ void MyRender::setup() {
   nshader.loadFiles(App::assetsDir() + "shaders/touchpixels");
   nshader.compile();
 
-  ashader.use();
+  program.use();
   // Como la cámara está fija, la establecemos aquí
   mats->setMatrix(GLMatrices::VIEW_MATRIX,
     glm::lookAt(vec3(0.0f, 0.8f, 0.8f), vec3(0.0f, 0.25f, 0.0f),
@@ -86,7 +86,7 @@ void MyRender::render() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Shader para dibujar los objetos
-  ashader.use();
+  program.use();
 
   // Activar el test de stencil
   glEnable(GL_STENCIL_TEST);

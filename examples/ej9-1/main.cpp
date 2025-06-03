@@ -34,7 +34,7 @@ private:
   std::shared_ptr<GLMatrices> mats;
   GLuint fbo;
   GLuint rbos[2];
-  Program ashader;
+  Program program;
   std::shared_ptr<Scene> tetera;	// Modelo de una tetera
   float teapotSpin;	// Ángulo de rotación actual de la tetera
   vec4 lightPos;		// Posición de la luz en coordenadas del mundo
@@ -58,14 +58,14 @@ void MyRender::setup() {
 
   mats = GLMatrices::build();
 
-  ashader.addAttributeLocation(Mesh::VERTICES, "position");
-  ashader.addAttributeLocation(Mesh::NORMALS, "normal");
-  ashader.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
-  ashader.replaceString("$" + UBOMaterial::blockName, UBOMaterial::definition);
-  ashader.loadFiles(App::assetsDir() + "shaders/ambdiff");
-  ashader.compile();
+  program.addAttributeLocation(Mesh::VERTICES, "position");
+  program.addAttributeLocation(Mesh::NORMALS, "normal");
+  program.connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
+  program.replaceString("$" + UBOMaterial::blockName, UBOMaterial::definition);
+  program.loadFiles(App::assetsDir() + "shaders/ambdiff");
+  program.compile();
   // Localización del uniform que contiene la posición de la luz	
-  lightPosLoc = ashader.getUniformLocation("lightpos");
+  lightPosLoc = program.getUniformLocation("lightpos");
 
   // Mostrar por consola información relacionada con los FBO en este sistema
   // Recuerda que pulsando Ctrl+I en cualquier aplicación PGUPV mostrará por consola
@@ -121,7 +121,7 @@ void MyRender::render() {
 
   mats->setMatrix(GLMatrices::VIEW_MATRIX, glm::lookAt(vec3(0.0f, 0.0f, 1.0f),
     vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f)));
-  ashader.use();
+  program.use();
 
   // Posición de la luz en coordenadas de la cámara
   vec4 lp = mats->getMatrix(GLMatrices::VIEW_MATRIX) * lightPos;
