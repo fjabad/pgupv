@@ -11,7 +11,7 @@ public:
 	void setup(void) override;
 	void render(void) override;
 	void reshape(uint w, uint h) override;
-
+	bool reload() override;
 private:
 	void buildGUI();
 	Axes axes;
@@ -55,20 +55,10 @@ void MyRender::setup() {
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 
-	// Construímos el objeto GLMatrices
-	pbr_program = std::make_shared<Program>();
-	pbr_program->addAttributeLocation(Mesh::VERTICES, "position");
-	pbr_program->addAttributeLocation(Mesh::NORMALS, "normal");
-	pbr_program->addAttributeLocation(Mesh::TEX_COORD0, "texcoords");
-	pbr_program->addAttributeLocation(Mesh::TANGENTS, "tangent");
-
 	lights = UBOPBRLightSources::build();
-	pbr_program->connectUniformBlock(lights, UBO_PBR_LIGHTS_BINDING_INDEX);
 	mats = GLMatrices::build();
-	pbr_program->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
-	pbr_program->replaceString("$" + UBOPBRMaterial::blockName, UBOPBRMaterial::definition);
-	pbr_program->loadFiles(App::exercisesDir() + "p10/pbr-mat");
-	pbr_program->compile();
+
+	reload();
 
 	for (int i = 0; i < 4; i++) {
 		auto l = lights->getLightSource(i);
@@ -83,12 +73,29 @@ void MyRender::setup() {
 		lights->setLightSource(i, l);
 	}
 
-
 	model = loadPBRPistol();
 
 	setCameraHandler(std::make_shared<OrbitCameraHandler>());
 	buildGUI();
 	App::getInstance().getWindow().showGUI(true);
+}
+
+bool MyRender::reload() {
+	// Construímos el objeto GLMatrices
+	pbr_program = std::make_shared<Program>();
+	pbr_program->addAttributeLocation(Mesh::VERTICES, "position");
+	pbr_program->addAttributeLocation(Mesh::NORMALS, "normal");
+	pbr_program->addAttributeLocation(Mesh::TEX_COORD0, "texcoords");
+	pbr_program->addAttributeLocation(Mesh::TANGENTS, "tangent");
+
+	pbr_program->connectUniformBlock(lights, UBO_PBR_LIGHTS_BINDING_INDEX);
+
+	pbr_program->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
+	pbr_program->replaceString("$" + UBOPBRMaterial::blockName, UBOPBRMaterial::definition);
+	pbr_program->loadFiles(App::exercisesDir() + "p10/pbr-mat");
+	pbr_program->compile();
+
+	return true;
 }
 
 void MyRender::render() {

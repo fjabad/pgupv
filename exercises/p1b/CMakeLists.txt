@@ -19,7 +19,7 @@ file (GLOB SOURCES "*.cpp" "*.h" "*.hpp")
 
 add_executable(p01b ${SOURCES})
 
-target_link_libraries(p01b PGUPV pugixml)
+target_link_libraries(p01b pugixml)
 
 
 config_exercise(p01b)

@@ -20,7 +20,7 @@ file (GLOB SOURCES "*.cpp" "*.h" "*.hpp")
 add_executable(p02 ${SOURCES})
 
 target_include_directories(p02 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(p02 PGUPV pugixml)
+target_link_libraries(p02 pugixml)
 
 
 config_exercise(p02)

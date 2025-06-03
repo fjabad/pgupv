@@ -144,6 +144,7 @@ namespace PGUPV {
 		void swapBuffers();
 		void destroy();
 		void update(uint64_t ms);
+		void onReload();
 		/** Guarda en un fichero con el nombre indicado el contenido actual de la
 		 ventana */
 		bool saveColorBuffer(const std::string &filename,

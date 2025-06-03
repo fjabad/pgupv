@@ -51,6 +51,13 @@ namespace PGUPV {
     // Eventos de pulsaciones de botones del joystick
     virtual bool joystick_button(const JoystickButtonEvent &) { return false; };
 
+	// Recarga de shaders:
+	// si mueves aquí el código de carga de un shader, al pulsar Ctrl+R podrás recargar
+	// uno o varios shaders sin tener que parar la ejecución. Recuerda conectar los atributos,
+	// UBO, calcular la localización de los uniforms, inicializar los uniforms que no cambian
+	// por frame, etc.
+	virtual bool reload() { return true; }
+
     // Uso interno
     void dispatchSetup() {
       if (!initialized) {

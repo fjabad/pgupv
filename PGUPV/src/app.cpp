@@ -262,6 +262,7 @@ std::string App::getShortcutsHelp() {
 	o << "  Ctrl + m: modo de dibujo de polígonos (sólido, aristas, vértices)\n";
 	o << "  Ctrl + space: liberar/capturar el ratón de la cámara\n";
 	o << "  Ctrl + n: modo de inspección de la escena\n";
+	o << "  Ctrl + r: ejecutar la función reload()\n";
 	o << "  Ctrl + F? / F? : guardar / cargar posición de la cámara (teclas de función)\n";
 	o << "  ESC: terminar el programa\n";
 	o << "  P: pausa";
@@ -383,6 +384,11 @@ void App::onKeyboardEvent(const PGUPV::KeyboardEvent &e) {
 		case KeyCode::C:
 			if (e.state == ButtonState::Released) {
 				if (e.wsrc) e.wsrc->showConsole(!e.wsrc->isConsoleVisible());
+			}
+			break;
+		case KeyCode::R:
+			if (e.state == ButtonState::Released) {
+				if (e.wsrc) e.wsrc->onReload();
 			}
 			break;
 		default:
