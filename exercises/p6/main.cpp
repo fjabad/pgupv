@@ -38,6 +38,7 @@ public:
   void render(void) override;
   void reshape(uint w, uint h) override;
   void update(uint64_t ms) override;
+  bool reload() override;
 
 private:
   std::shared_ptr<GLMatrices> mats;
@@ -64,6 +65,32 @@ void MyRender::update(uint64_t ms) {
   cylinderPosWCS = li.interpolate(total / 1000.0);
 }
 
+bool MyRender::reload() {
+	/* Este shader se encarga de calcular la iluminación (sólo componente
+	 * difusa)*/
+	program = std::make_shared<Program>();
+	program->addAttributeLocation(Mesh::VERTICES, "position");
+	program->addAttributeLocation(Mesh::NORMALS, "normal");
+	program->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
+	program->loadFiles(App::exercisesDir() + "p6/p6");
+	program->compile();
+
+	// Posiciones de las variables uniform
+	lightPosLoc = program->getUniformLocation("lightpos");
+	cylinderPosLoc = program->getUniformLocation("cylinderPos");
+
+	// Color del objeto
+	program->use();
+	GLint diffuseLoc = program->getUniformLocation("diffuseColor");
+	glUniform4f(diffuseLoc, 0.8f, 0.8f, 0.8f, 1.0f);
+
+	// Reconectar los widgets con el programa
+	destroyPanels();
+	buildGUI();
+
+	return true;
+}
+
 void MyRender::setup() {
   glClearColor(1.f, 1.f, 1.f, 1.0f);
   glEnable(GL_DEPTH_TEST);
@@ -74,29 +101,11 @@ void MyRender::setup() {
 
   bunny = FileLoader::load(App::assetsDir() + "models/bunny.obj");
 
-  /* Este shader se encarga de calcular la iluminación (sólo componente
-   * difusa)*/
-  program = std::make_shared<Program>();
-  program->addAttributeLocation(Mesh::VERTICES, "position");
-  program->addAttributeLocation(Mesh::NORMALS, "normal");
-
   mats = GLMatrices::build();
-  program->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
-  program->loadFiles(App::exercisesDir() + "p6/p6");
-  program->compile();
-
-  // Posiciones de las variables uniform
-  lightPosLoc = program->getUniformLocation("lightpos");
-  cylinderPosLoc = program->getUniformLocation("cylinderPos");
-
-  // Color del objeto
-  program->use();
-  GLint diffuseLoc = program->getUniformLocation("diffuseColor");
-  glUniform4f(diffuseLoc, 0.8f, 0.8f, 0.8f, 1.0f);
-
   setCameraHandler(std::make_shared<OrbitCameraHandler>());
 
-  buildGUI();
+  reload();
+
   App::getInstance().getWindow().showGUI();
 }
 

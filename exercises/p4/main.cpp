@@ -16,14 +16,15 @@ using std::vector;
 
 class MyRender : public Renderer {
 public:
-  MyRender() : ashader(std::shared_ptr<Program>(new Program())) {};
+  MyRender() {};
   void setup(void) override;
   void render(void) override;
   void reshape(uint w, uint h) override;
   void update(uint64_t ms) override;
+  bool reload() override;
 private:
   std::shared_ptr<GLMatrices> mats;
-  std::shared_ptr<Program> ashader;
+  std::shared_ptr<Program> program;
   std::shared_ptr<TextureVideo> videoFeed;
   GLint texUnitLoc;
   void buildGUI();
@@ -36,22 +37,9 @@ void MyRender::setup() {
 
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-  /* Este shader se encarga de calcular la iluminación, teniendo
-    en cuenta una textura */
-  ashader->addAttributeLocation(Mesh::VERTICES, "position");
-  ashader->addAttributeLocation(Mesh::TEX_COORD0, "texCoord");
-
   mats = GLMatrices::build();
-  ashader->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
 
-  ashader->loadFiles(App::exercisesDir() + "p4/textureReplace");
-  ashader->compile();
-
-  // Localización de los uniform (posición de la luz y unidad de textura)
-  texUnitLoc = ashader->getUniformLocation("texUnit");
-  // Comunicamos la unidad de textura al shader
-  ashader->use();
-  glUniform1i(texUnitLoc, 0);
+  reload();
 
   auto sources = media::VideoDevice::getAvailableCameras();
   if (sources.empty()) {
@@ -75,10 +63,35 @@ void MyRender::render() {
 
 void MyRender::reshape(uint w, uint h) {
   glViewport(0, 0, w, h);
+  if (program) {
+	  program->use();
+	  glUniform1i(program->getUniformLocation("height"), h);
+  }
 }
 
 
 void MyRender::update(uint64_t ms) {
+}
+
+bool MyRender::reload()
+{
+	/* Este shader se encarga de calcular la iluminación, teniendo
+	  en cuenta una textura */
+	program = std::make_shared<Program>();
+	program->addAttributeLocation(Mesh::VERTICES, "position");
+	program->addAttributeLocation(Mesh::TEX_COORD0, "texCoord");
+	program->connectUniformBlock(mats, UBO_GL_MATRICES_BINDING_INDEX);
+
+	program->loadFiles(App::exercisesDir() + "p4/textureReplace");
+	if (!program->compile())
+		return false;
+
+	// Localización de los uniform (posición de la luz y unidad de textura)
+	texUnitLoc = program->getUniformLocation("texUnit");
+	// Comunicamos la unidad de textura al shader
+	program->use();
+	glUniform1i(texUnitLoc, 0);
+	return true;
 }
 
 
