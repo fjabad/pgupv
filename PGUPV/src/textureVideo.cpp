@@ -11,12 +11,12 @@ using media::VideoFile;
 using media::VideoDevice;
 
 
-TextureVideo::TextureVideo(const std::string &path) : status(Status::PLAYING), updateCallbackId(static_cast<size_t>(-1)) {
+TextureVideo::TextureVideo(const std::filesystem::path &path) : status(Status::PLAYING), updateCallbackId(static_cast<size_t>(-1)) {
 	media = std::unique_ptr<VideoFile>(new VideoFile(path));
   media->setAutoLoop(true);
 	init();
-	INFO("Nuevo TextureVideo (" + path + ") " + std::to_string(reinterpret_cast<std::uint64_t>(this)));
-	_name = PGUPV::getFilenameFromPath(path);
+	INFO("Nuevo TextureVideo (" + path.string() + ") " + std::to_string(reinterpret_cast<std::uint64_t>(this)));
+	_name = path.filename().string();
 }
 
 

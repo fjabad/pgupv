@@ -125,7 +125,7 @@ void MyRender::buildGUI() {
   std::vector<bool> sourcesIsVideo(sources.size(), false);
   auto videos = PGUPV::listFiles(App::assetsDir() + "videos/", false);
   for (const auto &v : videos) {
-	  sources.push_back(v);
+	  sources.push_back(v.string());
 	  sourcesIsVideo.push_back(true);
   }
 

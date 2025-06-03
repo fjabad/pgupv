@@ -71,7 +71,7 @@ int Program::loadFiles(const std::string& name) {
 	for (int i = 0; i < Shader::NUM_SHADER_TYPES; i++) {
 		std::string f =
 			name + Shader::getDefaultShaderExtension((Shader::ShaderType)i);
-		if (fileExists(f)) {
+		if (std::filesystem::exists(f)) {
 			addShader(Shader::loadFromFile(f, (Shader::ShaderType)i, subStrings));
 			count++;
 		}

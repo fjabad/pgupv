@@ -4,11 +4,7 @@
 #include <memory>
 #include <map>
 
-#ifndef _WIN32
-#include <SDL2/SDL.h>
-#else
-#include <SDL.h>
-#endif
+#include <SDL3/SDL.h>
 
 #include "common.h"
 #include "eventSource.h"
@@ -53,12 +49,12 @@ namespace PGUPV {
     /**
     Mueve el puntero del ratón a la posición de la ventana indicada
     */
-    static void moveMousePointerInWindow(int x, int y);
+    static void moveMousePointerInWindow(float x, float y);
 
     /**
     Mueve el puntero del ratón a la posición de la pantalla indicada
     */
-    static void moveMousePointerTo(int x, int y);
+    static void moveMousePointerTo(float x, float y);
 
 /**
     Devuelve la versión de la librería subyacente, en forma de:
@@ -110,7 +106,9 @@ namespace PGUPV {
       return _fullscreen;
     }
 
-    void setMousePosition(uint x, uint y);
+    void captureMouse();
+    void releaseMouse();
+    void setMousePosition(float x, float y);
     void showMouseCursor(bool show);
 
     void getSize(uint &w, uint &h);

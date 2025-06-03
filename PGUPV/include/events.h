@@ -48,10 +48,10 @@ namespace PGUPV {
 		EventType type;
 		Window *wsrc; // The window that generated the event
 		uchar state;        /**< The current button state, in a bit mask */
-		int x;              /**< X coordinate, relative to window */
-		int y;              /**< Y coordinate, relative to window */
-		int xrel;           /**< The relative motion in the X direction */
-		int yrel;           /**< The relative motion in the Y direction */
+		float x;              /**< X coordinate, relative to window */
+		float y;              /**< Y coordinate, relative to window */
+		float xrel;           /**< The relative motion in the X direction */
+		float yrel;           /**< The relative motion in the Y direction */
 	};
 
 	struct MouseButtonEvent {
@@ -59,15 +59,15 @@ namespace PGUPV {
 		Window *wsrc; // The window that generated the event
 		uchar button;       /**< The mouse button index: 1 left, 2: center, 3: right, 4: side... */
 		ButtonState state;        /**< RELEASED, PRESSED */
-		int x;              /**< X coordinate, relative to window */
-		int y;              /**< Y coordinate, relative to window */
+		float x;              /**< X coordinate, relative to window */
+		float y;              /**< Y coordinate, relative to window */
 	};
 
 	struct MouseWheelEvent {
 		EventType type;
 		Window *wsrc; // The window that generated the event
-		int x;              /**< The amount scrolled horizontally */
-		int y;              /**< The amount scrolled vertically */
+		float x;              /**< The amount scrolled horizontally */
+		float y;              /**< The amount scrolled vertically */
 	};
 
 	enum class KeyCode {

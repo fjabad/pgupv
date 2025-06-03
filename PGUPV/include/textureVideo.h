@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <filesystem>
+
 #include "media.h"
 #include "texture2D.h"
 #include "videoDevice.h"
@@ -21,7 +23,7 @@ namespace PGUPV {
     La textura estará asociada al vídeo indicado
     \param path ruta del fichero de vídeo
     */
-    TextureVideo(const std::string &path);
+    TextureVideo(const std::filesystem::path &path);
     /**
     La textura estará asociada a la cámara indicada
     \param camId identificador de la cámara a utilizar. Se pueden listar las cámaras instaladas

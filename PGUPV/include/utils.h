@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include <sstream>
+#include <filesystem>
 #include <algorithm>
 #include <cstring>
 #include <GL/glew.h>
@@ -32,7 +33,8 @@ namespace PGUPV {
 	Comprueba que el fichero existe y se puede abrir para lectura
 	\param filename Ruta de un fichero
 	*/
-	bool fileExists(const std::string &filename);
+#define fileExists fileExists_Replace_with_std_filesystem_exists_filename
+	//bool fileExists(const std::string &filename);
 
 
 	bool dirExists(const std::string &path);
@@ -62,7 +64,8 @@ namespace PGUPV {
 	\param filepath Ruta completa de un fichero
 	\param includeExtension true si se quiere la extensión en el resultado
 	*/
-	std::string getFilenameFromPath(const std::string &filepath, bool includeExtension = true);
+#define getFilenameFromPath getFilenameFromPath_Replace_with_filename_dot_filename_parents
+	//std::string getFilenameFromPath(const std::string &filepath, bool includeExtension = true);
 
 	/**
 	Devuelve la lista de ficheros que se encuentran dentro del directorio indicado.
@@ -70,7 +73,7 @@ namespace PGUPV {
 	\param recursive Si es true, hará una búsqueda recursiva
 	\return la lista de nombres de fichero
 	*/
-	std::vector<std::string> listFiles(const std::string &path, bool recursive);
+	std::vector<std::filesystem::path> listFiles(const std::filesystem::path &path, bool recursive);
 
 
 	/**
@@ -89,7 +92,7 @@ namespace PGUPV {
 	\param patterns lista de patrones a buscar (p.e., *.jpg, imagen??.bmp, log*.txt, etc.)
 	\return la lista de nombres de fichero
 	*/
-	std::vector<std::string> listFiles(const std::string &path, bool recursive, const std::vector<std::string> &patterns);
+	std::vector<std::filesystem::path> listFiles(const std::filesystem::path &path, bool recursive, const std::vector<std::string> &patterns);
 
 	/**
 	\return El directorio actual (acaba con la /)

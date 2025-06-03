@@ -121,9 +121,9 @@ void Texture2DGeneric::updateImage(const Image &image) {
 }
 
 
-bool Texture2DGeneric::loadImage(const std::string &filename, GLenum internalFormat) {
+bool Texture2DGeneric::loadImage(const std::filesystem::path &filename, GLenum internalFormat) {
 	PGUPV::Image image(filename);
-	_name = PGUPV::getFilenameFromPath(filename);
+	_name = filename.filename().string();
 	return loadImage(image, internalFormat);
 }
 

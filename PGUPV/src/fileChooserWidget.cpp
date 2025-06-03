@@ -83,7 +83,7 @@ void FileChooserWidget::refresh()
 
 	std::vector<std::string> onlyNames;
 	for (const auto &p : files) {
-		onlyNames.push_back(getFilenameFromPath(p));
+		onlyNames.push_back(p.filename().string());
 	}
 	filenames.setElements(onlyNames, files, true);
 	

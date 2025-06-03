@@ -472,7 +472,17 @@ void Window::setTitle(const std::string &title) {
 	window->setTitle(title);
 }
 
-void Window::setMousePosition(uint x, uint y) {
+void Window::captureMouse() {
+	assert(window);
+	window->captureMouse();
+}
+
+void Window::releaseMouse() {
+	assert(window);
+	window->releaseMouse();
+}
+
+void Window::setMousePosition(float x, float y) {
 	assert(window);
 	window->setMousePosition(x, y);
 }

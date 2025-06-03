@@ -5,6 +5,7 @@
 #include "button.h"
 #include "listBoxWidget.h"
 
+#include <filesystem>
 #include <vector>
 #include <string>
 
@@ -34,7 +35,7 @@ namespace PGUPV {
 		\return una referencia al objeto Value<string> que contiene la selección actual. Con esa
 		referencia puedes instalar, por ejemplo, un listener para saber cuándo cambia la selección
 		*/
-		Value<std::string> &getValue() {
+		Value<std::filesystem::path> &getValue() {
 			return value;
 		}
 	private:
@@ -43,11 +44,11 @@ namespace PGUPV {
 		std::string directory;
 		Label currentDirLabel;
 		Button changeDirBtn;
-		ListBoxWidget<std::string> filenames;
+		ListBoxWidget<std::filesystem::path> filenames;
 		std::vector<std::string> showOnlyThisExtensions;
 		bool searchInSubfolders;
 		bool mustRefresh;
 
-		Value<std::string> value;
+		Value<std::filesystem::path> value;
 	};
 };

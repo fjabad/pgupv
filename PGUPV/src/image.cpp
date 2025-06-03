@@ -12,7 +12,7 @@
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable: 4458 4100)
+#pragma warning(disable: 4458 4100 4244 4189)
 #else
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wignored-qualifiers"
@@ -31,11 +31,11 @@ using PGUPV::Image;
 
 class Image::ImageImpl {
 public:
-	ImageImpl(const std::string& filename);
+	ImageImpl(const std::filesystem::path& filename);
 	ImageImpl(uint width, uint height, uint bpp, void* data = NULL);
 	~ImageImpl();
-	bool load(std::string filename);
-	bool save(const std::string& filename, uint frame = 0);
+	bool load(const std::filesystem::path &filename);
+	bool save(const std::filesystem::path& filename, uint frame = 0);
 	uint getWidth() const { return _width; };
 	uint getHeight() const { return _height; };
 	uint getBPP() const { return _bpp; };
@@ -57,9 +57,9 @@ public:
 	};
 protected:
 
-	bool loadDDS(const std::string& filename);
-	bool loadSimple(const std::string& filename, const ::FREE_IMAGE_FORMAT fileType);
-	bool loadMulti(const std::string& filename, const ::FREE_IMAGE_FORMAT fileType);
+	bool loadDDS(const std::filesystem::path& filename);
+	bool loadSimple(const std::filesystem::path& filename, const ::FREE_IMAGE_FORMAT fileType);
+	bool loadMulti(const std::filesystem::path& filename, const ::FREE_IMAGE_FORMAT fileType);
 	void loadFrameFromMulti(const unsigned int frame) const;
 
 	bool loadFreeImage(::FIBITMAP* image, const uint frame = 0);
@@ -73,7 +73,7 @@ protected:
 	uint _nfaces;
 	uint _nAnimationFrames;
 	uint _stride;
-	std::string _filename;
+	std::filesystem::path _filename;
 
 	::FIBITMAP* freeimageImage;
 	::FIMULTIBITMAP* freeimageMultiImage;
@@ -82,7 +82,7 @@ protected:
 	std::optional<GeoTiffMetadata> geoTiffMetadata;
 };
 
-Image::Image(const std::string& filename) :
+Image::Image(const std::filesystem::path& filename) :
 	impl{ std::make_unique<ImageImpl>(filename) }
 {
 }
@@ -182,11 +182,11 @@ void Image::swapRB(uint frame) const
 bool Image::ImageImpl::_freeImageInitialized = false;
 
 // Carga la imagen desde el fichero indicado
-Image::ImageImpl::ImageImpl(const std::string& filename)
+Image::ImageImpl::ImageImpl(const std::filesystem::path& filename)
 	: _filename(filename), freeimageImage(nullptr), freeimageMultiImage(nullptr) {
 	initLib();
 	if (!load(filename))
-		ERRT(std::string("No se ha podido cargar la imagen ") + filename);
+		ERRT(std::string("No se ha podido cargar la imagen ") + filename.string());
 }
 
 Image::ImageImpl::~ImageImpl()
@@ -438,7 +438,7 @@ void Image::ImageImpl::initLib() {
 	}
 }
 
-bool Image::ImageImpl::loadDDS(const std::string&/*filename*/) {
+bool Image::ImageImpl::loadDDS(const std::filesystem::path&/*filename*/) {
 	ERRT("No implementado (habla con Paco)");
 	// Si hace falta, usar una TextureCubeMap para cargar el dds y luego pedir las caras a OpenGL
 }
@@ -553,13 +553,13 @@ void processGeoTifMetadata(::FIBITMAP* bitmap, std::optional<PGUPV::GeoTiffMetad
 }
 
 
-bool Image::ImageImpl::loadSimple(const std::string& filename, const FREE_IMAGE_FORMAT fileType) {
+bool Image::ImageImpl::loadSimple(const std::filesystem::path& filename, const FREE_IMAGE_FORMAT fileType) {
 	if (fileType == FIF_GIF)
-		freeimageImage = FreeImage_Load(fileType, filename.c_str(), GIF_PLAYBACK);
+		freeimageImage = FreeImage_Load(fileType, filename.u8string().c_str(), GIF_PLAYBACK);
 	else
-		freeimageImage = FreeImage_Load(fileType, filename.c_str());
+		freeimageImage = FreeImage_Load(fileType, filename.u8string().c_str());
 	if (freeimageImage == nullptr) {
-		ERR("No se ha podido cargar la imagen " + filename + "Error: " + FreeImageErrorMsg);
+		ERR("No se ha podido cargar la imagen " + filename.string() + "Error: " + FreeImageErrorMsg);
 		return false;
 	}
 
@@ -570,15 +570,15 @@ bool Image::ImageImpl::loadSimple(const std::string& filename, const FREE_IMAGE_
 	return loadFreeImage(freeimageImage);
 }
 
-bool Image::ImageImpl::loadMulti(const std::string& filename, const FREE_IMAGE_FORMAT fileType) {
+bool Image::ImageImpl::loadMulti(const std::filesystem::path& filename, const FREE_IMAGE_FORMAT fileType) {
 	if (fileType == FIF_GIF)
-		freeimageMultiImage = FreeImage_OpenMultiBitmap(fileType, filename.c_str(), false, true, true, GIF_PLAYBACK);
+		freeimageMultiImage = FreeImage_OpenMultiBitmap(fileType, filename.u8string().c_str(), false, true, true, GIF_PLAYBACK);
 	else
-		freeimageMultiImage = FreeImage_OpenMultiBitmap(fileType, filename.c_str(), false, true, true);
+		freeimageMultiImage = FreeImage_OpenMultiBitmap(fileType, filename.u8string().c_str(), false, true, true);
 
 
 	if (freeimageMultiImage == nullptr) {
-		ERRT("No se ha podido cargar la imagen " + filename + "Error: " + FreeImageErrorMsg);
+		ERRT("No se ha podido cargar la imagen " + filename.string() + "Error: " + FreeImageErrorMsg);
 	}
 
 	auto pageCount = FreeImage_GetPageCount(freeimageMultiImage);
@@ -601,7 +601,7 @@ bool Image::ImageImpl::loadMulti(const std::string& filename, const FREE_IMAGE_F
 		FreeImage_UnlockPage(freeimageMultiImage, dib, false);
 	}
 	else
-		ERRT("No se ha podido leer el primer frame de " + filename);
+		ERRT("No se ha podido leer el primer frame de " + filename.string());
 
 	if (fileType == FIF_TIFF) {
 		processGeoTifMetadata(dib, geoTiffMetadata);
@@ -614,18 +614,18 @@ bool Image::ImageImpl::loadMulti(const std::string& filename, const FREE_IMAGE_F
 
 // Carga la imagen en el fichero indicado. La imagen que contenía este objeto se destruye (incluyendo el
 // puntero que devolvería getData
-bool Image::ImageImpl::load(std::string filename)
+bool Image::ImageImpl::load(const std::filesystem::path& filename)
 {
 	releaseMemory();
 
-	if (!fileExists(filename))
+	if (!std::filesystem::exists(filename))
 		return false;
 
-	auto fileType = FreeImage_GetFileType(filename.c_str(), 0);
+	auto fileType = FreeImage_GetFileType(filename.u8string().c_str(), 0);
 	if (fileType == FIF_UNKNOWN) return false;
 
 	if (fileType == FIF_UNKNOWN)
-		fileType = FreeImage_GetFIFFromFilename(filename.c_str());
+		fileType = FreeImage_GetFIFFromFilename(filename.u8string().c_str());
 
 	//if (fileType == FIF_DDS)
 	  //return loadDDS(filename);
@@ -745,7 +745,7 @@ void Image::ImageImpl::swapRB(uint frame)  const {
 	}
 }
 
-bool Image::ImageImpl::save(const std::string& filename, uint frame)
+bool Image::ImageImpl::save(const std::filesystem::path& filename, uint frame)
 {
 	if (frame >= getNumFaces() && frame >= getAnimationFrames()) {
 		ERRT("No existe ese frame o cara");
@@ -757,11 +757,11 @@ bool Image::ImageImpl::save(const std::string& filename, uint frame)
 #endif
 	FIBITMAP* image = FreeImage_ConvertFromRawBits(_data[frame], _width, _height, _stride, _bpp, 0x0000FF, 0x00FF00, 0xFF0000, false);
 
-	auto type = FreeImage_GetFIFFromFilename(filename.c_str());
+	auto type = FreeImage_GetFIFFromFilename(filename.u8string().c_str());
 	if (type == FIF_UNKNOWN) {
-		ERRT("Extensión desconocida: " + filename);
+		ERRT("Extensión desconocida: " + filename.string());
 	}
-	FreeImage_Save(type, image, filename.c_str(), 0);
+	FreeImage_Save(type, image, filename.u8string().c_str(), 0);
 
 #if FREEIMAGE_COLORORDER==FREEIMAGE_COLORORDER_BGR
 	if (_bpp > 8) {
@@ -885,7 +885,7 @@ bool Image::save(const std::string&/*filename*/, uint /*width*/, uint /*height*/
 	ERRT("No implementado. Habla con Paco");
 }
 
-bool Image::saveHDR(const std::string& filename, uint32_t width, uint32_t height, uint32_t bpp, const float* bytes)
+bool Image::saveHDR(const std::string& /*filename*/, uint32_t /*width*/, uint32_t /*height*/, uint32_t /*bpp*/, const float* /*bytes*/)
 {
 	ERRT("No implementado. Habla con Paco");
 }

@@ -2,6 +2,7 @@
 #ifndef _TEXTURE2DGENERIC_H
 #define _TEXTURE2DGENERIC_H 2014
 
+#include <filesystem>
 #include "texture.h"
 #include "common.h"
 
@@ -31,7 +32,7 @@ namespace PGUPV {
 	 \param internalFormat (opcional) establece el formato de los píxeles (GL_RGB, GL_RGBA...)
      \return true en caso de haber podido cargar la imagen.
      */
-    virtual bool loadImage(const std::string &filename, GLenum internalFormat = GL_RGB);
+    virtual bool loadImage(const std::filesystem::path &filename, GLenum internalFormat = GL_RGB);
 
     /**
      Función para cargar el objeto Image al objeto textura.

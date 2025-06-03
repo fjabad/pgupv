@@ -106,7 +106,7 @@ namespace PGUPV {
     \warning Para los renderer a pantalla completa, siempre devuelve true. Los renderer de 
     tipo ViewportRenderer, devuelven true sólo si la coordenada está dentro del viewport.
     */
-    virtual bool isInViewport(uint , uint ) { return true; }
+    virtual bool isInViewport(float, float) { return true; }
     /**
     Establece un identificador (opcional)
     \param s identificador del renderer

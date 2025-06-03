@@ -45,7 +45,7 @@ const Camera& CameraHandler::getCamera() {
 
 void CameraHandler::resized(uint width, uint height) {
 	if (!camera) {
-		WARN("CameraHandler sin cámara");
+		WARN("CameraHandler sin cï¿½mara");
 	}
 	else {
 		if (height == 0) height = 1;
@@ -89,15 +89,15 @@ bool OrbitCameraHandler::mouse_move(const MouseMotionEvent& e) {
 
 	if (e.state) {
 		uint width = e.wsrc->width();
-		// Botón izquierdo: rotar
+		// Botï¿½n izquierdo: rotar
 		if (e.state & 1)
 			moveRelative(0.0, (float)-e.xrel / width, (float)e.yrel / width);
 		else
-			// Botón derecho: acercar/alejar la cámara
+			// Botï¿½n derecho: acercar/alejar la cï¿½mara
 			if (e.state & 4)
 				moveRelative(-(float)e.yrel / width, 0.0f, 0.0f);
 			else
-				// Botón central: pan
+				// Botï¿½n central: pan
 				if (e.state & 2)
 					this->pan(-(float)e.xrel / width, (float)e.yrel / width);
 		return true;
@@ -193,7 +193,7 @@ bool OrbitCameraHandler::keyboard(const PGUPV::KeyboardEvent& e) {
 }
 
 /**
-Guarda el estado actual de la cámara en el flujo indicado
+Guarda el estado actual de la cï¿½mara en el flujo indicado
 */
 void OrbitCameraHandler::saveStatus(std::ostream& stream) {
 	json j;
@@ -216,12 +216,12 @@ static json readJsonFromFile(std::istream& stream) {
 		try
 		{
 			std::getline(stream, str);
-			if (stream.eof()) ERR("No se ha podido abrir el fichero para leer el estado de la cámara");
+			if (stream.eof()) ERR("No se ha podido abrir el fichero para leer el estado de la cï¿½mara");
 			j = json::parse(str);
 		}
 		catch (const std::exception& e)
 		{
-			ERRT(std::string("Error leyendo el fichero del estado de la cámara: ") + e.what());
+			ERRT(std::string("Error leyendo el fichero del estado de la cï¿½mara: ") + e.what());
 		}
 	}
 
@@ -229,13 +229,13 @@ static json readJsonFromFile(std::istream& stream) {
 }
 
 /**
-restaura el estado de la cámara al que se encuentra en el flujo
+restaura el estado de la cï¿½mara al que se encuentra en el flujo
 */
 void OrbitCameraHandler::loadStatus(std::istream& stream) {
 	json j = readJsonFromFile(stream);
 
 	if (!j["orbitcamera"]) {
-		ERR("Tipo de cámara incompatible. Usando OrbitCameraHandler");
+		ERR("Tipo de cï¿½mara incompatible. Usando OrbitCameraHandler");
 		return;
 	}
 
@@ -275,14 +275,14 @@ void XYPanZoomCamera::updateView() {
 bool XYPanZoomCamera::mouse_move(const MouseMotionEvent& e) {
 	if (e.state) {
 		uint width = e.wsrc->width();
-		// Botón izquierdo: pan
+		// Botï¿½n izquierdo: pan
 		if (e.state & 1) {
 			_center -= glm::vec2(e.xrel * _width / width,
 				-(e.yrel * _width) / (width * _aspectRatio));
 			updateView();
 		}
 		else
-			// Botón derecho: acercar/alejar la cámara
+			// Botï¿½n derecho: acercar/alejar la cï¿½mara
 			if (e.state & 4) {
 				_width = _width - e.yrel * _width / (width * _aspectRatio);
 				updateProj();
@@ -330,7 +330,7 @@ void XYPanZoomCamera::loadStatus(std::istream& stream) {
 	json j = readJsonFromFile(stream);
 
 	if (!j["xypanzoomcamera"]) {
-		ERR("Tipo de cámara incompatible. Usando ZYPanZoomCamera");
+		ERR("Tipo de cï¿½mara incompatible. Usando ZYPanZoomCamera");
 		return;
 	}
 	_width = j["width"];
@@ -357,7 +357,7 @@ WalkCameraHandler::WalkCameraHandler(float h, const glm::vec3& pos, float yaw,
 
 	_deltah = 0.1f;
 	_walkSpeed = 1.0f;
-	_deltayaw = _deltapitch = 1.8f;
+	_deltayaw = _deltapitch = 3.f;
 
 	captureMouse();
 	resetView();
@@ -367,14 +367,15 @@ WalkCameraHandler::~WalkCameraHandler() { releaseMouse(); }
 
 void WalkCameraHandler::releaseMouse() {
 	mouseCaptured = false;
-	App::getInstance().getWindow().showMouseCursor(true);
+	App::getInstance().getWindow().releaseMouse();
 }
 
 void WalkCameraHandler::captureMouse() {
 	Window& w = App::getInstance().getWindow();
 
-	w.showMouseCursor(false);
-	w.setMousePosition(w.width() / 2, w.height() / 2);
+	w.captureMouse();
+	//w.showMouseCursor(false);
+	//w.setMousePosition(w.width() / 2.f, w.height() / 2.f);
 	mouseCaptured = true;
 }
 
@@ -401,16 +402,14 @@ bool WalkCameraHandler::mouse_move(const MouseMotionEvent& e) {
 		return true;
 
 	Window& theWindow = App::getInstance().getWindow();
-	int halfwidth = theWindow.width() / 2;
-	int halfheight = theWindow.height() / 2;
-
-	int xrel, yrel;
+	auto halfwidth = theWindow.width() / 2.f;
+	auto halfheight = theWindow.height() / 2.f;
 
 	if (halfwidth == e.x && halfheight == e.y)
 		return true;
 
-	xrel = e.x - halfwidth;
-	yrel = e.y - halfheight;
+	auto xrel = e.x - halfwidth;
+	auto yrel = e.y - halfheight;
 
 	_yaw -= (xrel * PI) / (_deltayaw * halfwidth);
 	_pitch -= (yrel * PI) / (_deltapitch * halfheight);
@@ -476,18 +475,18 @@ void WalkCameraHandler::update(uint64_t ms) {
 	updateMatrix();
 }
 
-// Establece la altura de la cámara
+// Establece la altura de la cï¿½mara
 void WalkCameraHandler::setHeight(float height) {
 	_h = height;
 	updateMatrix();
 }
-// Establece la posición de la cámara
+// Establece la posiciï¿½n de la cï¿½mara
 void WalkCameraHandler::setPos(const glm::vec3& pos) {
 	_pos = pos;
 	updateMatrix();
 }
 
-// Establece los ángulos de la dirección de la vista (ver definición
+// Establece los ï¿½ngulos de la direcciï¿½n de la vista (ver definiciï¿½n
 // en el constructor
 void WalkCameraHandler::setAngles(float pitch, float yaw) {
 	_pitch = pitch;
@@ -504,7 +503,7 @@ void WalkCameraHandler::setSpeeds(float deltah, float deltayaw,
 
 
 /**
-Guarda el estado actual de la cámara en el flujo indicado
+Guarda el estado actual de la cï¿½mara en el flujo indicado
 */
 void WalkCameraHandler::saveStatus(std::ostream& stream) {
 
@@ -530,13 +529,13 @@ void WalkCameraHandler::saveStatus(std::ostream& stream) {
 
 
 /**
-restaura el estado de la cámara al que se encuentra en el flujo
+restaura el estado de la cï¿½mara al que se encuentra en el flujo
 */
 void WalkCameraHandler::loadStatus(std::istream& stream) {
 	json j = readJsonFromFile(stream);
 
 	if (!j["walkcamera"]) {
-		ERR("Tipo de cámara incompatible. Usando WalkCamera");
+		ERR("Tipo de cï¿½mara incompatible. Usando WalkCamera");
 		return;
 	}
 	_yaw = j["yaw"];

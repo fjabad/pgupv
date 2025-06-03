@@ -2,6 +2,8 @@
 #include <fstream>
 #include <bitset>
 
+#include <filesystem>
+
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <assimp/Exporter.hpp>
@@ -349,9 +351,9 @@ Dada la ruta de una textura, intenta buscar el fichero, en el siguiente orden:
 \param filename La ruta por donde empezar la búsqueda
 \return La ruta completa de un fichero que se puede abrir, o filename, si no existe
 */
-std::string findTexture(const std::string& filename, const std::string& modelfilename) {
+std::filesystem::path findTexture(const std::filesystem::path& filename, const std::filesystem::path& modelfilename) {
 	// First, try to load the texture filename as given by the model file
-	std::ifstream f(filename.c_str());
+	std::ifstream f(filename);
 	if (f) {
 		f.close();
 		return filename;
@@ -359,7 +361,7 @@ std::string findTexture(const std::string& filename, const std::string& modelfil
 
 	// If it does not work, then try removing the directory and use only the filename
 	// it will work only if the texture file is in the current working directory
-	std::string name = PGUPV::getFilenameFromPath(filename);
+	auto name = filename.filename();
 	f.open(name);
 	if (f) {
 		f.close();
@@ -368,7 +370,7 @@ std::string findTexture(const std::string& filename, const std::string& modelfil
 
 	// If it does not work, try to prepend the directory where the model file is located 
 	// to the original texture filename (it may have relative directories like ../textures/pp.jpg"
-	name = PGUPV::getDirectory(modelfilename) + filename;
+	name = modelfilename.parent_path() / filename;
 	f.open(name);
 	if (f) {
 		f.close();
@@ -376,7 +378,7 @@ std::string findTexture(const std::string& filename, const std::string& modelfil
 	}
 
 	// Next, try the directory of the model file with the filename of the texture (just the filename)
-	name = PGUPV::getDirectory(modelfilename) + PGUPV::getFilenameFromPath(filename);
+	name = modelfilename.parent_path() / filename.filename();
 	f.open(name);
 	if (f) {
 		f.close();
@@ -384,7 +386,7 @@ std::string findTexture(const std::string& filename, const std::string& modelfil
 	}
 
 	// Finally, search in all the subdirectories inside the directory that contains the model
-	auto res = PGUPV::listFiles(PGUPV::getDirectory(modelfilename), true, std::vector<std::string> {PGUPV::getFilenameFromPath(filename)});
+	auto res = PGUPV::listFiles(modelfilename.parent_path(), true, std::vector<std::string> {filename.filename().string()});
 	if (res.size() == 1) {
 		return res[0];
 	}
@@ -393,14 +395,22 @@ std::string findTexture(const std::string& filename, const std::string& modelfil
 }
 
 uint acceptTexture(const std::string& modelFileName, aiTextureType type, const uint textureUnitBase, const aiMaterial* mtl, PGUPV::Material& mat) {
-	aiString path;
+	aiString aipath;
 	unsigned int c = MIN(mtl->GetTextureCount(type), 4U); // Soportamos hasta 4 texturas de cada tipo
 	for (uint i = 0; i < c; i++) {
-		mtl->GetTexture(type, i, &path);
+		mtl->GetTexture(type, i, &aipath);
+
+		#ifndef WIN32
+		std::string tpath = aipath.C_Str();
+		std::replace(tpath.begin(), tpath.end(), '\\', '/');
+		auto path = std::filesystem::path{tpath};
+		#else
+		auto path = std::filesystem::path{aipath.C_Str()};
+		#endif
 		// This function will throw if we can't find the texture
 		try {
 			auto t = std::make_shared<Texture2D>(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-			t->loadImage(findTexture(path.C_Str(), modelFileName));
+			t->loadImage(findTexture(path, modelFileName));
 			t->generateMipmap();
 			mat.setTexture(textureUnitBase + i, t);
 		}

@@ -291,40 +291,6 @@ std::string PGUPV::hexString(ulong n) {
 	return os.str();
 }
 
-std::string PGUPV::getFilenameFromPath(const std::string& filepath, bool includeExtension) {
-	std::string::size_type slash1, slash2, slash;
-
-	slash1 = filepath.find_last_of('\\');
-	slash2 = filepath.find_last_of('/');
-
-	if (slash1 == std::string::npos)
-		slash = slash2;
-	else if (slash2 == std::string::npos)
-		slash = slash1;
-	else if (slash1 > slash2)
-		slash = slash1;
-	else
-		slash = slash2;
-
-	std::string result;
-	if (slash == std::string::npos)
-		result = filepath;
-	else
-		result = filepath.substr(slash + 1);
-
-	if (includeExtension) {
-		return result;
-	}
-	else {
-		std::string::size_type dot;
-		dot = result.find_last_of('.');
-		if (dot == std::string::npos)
-			return result;
-
-		return result.substr(0, dot);
-	}
-}
-
 std::string PGUPV::getDirectory(const std::string& filepath) {
 	std::string::size_type slash1, slash2, slash;
 
@@ -350,11 +316,6 @@ float PGUPV::distSquare(glm::vec3 a, glm::vec3 b) {
 	glm::vec3 d = a - b;
 	return glm::dot(d, d);
 };
-
-bool PGUPV::fileExists(const std::string& name) {
-	std::ifstream f(name.c_str());
-	return f.good();
-}
 
 bool PGUPV::dirExists(const std::string& path)
 {
@@ -659,7 +620,7 @@ void EscapeRegex(string& regex)
 	replaceAll(regex, "/", "\\/");
 }
 
-std::vector<std::string> PGUPV::listFiles(const std::string& path, bool recursive) {
+std::vector<std::filesystem::path> PGUPV::listFiles(const std::filesystem::path& path, bool recursive) {
 	return listFiles(path, recursive, std::vector<std::string>());
 }
 
@@ -675,9 +636,9 @@ std::vector<std::string> PGUPV::listDirs(const std::string& path)
 	return result;
 }
 
-std::vector<std::string> PGUPV::listFiles(const std::string& path, bool recursive, const std::vector<std::string>& patterns) {
+std::vector<std::filesystem::path> PGUPV::listFiles(const std::filesystem::path& path, bool recursive, const std::vector<std::string>& patterns) {
 
-	std::vector<std::string> result;
+	std::vector<std::filesystem::path> result;
 
 	if (!std::filesystem::exists(path)) 
 		return result;
@@ -716,51 +677,6 @@ std::vector<std::string> PGUPV::listFiles(const std::string& path, bool recursiv
 		}
 	}
 	return result;
-	//DIR* dir;
-	//struct dirent* ent;
-	//std::vector<std::string> results;
-
-	//std::string wpath = path;
-	//if (path.empty())
-	//	wpath = "./";
-	//else
-	//	if (path.back() != '/' && path.back() != '\\')
-	//		wpath += "/";
-
-	///* Open directory stream */
-	//dir = opendir(wpath.c_str());
-	//if (dir != NULL) {
-
-	//	/* Print all files and directories within the directory */
-	//	while ((ent = readdir(dir)) != NULL) {
-	//		switch (ent->d_type) {
-	//		case DT_REG:
-	//			if (patterns.empty()) results.push_back(wpath + ent->d_name);
-	//			else {
-	//				for (auto p : patterns) {
-	//					if (MatchTextWithWildcards(ent->d_name, p, getPlatform() != Platform::WIN)) {
-	//						results.push_back(wpath + ent->d_name);
-	//						break;
-	//					}
-	//				}
-	//			}
-	//			break;
-
-	//		case DT_DIR:
-	//			if (std::string(".") != ent->d_name && std::string("..") != ent->d_name && recursive) {
-	//				auto tmp = listFiles(wpath + ent->d_name, true, patterns);
-	//				std::move(tmp.begin(), tmp.end(), std::back_inserter(results));
-	//			}
-	//			break;
-	//		}
-	//	}
-	//	closedir(dir);
-	//}
-	//else {
-	//	/* Could not open directory */
-	//	ERRT("No se puede abrir el directorio " + wpath);
-	//}
-	//return results;
 }
 
 typedef unsigned value_type;

@@ -1,10 +1,6 @@
 #include <string>
 
-#ifdef WIN32
-#include <SDL_ttf.h>
-#else
-#include <SDL2/SDL_ttf.h>
-#endif
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include "font.h"
 #include "log.h"
@@ -18,7 +14,7 @@ Font::FontCache Font::cache;
 
 
 Font::Font(const std::string &filePath, int pointSize) {
-	ttffont = TTF_OpenFont(filePath.c_str(), pointSize);
+	ttffont = TTF_OpenFont(filePath.c_str(), static_cast<float>(pointSize));
   if (ttffont == nullptr) {
     ERRT("No se ha podido encontrar la fuente " + filePath);
   }
@@ -27,8 +23,8 @@ Font::Font(const std::string &filePath, int pointSize) {
 std::shared_ptr<Font> Font::loadFont(std::string filePath, int pointSize) {
 	if (!ttfInitialized) {
 		/* start SDL_ttf */
-		if(TTF_Init() == -1)
-			ERRT(std::string("TTF_Init: ") + TTF_GetError());
+		if(!TTF_Init())
+			ERRT(std::string("TTF_Init: ") + SDL_GetError());
 		ttfInitialized = true;
 	}
 

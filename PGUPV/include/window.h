@@ -94,9 +94,13 @@ namespace PGUPV {
 		bool isStatsOpen() const { return _showfps; };
 		// Establecer el título de la ventana
 		void setTitle(const std::string &title);
+		// Captura el ratón (desaparece y sólo devuelve movimientos relativos)
+		void captureMouse();
+		// Libera el ratón
+		void releaseMouse();
 		// Mueve el puntero del ratón a las coordenadas indicadas (cuidado!
 		// genera el evento de movimiento de ratón correspondiente)
-		void setMousePosition(uint x, uint y);
+		void setMousePosition(float x, float y);
 		// Muestra/oculta el puntero del ratón
 		void showMouseCursor(bool show = true);
 		/**
@@ -247,7 +251,7 @@ namespace PGUPV {
 		JoystickButtonEventsSource::SubscriptionId joyButtonSubsId;
 
 		std::weak_ptr<Renderer> activeRenderer;
-		uint lastXMousePos, lastYMousePos;
+		float lastXMousePos, lastYMousePos;
 
 		void buildStatsPanel();
 	};

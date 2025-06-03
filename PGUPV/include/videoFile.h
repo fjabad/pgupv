@@ -1,18 +1,18 @@
 #pragma once
 
-#include <string>
+#include <filesystem>
 #include "media.h"
 
 namespace media {
 	class VideoFile : public Media {
 	public:
-		VideoFile(const std::string &filepath);
+		VideoFile(const std::filesystem::path &filepath);
         ~VideoFile();
 		/**
 		Salta al principio del vídeo
 		*/
 		void rewind();
 	private:
-		std::string filepath;
+		std::filesystem::path filepath;
 	};
 };

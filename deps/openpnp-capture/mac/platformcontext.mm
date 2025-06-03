@@ -48,11 +48,11 @@ PlatformContext::PlatformContext() :
     if ([AVCaptureDevice respondsToSelector:@selector(authorizationStatusForMediaType:)]) {
         cameraPermissionReceived = 0;
         if ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] == AVAuthorizationStatusAuthorized) {
-            NSLog(@"Already have camera permission");
+            LOG(LOG_DEBUG, "Already have camera permission\n");
             cameraPermissionReceived = 1;
         }
         else {
-            NSLog(@"Requesting permission, bundle path for Info.plist: %@", [[NSBundle mainBundle] bundlePath]);
+            LOG(LOG_INFO, "Requesting permission, bundle path for Info.plist: %s\n", [[[NSBundle mainBundle] bundlePath] UTF8String]);
             [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
                 if (granted) {
                     cameraPermissionReceived = 1;
@@ -60,9 +60,9 @@ PlatformContext::PlatformContext() :
                     cameraPermissionReceived = -1;
                 }
                 if (granted) {
-                    NSLog(@"Permission granted");
+                    LOG(LOG_INFO, "Permission granted\n");
                 } else {
-                    NSLog(@"Failed to get permission");
+                    LOG(LOG_WARNING, "Failed to get permission\n");
                 }
             } ];
             while (cameraPermissionReceived == 0) {
@@ -88,7 +88,10 @@ bool PlatformContext::enumerateDevices()
     LOG(LOG_DEBUG, "enumerateDevices called\n");
 
     m_devices.clear();
-    for (AVCaptureDevice* device in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo]) 
+    AVCaptureDeviceDiscoverySession *captureDeviceDiscoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[AVCaptureDeviceTypeBuiltInWideAngleCamera,AVCaptureDeviceTypeExternalUnknown]
+                                          mediaType:AVMediaTypeVideo
+                                           position:AVCaptureDevicePositionUnspecified];
+    for (AVCaptureDevice* device in [captureDeviceDiscoverySession devices])
     {
         platformDeviceInfo* deviceInfo = new platformDeviceInfo();
         deviceInfo->m_captureDevice = CFBridgingRetain(device);
@@ -104,7 +107,7 @@ bool PlatformContext::enumerateDevices()
         NSRange vidRange = [device.modelID rangeOfString:@"VendorID_"];
         if (vidRange.length > 0)
         {
-            uint32_t maxLen = device.modelID.length - vidRange.location - 9;
+            unsigned long maxLen = device.modelID.length - vidRange.location - 9;
             maxLen = (maxLen > 5) ? 5 : maxLen;        
             deviceInfo->m_vid = [[device.modelID substringWithRange:NSMakeRange(vidRange.location + 9, maxLen)] intValue];
         }
@@ -117,7 +120,7 @@ bool PlatformContext::enumerateDevices()
         NSRange pidRange = [device.modelID rangeOfString:@"ProductID_"];
         if (pidRange.length > 0)
         {
-            uint32_t maxLen = device.modelID.length - pidRange.location - 10;
+            unsigned long maxLen = device.modelID.length - pidRange.location - 10;
             maxLen = (maxLen > 5) ? 5 : maxLen;
             deviceInfo->m_pid = [[device.modelID substringWithRange:NSMakeRange(pidRange.location + 10, maxLen)] intValue];
         }
@@ -152,8 +155,6 @@ bool PlatformContext::enumerateDevices()
                 [scanner scanHexInt:&(deviceInfo->m_busLocation)];
 
                 LOG(LOG_DEBUG, "Location : %08X\n", deviceInfo->m_busLocation);
-                [scanner dealloc];
-                [hexString dealloc];
             }
             else
             {
