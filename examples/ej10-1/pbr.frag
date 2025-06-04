@@ -25,12 +25,9 @@ float DistributionGGX(float NdotH, float roughness)
     float a = roughness*roughness;
     float a2 = a*a;
     float NdotH2 = NdotH*NdotH;
+    float d = (NdotH2 * (a2 - 1.0) + 1.0);
 
-    float nom   = a2;
-    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-    denom = PI * denom * denom;
-
-    return nom / max(denom, 0.000001); // Para evitar divisiones por cero
+    return a2 / max(PI * d * d, 0.000001); // Para evitar divisiones por cero
 }
 // ----------------------------------------------------------------------------
 float GeometrySchlickGGX(float NdotV, float roughness)
@@ -38,10 +35,7 @@ float GeometrySchlickGGX(float NdotV, float roughness)
     float r = (roughness + 1.0);
     float k = (r*r) / 8.0;
 
-    float nom   = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-
-    return nom / max(denom, 0.000001);
+    return NdotV / max(NdotV * (1.0 - k) + k, 0.000001);
 }
 // ----------------------------------------------------------------------------
 float GeometrySmith(float NdotV, float NdotL, float roughness)
