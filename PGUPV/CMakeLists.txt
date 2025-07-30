@@ -11,7 +11,7 @@ endif()
 target_include_directories(PGUPV PUBLIC include/)
 
 target_link_libraries(PGUPV PRIVATE assimp::assimp freeimage nlohmann_json::nlohmann_json gli_lib)
-target_link_libraries(PGUPV PRIVATE par_lib openpnp-capture SDL3_ttf::SDL3_ttf-shared)
+target_link_libraries(PGUPV PRIVATE par_lib openpnp-capture SDL3_ttf::SDL3_ttf)
 if (MSVC)
 target_link_libraries(PGUPV PRIVATE libavdevice libavformat libavutil libavcodec libswscale)
 else()

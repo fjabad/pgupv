@@ -9,8 +9,7 @@ set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(SDL_TEST OFF)
 set(SDL_TEST_LIBRARY OFF)
 
-set(BUILD_SHARED_LIBS ON)
-
+set(BUILD_SHARED_LIBS OFF)
 FetchContent_Declare(SDL3
     GIT_REPOSITORY "https://github.com/libsdl-org/SDL"
     GIT_TAG "release-3.2.14"
@@ -30,7 +29,6 @@ FetchContent_MakeAvailable(SDL3_ttf)
 
 
 set(GLM_BUILD_TESTS OFF)
-set(BUILD_SHARED_LIBS OFF)
 FetchContent_Declare(glm
     GIT_REPOSITORY "https://github.com/g-truc/glm"
 #    GIT_TAG "1.0.1" 
@@ -154,8 +152,8 @@ target_link_libraries(dearimgui PRIVATE SDL3::SDL3)
 if (MSVC)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_target_properties(assimp dearimgui freetype gli_dummy glm GLEW PROPERTIES FOLDER "deps")
-set_target_properties(openpnp-capture harfbuzz plutosvg plutovg SDL_uclibc PROPERTIES FOLDER "deps")
-set_target_properties(SDL3_ttf-shared SDL3-shared PROPERTIES FOLDER "deps")
+set_target_properties(openpnp-capture openpnp-capture-test harfbuzz plutosvg plutovg SDL_uclibc PROPERTIES FOLDER "deps")
+set_target_properties(SDL3_ttf-static SDL3-shared PROPERTIES FOLDER "deps")
 set_target_properties(UpdateAssimpLibsDebugSymbolsAndDLLs zlibstatic pugixml-static PROPERTIES FOLDER "deps")
 endif()
 
