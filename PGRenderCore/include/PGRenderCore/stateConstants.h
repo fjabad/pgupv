@@ -2,16 +2,38 @@
 
 namespace PGRenderCore {
 
+
     /**
-     * @brief Modos de blending para mezclar colores en framebuffer.
+     * @brief Factores de blending personalizados.
      */
-    enum class BlendMode {
-        None,           // Sin blending, sobrescribe directamente
-        AlphaBlend,     // Mezcla alfa (src alpha, 1-src alpha)
-        Additive,       // Suma colores (emisión, fuego, glow)
-        Multiply,       // Multiplica colores (sombra, oscurecido)
-        Custom          // Permite definir blend states específicos (backend)
+    enum class BlendFactor {
+        Zero,
+        One,
+        SrcColor,
+        OneMinusSrcColor,
+        DstColor,
+        OneMinusDstColor,
+        SrcAlpha,
+        OneMinusSrcAlpha,
+        DstAlpha,
+        OneMinusDstAlpha,
+        ConstantColor,
+        OneMinusConstantColor,
+        ConstantAlpha,
+		OneMinusConstantAlpha
     };
+
+    /**
+     * @brief Operaciones de blending.
+     */
+    enum class BlendOp {
+        Add,
+        Subtract,
+        ReverseSubtract,
+        Min,
+        Max
+    };
+
 
     /**
      * @brief Funciones de comparación usadas en test de profundidad (depth test).
@@ -33,7 +55,8 @@ namespace PGRenderCore {
     enum class CullMode {
         None,           // No se descarta nada
         Front,          // Culling caras frontales
-        Back            // Culling caras traseras (default típico)
+        Back,           // Culling caras traseras (default típico)
+		FrontAndBack    // Culling ambas caras
     };
 
     /**

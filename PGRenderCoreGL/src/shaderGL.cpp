@@ -5,7 +5,7 @@
 
 namespace PGRenderCore {
 
-    ShaderGL::ShaderGL(const ShaderDesc& desc)
+    ShaderGL::ShaderGL(const Program::Desc& desc)
         : m_desc(desc), m_programId(0), m_lastError()
     {}
 
@@ -24,6 +24,11 @@ namespace PGRenderCore {
         if (m_programId == 0) {
             m_lastError = "Failed to create GL program";
             return false;
+        }
+
+        // Establecer label para debugging si se proporciona
+        if (m_desc.debugName && glObjectLabel) {
+            glObjectLabel(GL_PROGRAM, m_programId, -1, m_desc.debugName);
         }
 
         for (const auto& stageSource : m_desc.stages) {
@@ -57,6 +62,7 @@ namespace PGRenderCore {
             return false;
         }
 
+        // Detach shaders (ya no son necesarios después del link)
         detachAndDeleteShaders();
         return true;
     }
@@ -120,7 +126,7 @@ namespace PGRenderCore {
         return static_cast<unsigned long>(m_programId);
     }
 
-    const ShaderDesc& ShaderGL::getDesc() const {
+    const Program::Desc& ShaderGL::getDesc() const {
         return m_desc;
     }
 

@@ -1,22 +1,25 @@
 #pragma once
 #include <PGRenderCore/renderPass.h>
 #include <cstdint>
+#include <PGRenderCore/backendType.h>
 
 namespace PGRenderCore {
 
     class RenderPassGL : public RenderPass {
     public:
-        explicit RenderPassGL(const RenderPassDesc& desc);
+        explicit RenderPassGL(const RenderPass::Desc& desc);
         ~RenderPassGL() override;
 
-        const RenderPassDesc& getDesc() const override;
+        const RenderPass::Desc& getDesc() const override;
         uint64_t nativeHandle() const override;
 
         void begin() override;
         void end() override;
 
+		BackendType getBackendType() const override { return BackendType::OpenGL; }
+
     private:
-        RenderPassDesc m_desc;
+        RenderPass::Desc m_desc;
         bool m_isActive = false;
     };
 

@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <cstdint>
+#include "core.h"
 
 namespace PGRenderCore {
 
@@ -72,6 +73,9 @@ namespace PGRenderCore {
          *        (Ej. framebuffer OpenGL o Vulkan).
          */
         virtual uint64_t nativeHandle() const = 0;
+
+        BACKEND_CHECKER
+        CAST_HELPERS
     };
 
 } // namespace PGRenderCore

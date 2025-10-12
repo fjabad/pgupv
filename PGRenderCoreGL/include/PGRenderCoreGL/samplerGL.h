@@ -16,7 +16,7 @@ namespace PGRenderCore {
         uint64_t nativeHandle() const override { return static_cast<uint64_t>(m_samplerId); }
 
         SamplerHandle nativeSamplerId() const { return m_samplerId; }
-
+		BackendType getBackendType() const override { return BackendType::OpenGL; }
     private:
         Desc m_desc;
         SamplerHandle m_samplerId;

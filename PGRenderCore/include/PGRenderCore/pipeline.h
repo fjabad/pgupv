@@ -1,46 +1,86 @@
 #pragma once
-
-#include <memory>
+#include "backendType.h"
+#include "shader.h"
 #include "stateConstants.h"
+#include <memory>
+#include <cstdint>
+#include <glm/vec4.hpp>
 
 namespace PGRenderCore {
 
+
     /**
-     * @brief Configuración de pipeline gráfico.
-     *
-     * Agrupa shaders, estado de blending, culling, test de profundidad, etc.
+     * @brief Descriptor para modo de polígono por cara.
+     */
+    struct PolygonModeDesc {
+        PolygonMode mode = PolygonMode::Fill; // same for front and back faces
+    };
+
+    /**
+     * @brief Configuración personalizada de blending.
+     */
+    struct BlendStateDesc {
+        bool enabled = false;
+        BlendFactor srcColorFactor = BlendFactor::One;
+        BlendFactor dstColorFactor = BlendFactor::Zero;
+        BlendOp colorOp = BlendOp::Add;
+        BlendFactor srcAlphaFactor = BlendFactor::One;
+        BlendFactor dstAlphaFactor = BlendFactor::Zero;
+        BlendOp alphaOp = BlendOp::Add;
+		glm::vec4 constantColor = glm::vec4(0.0f);
+    };
+
+    /**
+	* @brief Configuración de profundidad.
+    */
+    struct DepthStateDesc {
+        DepthFunc depthFunc = DepthFunc::Less;
+        bool depthTestEnabled = true;
+        bool depthWriteEnabled = true;
+    };
+
+    /**
+     * @brief Interfaz abstracta para pipeline de renderizado.
      */
     class Pipeline {
     public:
-        /**
-         * @brief Descripción para la creación del pipeline.
-         */
-        struct Desc {
-            std::shared_ptr<class Shader> vertexShader;
-            std::shared_ptr<class Shader> fragmentShader;
-            enum class BlendMode blendMode = BlendMode::None;
-            enum class DepthFunc depthFunc = DepthFunc::Less;
-            enum class CullMode cullMode = CullMode::Back;
-
-            struct PolygonModeDesc {
-                PolygonMode front = PolygonMode::Fill;
-                PolygonMode back = PolygonMode::Fill;
-            } polygonMode;
-            // Se pueden añadir más configuraciones: rasterizer, maschering, multicore, etc.
-        };
-
         virtual ~Pipeline() = default;
 
         /**
-         * @brief Devuelve la descripción usada para crear este pipeline.
+         * @brief Descriptor de pipeline.
          */
-        virtual const Desc& getDesc() const = 0;
+        struct Desc {
+            std::shared_ptr<Program> program = nullptr;
+
+            // Estado de rasterización
+            BlendStateDesc customBlendState;
+
+			DepthStateDesc depthState;
+
+            CullMode cullMode = CullMode::Back;
+            bool frontFaceCCW = true;  // Counter-clockwise = front face
+
+            PolygonModeDesc polygonMode;
+
+            float lineWidth = 1.0f;
+            float pointSize = 1.0f;
+
+            // Otros estados
+            bool scissorTestEnabled = false;
+            bool stencilTestEnabled = false;
+
+            const char* debugName = nullptr;
+        };
+
 
         /**
-         * @brief Retorna un identificador nativo o handle interno.
-         *        Para depuración, integración o validación.
+         * @brief Devuelve el descriptor del pipeline.
          */
-        virtual uint64_t nativeHandle() const = 0;
+        virtual const Pipeline::Desc& getDesc() const = 0;
+
+        BACKEND_CHECKER
+        CAST_HELPERS
+
     };
 
 } // namespace PGRenderCore

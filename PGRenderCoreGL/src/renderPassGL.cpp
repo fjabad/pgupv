@@ -5,7 +5,7 @@
 
 namespace PGRenderCore {
 
-    RenderPassGL::RenderPassGL(const RenderPassDesc& desc)
+    RenderPassGL::RenderPassGL(const RenderPass::Desc& desc)
         : m_desc(desc), m_isActive(false)
     {
         // Aquí puedes validar el descriptor, verificar compatibilidad, etc.
@@ -18,7 +18,7 @@ namespace PGRenderCore {
         }
     }
 
-    const RenderPassDesc& RenderPassGL::getDesc() const {
+    const RenderPass::Desc& RenderPassGL::getDesc() const {
         return m_desc;
     }
 
@@ -51,7 +51,7 @@ namespace PGRenderCore {
         // Clear si está definido en descriptor
         GLuint clearMask = 0;
         if (m_desc.clearColor) {
-            const float* c = m_desc.clearColorValue;
+            auto & c = m_desc.clearColorValue;
             glClearColor(c[0], c[1], c[2], c[3]);
             clearMask |= GL_COLOR_BUFFER_BIT;
         }

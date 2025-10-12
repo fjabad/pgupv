@@ -12,7 +12,7 @@ set(SDL_TEST_LIBRARY OFF)
 set(BUILD_SHARED_LIBS OFF)
 FetchContent_Declare(SDL3
     GIT_REPOSITORY "https://github.com/libsdl-org/SDL"
-    GIT_TAG "release-3.2.14"
+    GIT_TAG "release-3.2.24"
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(SDL3)
@@ -153,7 +153,7 @@ if (MSVC)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_target_properties(assimp dearimgui freetype gli_dummy glm GLEW PROPERTIES FOLDER "deps")
 set_target_properties(openpnp-capture openpnp-capture-test harfbuzz plutosvg plutovg SDL_uclibc PROPERTIES FOLDER "deps")
-set_target_properties(SDL3_ttf-static SDL3-shared PROPERTIES FOLDER "deps")
+#set_target_properties(SDL3_ttf-static SDL3-shared PROPERTIES FOLDER "deps")
 set_target_properties(UpdateAssimpLibsDebugSymbolsAndDLLs zlibstatic pugixml-static PROPERTIES FOLDER "deps")
 endif()
 

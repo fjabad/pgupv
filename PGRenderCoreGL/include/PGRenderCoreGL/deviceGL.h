@@ -2,6 +2,8 @@
 #include <memory>
 #include <PGRenderCore/device.h>
 #include <PGRenderCore/context.h>
+#include <PGRenderCore/debugManager.h>
+
 
 namespace PGRenderCore {
 
@@ -13,11 +15,11 @@ namespace PGRenderCore {
         DeviceGL();
         ~DeviceGL() override;
 
-        std::unique_ptr<Context> createContext(const ContextDesc& desc) override;
+        std::unique_ptr<Context> createContext(const Context::Desc& desc) override;
         DebugManager* getDebugManager() override;
 
     private:
-        // Puedes añadir aquí miembros privados si hace falta
+		std::unique_ptr<DebugManager> m_debugManager;
     };
 
 } // namespace PGRenderCore

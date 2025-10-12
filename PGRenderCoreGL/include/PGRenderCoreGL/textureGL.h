@@ -1,6 +1,7 @@
 #pragma once
 #include <PGRenderCore/texture.h>
 #include <cstdint>
+#include <PGRenderCore/backendType.h>
 
 namespace PGRenderCore {
 
@@ -19,6 +20,7 @@ namespace PGRenderCore {
 
         TextureHandle nativeTextureId() const { return m_textureId; }
 
+		BackendType getBackendType() const override { return BackendType::OpenGL; }
         unsigned int toGLTarget() const;
     private:
         Desc m_desc;

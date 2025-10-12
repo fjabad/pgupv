@@ -1,30 +1,32 @@
 #pragma once
-#include <PGRenderCore/pipeline.h>
+#include <PGRenderCore/Pipeline.h>
+#include <PGRenderCore/stateConstants.h>
+
 #include <cstdint>
 
 namespace PGRenderCore {
-
-    // Alias opaco para identificador OpenGL de programa shader
-    using ProgramHandle = uint32_t;
-
     class PipelineGL : public Pipeline {
     public:
-        explicit PipelineGL(const Desc& desc);
+        explicit PipelineGL(const Pipeline::Desc& desc);
         ~PipelineGL() override;
 
-        const Desc& getDesc() const override;
-        uint64_t nativeHandle() const override;
+        BackendType getBackendType() const override { return BackendType::OpenGL; }
+        const Pipeline::Desc& getDesc() const override { return m_desc; }
 
     private:
-        Desc m_desc;
-        ProgramHandle m_programId;
+        friend class ContextGL;  // Para que ContextGL pueda llamar a apply()
 
+        Pipeline::Desc m_desc;
+
+        void apply() const;
         void applyBlendMode() const;
-        void applyDepthFunc() const;
+        void applyDepthState() const;
         void applyCullMode() const;
         void applyPolygonMode() const;
+        void applyOtherStates() const;
 
-        void validateProgram() const;
+        unsigned int toGLBlendFactor(BlendFactor factor) const;
+        unsigned int toGLBlendOp(BlendOp op) const;
     };
-} // namespace PGRenderCore
 
+} // namespace PGRenderCore

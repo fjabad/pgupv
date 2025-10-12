@@ -1,7 +1,6 @@
 #pragma once
-
-#pragma once
 #include <cstdint>
+#include "core.h"
 
 namespace PGRenderCore {
 
@@ -86,6 +85,9 @@ namespace PGRenderCore {
          *        (Ej. ID de OpenGL, descriptor de Vulkan, etc.)
          */
         virtual uint64_t nativeHandle() const = 0;
+
+        BACKEND_CHECKER
+        CAST_HELPERS
     };
 
 } // namespace PGRenderCore

@@ -6,20 +6,22 @@
 
 namespace PGRenderCore {
 
-    class ShaderGL : public Shader {
+    class ShaderGL : public Program {
     public:
-        explicit ShaderGL(const ShaderDesc& desc);
+        explicit ShaderGL(const Program::Desc& desc);
         ~ShaderGL() override;
 
         bool compile() override;
         void release() override;
 
+		BackendType getBackendType() const override { return BackendType::OpenGL; }
+
         std::string getLastError() const;
         unsigned long nativeHandle() const override;
-        const ShaderDesc& getDesc() const override;
+        const Program::Desc& getDesc() const override;
 
     private:
-        ShaderDesc m_desc;
+        Program::Desc m_desc;
         unsigned long m_programId = 0;
         std::unordered_map<unsigned int, unsigned int> m_shaderObjects; // GLuint equiv.
         std::string m_lastError;

@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 
+#include "core.h"
+
 namespace PGRenderCore {
 
     /**
@@ -32,20 +34,21 @@ namespace PGRenderCore {
         std::string source;  ///< Código fuente GLSL u otro lenguaje compatible.
     };
 
-    struct ShaderDesc {
-        /**
-         * @brief Lista de etapas del shader con su código fuente.
-         */
-        std::vector<ShaderSource> stages;
-    };
-
     /**
      * @brief Interfaz abstracta para shaders que soportan múltiples etapas,
      * tanto gráficos tradicionales como trazado de rayos.
      */
-    class Shader {
+    class Program {
     public:
-        virtual ~Shader() = default;
+        virtual ~Program() = default;
+
+        struct Desc {
+            /**
+             * @brief Lista de etapas del shader con su código fuente.
+             */
+            std::vector<ShaderSource> stages;
+            const char* debugName = nullptr; ///< Nombre para depuración (opcional).
+        };
 
         /**
          * @brief Compila y enlaza el shader con las etapas indicadas en el descriptor.
@@ -61,12 +64,16 @@ namespace PGRenderCore {
         /**
          * @brief Devuelve el descriptor con las etapas y fuentes usadas.
          */
-        virtual const ShaderDesc& getDesc() const = 0;
+        virtual const Desc& getDesc() const = 0;
 
         /**
          * @brief Devuelve un identificador nativo o handle específico del backend.
          */
         virtual unsigned long nativeHandle() const = 0;
+
+        BACKEND_CHECKER
+        CAST_HELPERS
+
     };
 
 } // namespace PGRenderCore

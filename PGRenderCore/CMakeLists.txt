@@ -18,6 +18,8 @@ file(GLOB_RECURSE PGRenderCore_SRC_FILES CONFIGURE_DEPENDS
 add_library(PGRenderCore STATIC ${PGRenderCore_SRC_FILES})
 add_library(PGRenderCore::Core ALIAS PGRenderCore)
 
+target_link_libraries(PGRenderCore PUBLIC glm::glm)
+
 target_include_directories(PGRenderCore PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
