@@ -702,4 +702,17 @@ namespace PGRenderCore {
 		glScissor(x, y, width, height);
 	}
 
+	void ContextGL::setPolygonMode(PolygonMode mode)
+	{
+		auto toGLMode = [](PolygonMode mode) -> GLenum {
+			switch (mode) {
+			case PolygonMode::Fill: return GL_FILL;
+			case PolygonMode::Line: return GL_LINE;
+			case PolygonMode::Point: return GL_POINT;
+			default: return GL_FILL;
+			}
+			};
+		glPolygonMode(GL_FRONT_AND_BACK, toGLMode(mode));
+	}
+
 } // namespace PGRenderCore

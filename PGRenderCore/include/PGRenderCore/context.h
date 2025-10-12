@@ -198,6 +198,12 @@ namespace PGRenderCore {
 		 */
 		virtual void setScissor(int x, int y, uint32_t width, uint32_t height) = 0;
 
+		/**
+		 * @brief Establece el valor del modo de dibujado de polígonos.
+		*/
+		virtual void setPolygonMode(PolygonMode mode) = 0;
+
+
 		BACKEND_CHECKER
 		CAST_HELPERS
 	};

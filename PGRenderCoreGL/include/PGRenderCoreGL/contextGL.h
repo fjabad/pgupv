@@ -98,6 +98,7 @@ namespace PGRenderCore {
         // Viewport y Scissor
         void setViewport(int x, int y, uint32_t width, uint32_t height) override;
         void setScissor(int x, int y, uint32_t width, uint32_t height) override;
+        void setPolygonMode(PolygonMode mode) override;
 
         /**
          * @brief Obtiene el contexto OpenGL nativo.
