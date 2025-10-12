@@ -7,6 +7,7 @@
 #include <string>
 #include <cstdint>
 #include <PGRenderCoreFactory/deviceFactory.h>
+#include <events.h>
 
 
 class WindowSDL {
@@ -82,6 +83,8 @@ public:
 
 	virtual void onCleanup() {}
 	virtual uint32_t getWindowId() const;
+
+	virtual void onKey(const PGRenderCore::KeyEvent& event) {}
 protected:
 	// SDL
 	SDL_Window* m_window = nullptr;

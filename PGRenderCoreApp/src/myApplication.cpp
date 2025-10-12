@@ -42,11 +42,6 @@ void MyApplication::onCleanup() {
 void MyApplication::onEvent(const SDL_Event& event) {
     if (event.type == SDL_EVENT_KEY_DOWN) {
         switch (event.key.key) {
-        case SDLK_SPACE:
-            m_wireframe = !m_wireframe;
-            std::cout << "Wireframe: " << (m_wireframe ? "ON" : "OFF") << std::endl;
-            break;
-
         case SDLK_F:
             std::cout << "FPS: " << getFPS() << std::endl;
             break;
@@ -87,12 +82,12 @@ void MyWindow1::onRender() {
 
     // TODO: Aquí establecerías uniforms con m_rotationAngle
 
-	//if (m_wireframe) {
-	//	context->setPolygonMode(PGRenderCore::PolygonMode::Line);
-	//}
-	//else {
-	//	context->setPolygonMode(PGRenderCore::PolygonMode::Fill);
-	//}
+	if (m_wireframe) {
+		context->setPolygonMode(PGRenderCore::PolygonMode::Line);
+	}
+	else {
+		context->setPolygonMode(PGRenderCore::PolygonMode::Fill);
+	}
 
     context->draw(3); // 3 vértices = 1 triángulo
 
@@ -127,6 +122,17 @@ void MyWindow1::onCleanup()
     m_triangleVAO.reset();
     m_pipeline.reset();
     m_renderPass.reset();
+}
+
+void MyWindow1::onKey(const PGRenderCore::KeyEvent& event)
+{
+    if (event.state == PGRenderCore::KeyState::Pressed) {
+		if (event.keyCode == PGRenderCore::KeyCode::Space) {
+            m_wireframe = !m_wireframe;
+            std::cout << "Wireframe: " << (m_wireframe ? "ON" : "OFF") << std::endl;
+            std::cout << "Space key pressed in Window1" << std::endl;
+		}
+	}
 }
 
 void MyWindow1::createResources() {

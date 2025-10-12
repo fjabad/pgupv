@@ -103,7 +103,115 @@ void Application::cleanup() {
 	SDL_Quit();
 }
 
+PGRenderCore::KeyCode translateKeyCode(SDL_Keycode sdlKey) {
+	switch (sdlKey) {
+	case SDLK_UNKNOWN: return PGRenderCore::KeyCode::Unknown;
+	case SDLK_A: return PGRenderCore::KeyCode::A;
+	case SDLK_B: return PGRenderCore::KeyCode::B;
+	case SDLK_C: return PGRenderCore::KeyCode::C;
+	case SDLK_D: return PGRenderCore::KeyCode::D;
+	case SDLK_E: return PGRenderCore::KeyCode::E;
+	case SDLK_F: return PGRenderCore::KeyCode::F;
+	case SDLK_G: return PGRenderCore::KeyCode::G;
+	case SDLK_H: return PGRenderCore::KeyCode::H;
+	case SDLK_I: return PGRenderCore::KeyCode::I;
+	case SDLK_J: return PGRenderCore::KeyCode::J;
+	case SDLK_K: return PGRenderCore::KeyCode::K;
+	case SDLK_L: return PGRenderCore::KeyCode::L;
+	case SDLK_M: return PGRenderCore::KeyCode::M;
+	case SDLK_N: return PGRenderCore::KeyCode::N;
+	case SDLK_O: return PGRenderCore::KeyCode::O;
+	case SDLK_P: return PGRenderCore::KeyCode::P;
+	case SDLK_Q: return PGRenderCore::KeyCode::Q;
+	case SDLK_R: return PGRenderCore::KeyCode::R;
+	case SDLK_S: return PGRenderCore::KeyCode::S;
+	case SDLK_T: return PGRenderCore::KeyCode::T;
+	case SDLK_U: return PGRenderCore::KeyCode::U;
+	case SDLK_V: return PGRenderCore::KeyCode::V;
+	case SDLK_W: return PGRenderCore::KeyCode::W;
+	case SDLK_X: return PGRenderCore::KeyCode::X;
+	case SDLK_Y: return PGRenderCore::KeyCode::Y;
+	case SDLK_Z: return PGRenderCore::KeyCode::Z;
 
+	case SDLK_0: return PGRenderCore::KeyCode::Num0;
+	case SDLK_1: return PGRenderCore::KeyCode::Num1;
+	case SDLK_2: return PGRenderCore::KeyCode::Num2;
+	case SDLK_3: return PGRenderCore::KeyCode::Num3;
+	case SDLK_4: return PGRenderCore::KeyCode::Num4;
+	case SDLK_5: return PGRenderCore::KeyCode::Num5;
+	case SDLK_6: return PGRenderCore::KeyCode::Num6;
+	case SDLK_7: return PGRenderCore::KeyCode::Num7;
+	case SDLK_8: return PGRenderCore::KeyCode::Num8;
+	case SDLK_9: return PGRenderCore::KeyCode::Num9;
+	case SDLK_ESCAPE: return PGRenderCore::KeyCode::Escape;
+	case SDLK_RETURN: return PGRenderCore::KeyCode::Return;
+	case SDLK_TAB: return PGRenderCore::KeyCode::Tab;
+	case SDLK_BACKSPACE: return PGRenderCore::KeyCode::Backspace;
+	case SDLK_INSERT: return PGRenderCore::KeyCode::Insert;
+	case SDLK_DELETE: return PGRenderCore::KeyCode::Delete;
+	case SDLK_RIGHT: return PGRenderCore::KeyCode::Right;
+	case SDLK_LEFT: return PGRenderCore::KeyCode::Left;
+	case SDLK_DOWN: return PGRenderCore::KeyCode::Down;
+	case SDLK_UP: return PGRenderCore::KeyCode::Up;
+	case SDLK_PAGEUP: return PGRenderCore::KeyCode::PageUp;
+	case SDLK_PAGEDOWN: return PGRenderCore::KeyCode::PageDown;
+	case SDLK_HOME: return PGRenderCore::KeyCode::Home;
+	case SDLK_END: return PGRenderCore::KeyCode::End;
+	case SDLK_CAPSLOCK: return PGRenderCore::KeyCode::CapsLock;
+	case SDLK_SCROLLLOCK: return PGRenderCore::KeyCode::ScrollLock;
+	case SDLK_NUMLOCKCLEAR: return PGRenderCore::KeyCode::NumLock;
+	case SDLK_PRINTSCREEN: return PGRenderCore::KeyCode::PrintScreen;
+	case SDLK_PAUSE: return PGRenderCore::KeyCode::Pause;
+	case SDLK_F1: return PGRenderCore::KeyCode::F1;
+	case SDLK_F2: return PGRenderCore::KeyCode::F2;
+	case SDLK_F3: return PGRenderCore::KeyCode::F3;
+	case SDLK_F4: return PGRenderCore::KeyCode::F4;
+	case SDLK_F5: return PGRenderCore::KeyCode::F5;
+	case SDLK_F6: return PGRenderCore::KeyCode::F6;
+	case SDLK_F7: return PGRenderCore::KeyCode::F7;
+	case SDLK_F8: return PGRenderCore::KeyCode::F8;
+	case SDLK_F9: return PGRenderCore::KeyCode::F9;
+	case SDLK_F10: return PGRenderCore::KeyCode::F10;
+	case SDLK_F11: return PGRenderCore::KeyCode::F11;
+	case SDLK_F12: return PGRenderCore::KeyCode::F12;
+	case SDLK_LCTRL: return PGRenderCore::KeyCode::LeftControl;
+	case SDLK_LSHIFT: return PGRenderCore::KeyCode::LeftShift;
+	case SDLK_LALT: return PGRenderCore::KeyCode::LeftAlt;
+	case SDLK_LGUI: return PGRenderCore::KeyCode::LeftSuper;
+	case SDLK_RCTRL: return PGRenderCore::KeyCode::RightControl;
+	case SDLK_RSHIFT: return PGRenderCore::KeyCode::RightShift;
+	case SDLK_RALT: return PGRenderCore::KeyCode::RightAlt;
+	case SDLK_RGUI: return PGRenderCore::KeyCode::RightSuper;
+	case SDLK_SPACE: return PGRenderCore::KeyCode::Space;
+	default:
+		return PGRenderCore::KeyCode::Unknown;
+	}
+}
+
+PGRenderCore::KeyState translateKeyState(uint32_t sdlEventType) {
+	switch (sdlEventType) {
+	case SDL_EVENT_KEY_DOWN:
+		return PGRenderCore::KeyState::Pressed;
+	case SDL_EVENT_KEY_UP:
+		return PGRenderCore::KeyState::Released;
+	default:
+		return PGRenderCore::KeyState::Unknown;
+	}
+}
+
+PGRenderCore::KeyEvent translateEvent(const SDL_Event& sdlEvent) {
+	PGRenderCore::KeyEvent keyEvent;
+	keyEvent.keyCode = translateKeyCode(sdlEvent.key.key);
+	
+
+	if (sdlEvent.key.mod & SDL_KMOD_SHIFT) keyEvent.modifiers |= PGRenderCore::KeyModifier::Shift;
+	if (sdlEvent.key.mod & SDL_KMOD_CTRL) keyEvent.modifiers |= PGRenderCore::KeyModifier::Control;
+	if (sdlEvent.key.mod & SDL_KMOD_ALT) keyEvent.modifiers |= PGRenderCore::KeyModifier::Alt;
+	if (sdlEvent.key.mod & SDL_KMOD_GUI) keyEvent.modifiers |= PGRenderCore::KeyModifier::Super;
+
+	keyEvent.state = translateKeyState(sdlEvent.type);
+	return keyEvent;
+}
 
 void Application::processEvents() {
 	SDL_Event event;
@@ -127,8 +235,17 @@ void Application::processEvents() {
 		break;
 
 		case SDL_EVENT_KEY_DOWN:
-			if (event.key.key == SDLK_ESCAPE) {
+			switch (event.key.key) {
+			case SDLK_ESCAPE:
 				m_running = false;
+				break;
+			case SDLK_F:
+				std::cout << "FPS: " << getFPS() << "  " << event.key.windowID << std::endl;
+				break;
+			default:
+				auto w = findWindow(event.key.windowID);
+				w->onKey(translateEvent(event));
+				break;
 			}
 			break;
 

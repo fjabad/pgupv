@@ -15,6 +15,7 @@ public:
     void onRender() override;
     void onResize(uint32_t width, uint32_t height) override;
 	void onCleanup() override;
+	void onKey(const PGRenderCore::KeyEvent& event) override;
 private:
     void createResources();
     void createRenderPass();
@@ -29,7 +30,7 @@ private:
 
     // Estado de la aplicación
     float m_rotationAngle = 0.0f;
-
+    bool m_wireframe = false;
 };
 
 class MyWindow2 : public WindowSDL {
@@ -54,7 +55,5 @@ protected:
 
 private:
     std::shared_ptr<WindowSDL> m_window1, m_window2;
-
-    bool m_wireframe = false;
 };
 
