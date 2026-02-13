@@ -12,6 +12,9 @@
 #pragma GCC diagnostic ignored "-Wtype-limits"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
+#ifndef GLM_STATIC_ASSERT
+#define GLM_STATIC_ASSERT(x, message) static_assert(x, message)
+#endif
 #include <gli/gli.hpp>
 #ifdef _WIN32
 #pragma warning(pop)

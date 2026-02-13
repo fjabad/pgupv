@@ -153,7 +153,7 @@ if (MSVC)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_target_properties(assimp dearimgui freetype gli_dummy glm GLEW PROPERTIES FOLDER "deps")
 set_target_properties(openpnp-capture openpnp-capture-test harfbuzz plutosvg plutovg SDL_uclibc PROPERTIES FOLDER "deps")
-set_target_properties(SDL3_ttf-static SDL3-shared PROPERTIES FOLDER "deps")
+set_target_properties(SDL3_ttf-static SDL3-static PROPERTIES FOLDER "deps")
 set_target_properties(UpdateAssimpLibsDebugSymbolsAndDLLs zlibstatic pugixml-static PROPERTIES FOLDER "deps")
 endif()
 
