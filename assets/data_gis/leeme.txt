@@ -1,0 +1,1 @@
+Copia en este fichero los ficheros de datos geográficos que se usarán en las prácticas.
