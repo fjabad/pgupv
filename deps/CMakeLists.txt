@@ -53,9 +53,10 @@ FetchContent_Declare(GSL
 FetchContent_MakeAvailable(GSL)
 
 
+set(BUILD_STATIC_LIBS ON)
 FetchContent_Declare(json 
     GIT_REPOSITORY "https://github.com/nlohmann/json"
-    GIT_TAG "v3.11.3"
+    GIT_TAG "v3.12.0"
     GIT_SHALLOW ON
 )
 FetchContent_MakeAvailable(json)
@@ -152,7 +153,7 @@ target_link_libraries(dearimgui PRIVATE SDL3::SDL3)
 if (MSVC)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_target_properties(assimp dearimgui freetype gli_dummy glm GLEW PROPERTIES FOLDER "deps")
-set_target_properties(openpnp-capture openpnp-capture-test harfbuzz plutosvg plutovg SDL_uclibc PROPERTIES FOLDER "deps")
+set_target_properties(openpnp-capture harfbuzz plutosvg plutovg SDL_uclibc PROPERTIES FOLDER "deps")
 set_target_properties(SDL3_ttf-static SDL3-static PROPERTIES FOLDER "deps")
 set_target_properties(UpdateAssimpLibsDebugSymbolsAndDLLs zlibstatic pugixml-static PROPERTIES FOLDER "deps")
 endif()

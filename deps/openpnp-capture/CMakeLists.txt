@@ -16,8 +16,8 @@ set(OPENPNP_CAPTURE_LIB_VERSION "0.0.28" CACHE STRING "openpnp-capture library v
 set(OPENPNP_CAPTURE_LIB_SOVERSION "0" CACHE STRING "openpnp-capture library soversion")
 
 # Library type options
-option(BUILD_SHARED_LIBS "Build shared library" ON)
-option(BUILD_STATIC_LIBS "Build static library" OFF)
+option(BUILD_SHARED_LIBS "Build shared library" OFF)
+option(BUILD_STATIC_LIBS "Build static library" ON)
 option(LINK_DYNAMIC_MSVC_RUNTIME "Link MSVC runtime statically" OFF)
 
 # Validate library type options
@@ -96,15 +96,21 @@ set_target_properties(openpnp-capture PROPERTIES
                       VERSION ${OPENPNP_CAPTURE_LIB_VERSION}
                       SOVERSION ${OPENPNP_CAPTURE_LIB_SOVERSION})
 
+if(BUILD_STATIC_LIBS)
+	target_compile_definitions(openpnp-capture
+		PUBLIC OPENPNPCAPTURE_STATIC
+	)
+endif()
+
 IF (WIN32)
     if(MSVC)
-        if(LINK_DYNAMIC_MSVC_RUNTIME)
-            set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
-            set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
-        else()
-            set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-            set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-        endif()
+    #    if(LINK_DYNAMIC_MSVC_RUNTIME)
+    #        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+    #        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+    #    else()
+ #           set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+ #           set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+    #    endif()
     endif()
 
     # set the platform identification string
@@ -119,7 +125,7 @@ IF (WIN32)
     target_link_libraries(openpnp-capture strmiids)
 
     # add windows-specific test application
-#    add_subdirectory(win/tests)
+   ###  add_subdirectory(win/tests)
 
 ELSEIF(APPLE)
     # set the platform identification string
@@ -140,7 +146,7 @@ ELSEIF(APPLE)
         )
 
     # add mac specific test application
-    add_subdirectory(mac/tests)
+    ### add_subdirectory(mac/tests)
 
 ELSEIF(UNIX)
     # install path resolving
@@ -210,7 +216,7 @@ ELSEIF(UNIX)
     endif()
 
     # add linux-specific test application
-    add_subdirectory(linux/tests)
+   ### add_subdirectory(linux/tests)
 
     # install lib and headers
     install(FILES include/openpnp-capture.h
