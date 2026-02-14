@@ -10,10 +10,24 @@
 # Author: Niels A. Moseley, Jason von Nieda
 #
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project (openpnp-capture)
 set(OPENPNP_CAPTURE_LIB_VERSION "0.0.28" CACHE STRING "openpnp-capture library version")
 set(OPENPNP_CAPTURE_LIB_SOVERSION "0" CACHE STRING "openpnp-capture library soversion")
+
+# Library type options
+option(BUILD_SHARED_LIBS "Build shared library" ON)
+option(BUILD_STATIC_LIBS "Build static library" OFF)
+option(LINK_DYNAMIC_MSVC_RUNTIME "Link MSVC runtime statically" OFF)
+
+# Validate library type options
+if(BUILD_STATIC_LIBS AND BUILD_SHARED_LIBS)
+    message(WARNING "Both BUILD_STATIC_LIBS and BUILD_SHARED_LIBS are enabled. Building static library only.")
+    set(BUILD_SHARED_LIBS OFF)
+elseif(NOT BUILD_STATIC_LIBS AND NOT BUILD_SHARED_LIBS)
+    message(STATUS "Neither BUILD_STATIC_LIBS nor BUILD_SHARED_LIBS specified. Defaulting to shared library.")
+    set(BUILD_SHARED_LIBS ON)
+endif()
 
 # make sure the libjpegturbo is compiled with the
 # position independent flag -fPIC
@@ -21,6 +35,10 @@ IF (UNIX)
     set(POSITION_INDEPENDENT_CODE TRUE)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
+    # Add O3 optimizations and native architecture for release builds
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native")
 ENDIF()
 
 # make CMAKE search the current cmake dir inside the
@@ -55,10 +73,19 @@ else(CMAKE_BUILD_TYPE MATCHES Release)
 endif(CMAKE_BUILD_TYPE MATCHES Release)
 
 # create our capture library
-add_library(openpnp-capture SHARED common/libmain.cpp
-                                   common/context.cpp
-                                   common/logging.cpp
-                                   common/stream.cpp)
+if(BUILD_STATIC_LIBS AND NOT BUILD_SHARED_LIBS)
+    set(LIBRARY_TYPE STATIC)
+    add_definitions(-DOPENPNPCAPTURE_STATIC)
+    message(STATUS "Building static library")
+else()
+    set(LIBRARY_TYPE SHARED)
+    message(STATUS "Building shared library")
+endif()
+
+add_library(openpnp-capture ${LIBRARY_TYPE} common/libmain.cpp
+                                           common/context.cpp
+                                           common/logging.cpp
+                                           common/stream.cpp)
 
 target_include_directories(openpnp-capture PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -71,10 +98,13 @@ set_target_properties(openpnp-capture PROPERTIES
 
 IF (WIN32)
     if(MSVC)
-        # build with static runtime rather than DLL based so that we
-        # don't have to distribute it
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+        if(LINK_DYNAMIC_MSVC_RUNTIME)
+            set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+            set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+        else()
+            set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+            set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+        endif()
     endif()
 
     # set the platform identification string
@@ -125,30 +155,58 @@ ELSEIF(UNIX)
                                            linux/yuvconverters.cpp)
 
     # force include directories for libjpeg-turbo
-    include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/linux/contrib/libjpeg-turbo-dev")
+    include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/linux/contrib/libjpeg-turbo-3.1.2")
 
     # add pthreads library 
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)    
-    target_link_libraries(openpnp-capture PUBLIC Threads::Threads)
+    target_link_libraries(openpnp-capture PRIVATE Threads::Threads)
 
     # add turbojpeg library
     find_package(PkgConfig REQUIRED)
     pkg_search_module(TurboJPEG libturbojpeg)
     if( TurboJPEG_FOUND )
-        link_directories(${TurboJPEG_LIBDIR})
-        target_include_directories(openpnp-capture PUBLIC ${TurboJPEG_INCLUDE_DIRS})
-        target_link_libraries(openpnp-capture PUBLIC ${TurboJPEG_LIBRARIES})
-    else()
-        # compile libjpeg-turbo for MJPEG decoding support
-        # right now, we need to disable SIMD because it
-        # causes a compile problem.. we need to fix this
-        # later...
-        set(ENABLE_SHARED OFF)
-        set(WITH_SIMD OFF)    
-        set(TurboJPEG_LIBRARIES turbojpeg-static)  
-        add_subdirectory(linux/contrib/libjpeg-turbo-dev)
+        target_link_directories(openpnp-capture PRIVATE ${TurboJPEG_LIBDIR})
+        target_include_directories(openpnp-capture PRIVATE ${TurboJPEG_INCLUDE_DIRS})
         target_link_libraries(openpnp-capture PRIVATE ${TurboJPEG_LIBRARIES})
+    else()
+        # compile libjpeg-turbo for MJPEG decoding support using ExternalProject
+        include(ExternalProject)
+
+        set(LIBJPEG_TURBO_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/libjpeg-turbo)
+        set(LIBJPEG_TURBO_INSTALL_DIR ${LIBJPEG_TURBO_PREFIX}/install)
+
+        ExternalProject_Add(libjpeg-turbo-external
+            SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/linux/contrib/libjpeg-turbo-3.1.2
+            CMAKE_ARGS
+                -DCMAKE_INSTALL_PREFIX=${LIBJPEG_TURBO_INSTALL_DIR}
+                -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                -DENABLE_SHARED=OFF
+                -DWITH_SIMD=ON
+                -DWITH_TOOLS=OFF
+                -DWITH_JAVA=OFF
+                -DCMAKE_C_FLAGS=-fPIC
+                -DCMAKE_CXX_FLAGS=-fPIC
+                -DCMAKE_C_FLAGS_RELEASE=-O3 
+                -DCMAKE_CXX_FLAGS_RELEASE=-O3
+            BUILD_BYPRODUCTS 
+                ${LIBJPEG_TURBO_INSTALL_DIR}/lib/libturbojpeg.a
+        )
+
+        # Create imported target for turbojpeg
+        add_library(turbojpeg-static STATIC IMPORTED)
+        set_target_properties(turbojpeg-static PROPERTIES
+            IMPORTED_LOCATION ${LIBJPEG_TURBO_INSTALL_DIR}/lib/libturbojpeg.a
+        )
+
+        # Set up include directories
+        target_include_directories(openpnp-capture PRIVATE ${LIBJPEG_TURBO_INSTALL_DIR}/include)
+
+        # Make openpnp-capture depend on the external project
+        add_dependencies(openpnp-capture libjpeg-turbo-external)
+        add_dependencies(turbojpeg-static libjpeg-turbo-external)
+
+        target_link_libraries(openpnp-capture PRIVATE turbojpeg-static)
     endif()
 
     # add linux-specific test application
