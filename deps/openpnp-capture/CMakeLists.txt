@@ -119,7 +119,7 @@ IF (WIN32)
     target_link_libraries(openpnp-capture strmiids)
 
     # add windows-specific test application
-    add_subdirectory(win/tests)
+#    add_subdirectory(win/tests)
 
 ELSEIF(APPLE)
     # set the platform identification string
