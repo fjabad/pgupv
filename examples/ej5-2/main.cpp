@@ -73,7 +73,7 @@ void MyRender::setup() {
   dshader.addAttributeLocation(Mesh::VERTICES, "position");
   dshader.addAttributeLocation(Mesh::COLORS, "vertcolor");
 
-  dshader.loadFiles(App::examplesDir() + "ej5-3/ubo-dummy");
+  dshader.loadFiles(App::examplesDir() + "ej5-2/ubo-dummy");
   dshader.compile();
 
   // 1. Calcular el índice del bloque
