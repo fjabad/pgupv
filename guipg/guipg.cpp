@@ -126,7 +126,9 @@ bool GUILib::DirectionGizmo(const std::string &label, glm::vec3 &direction) {
 }
 
 bool GUILib::DirectionGizmo(const std::string &label, glm::vec3 &direction, glm::vec3 &directionShown) {
-	auto result = ImGui::gizmo3D(label.c_str(), direction);
+	auto md = -direction;
+	auto result = ImGui::gizmo3D(label.c_str(), md);
+	direction = -md;
 	std::ostringstream os;
 	os.precision(4);
 	os << "("
