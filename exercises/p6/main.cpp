@@ -15,7 +15,7 @@ using std::vector;
 
 /*
 
-Simulando un volumen de recorte cilíndrico con un shader de geometría
+Simulando un volumen de recorte cónicocon un shader de geometría
 
 */
 
@@ -27,13 +27,13 @@ class MyRender : public Renderer {
 public:
   MyRender()
     :
-    cylinderPosWCS(0.8f, 0.8f, 0.0f), // Posición en el S.C. del mundo
-    cylinderModel(1.0f, 1.0f, 1.0f),
+    conePosWCS(0.8f, 0.8f, 0.0f), // Posición en el S.C. del mundo
+    coneModel(1.0f, 1e-5f, 1.0f),
     // Este objeto interpola linealmente entre las dos primeras variables,
     // la tercera es la duración de un ciclo y la cuarta el tipo de
     // movimiento
-    // Se usa para calcular la posición del cilindro en cada momento.
-    li(cylinderPosWCS, vec3(-0.6, -0.4, 0), 4.0, PING_PONG) {};
+    // Se usa para calcular la posición del cono en cada momento.
+    li(conePosWCS, vec3(-0.6, -0.4, 0), 4.0, PING_PONG) {};
   void setup(void) override;
   void render(void) override;
   void reshape(uint w, uint h) override;
@@ -46,15 +46,15 @@ private:
   std::shared_ptr<Program> program;
   GLint lightPosLoc;
   vec4 lightPosWCS;
-  GLint cylinderPosLoc;
-  vec3 cylinderPosWCS; // Posición de la base del cilindro en el S.C. del mundo
+  GLint conePosLoc;
+  vec3 conePosWCS; // Posición de la base del cono en el S.C. del mundo
 
-  Cylinder cylinderModel;
+  Cylinder coneModel;
   std::shared_ptr<Scene> bunny;
   LinearInterpolator<vec3> li;
 
-  std::shared_ptr<FloatSliderWidget> cylinderHeight, cylinderRadius;
-  std::shared_ptr<DirectionWidget> cylinderAxis; // Eje del cilindro en el S.C. del mundo
+  std::shared_ptr<FloatSliderWidget> coneHeight, coneRadius;
+  std::shared_ptr<DirectionWidget> coneAxis; // Eje del cono en el S.C. del mundo
   void buildGUI();
 };
 
@@ -62,7 +62,7 @@ void MyRender::update(uint64_t ms) {
   static uint64_t total = 0;
 
   total += ms;
-  cylinderPosWCS = li.interpolate(total / 1000.0);
+  conePosWCS = li.interpolate(total / 1000.0);
 }
 
 bool MyRender::reload() {
@@ -77,7 +77,7 @@ bool MyRender::reload() {
 
 	// Posiciones de las variables uniform
 	lightPosLoc = program->getUniformLocation("lightpos");
-	cylinderPosLoc = program->getUniformLocation("cylinderPos");
+	conePosLoc = program->getUniformLocation("conePos");
 
 	// Color del objeto
 	program->use();
@@ -120,8 +120,8 @@ void MyRender::render() {
   vec4 lp = viewMatrix * lightPosWCS;
   glUniform3f(lightPosLoc, lp.x, lp.y, lp.z);
 
-  // Posición de la base del cilindro en el espacio del mundo
-  glUniform3fv(cylinderPosLoc, 1, &cylinderPosWCS.x);
+  // Posición de la base del cono en el espacio del mundo
+  glUniform3fv(conePosLoc, 1, &conePosWCS.x);
 
   // Dibujando el objeto
   mats->pushMatrix(GLMatrices::MODEL_MATRIX);
@@ -137,13 +137,13 @@ void MyRender::render() {
   // Dibujamos los ejes de coordenadas
   axes.render();
 
-  // Dibujamos el cilindro en alámbrico
+  // Dibujamos el cono en alámbrico
   mats->pushMatrix(GLMatrices::MODEL_MATRIX);
-  mats->translate(GLMatrices::MODEL_MATRIX, cylinderPosWCS);
+  mats->translate(GLMatrices::MODEL_MATRIX, conePosWCS);
 
   GLStateCapturer<PolygonModeState> restorePolygonModeState;
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  auto t = cylinderAxis->get();
+  auto t = coneAxis->get();
   auto yp1 = t.y + 1.0f;
   mats->multMatrix(GLMatrices::MODEL_MATRIX, glm::mat4(
     t.y + (t.z * t.z / yp1), -t.x, -t.z * t.x / yp1, 0.0f,
@@ -151,11 +151,11 @@ void MyRender::render() {
     -t.z*t.x / yp1, -t.z, t.y + (t.x*t.x / yp1), 0.0f,
     0.0f, 0.0f, 0.0f, 1.0f
   ));
-  vec3 cylScale(cylinderRadius->get());
-  cylScale.y = cylinderHeight->get();
+  vec3 cylScale(coneRadius->get());
+  cylScale.y = coneHeight->get();
   mats->scale(GLMatrices::MODEL_MATRIX, cylScale);
   mats->translate(GLMatrices::MODEL_MATRIX, 0.0f, 0.5f, 0.0f);
-  cylinderModel.render();
+  coneModel.render();
   mats->popMatrix(GLMatrices::MODEL_MATRIX);
 
   CHECK_GL();
@@ -173,23 +173,23 @@ void MyRender::reshape(uint w, uint h) {
 
 void MyRender::buildGUI() {
   // Un Panel representa un conjunto de widgets agrupados en una ventana, con un título
-  auto panel = addPanel("Cilindro");
+  auto panel = addPanel("Cono");
 
   // Podemos darle un tamaño y una posición, aunque no es necesario
   panel->setPosition(5, 50);
   panel->setSize(150, 240);
 
-  cylinderRadius = std::make_shared<FloatSliderWidget>("Radio", INITIAL_RADIUS, 0.001f, 2.0f,
-    program, "cylinderRadius");
-  panel->addWidget(cylinderRadius);
+  coneRadius = std::make_shared<FloatSliderWidget>("Radio", INITIAL_RADIUS, 0.001f, 2.0f,
+    program, "coneRadius");
+  panel->addWidget(coneRadius);
 
-  cylinderHeight = std::make_shared<FloatSliderWidget>("Altura", INITIAL_HEIGHT, 0.001f, 2.0f,
-    program, "cylinderHeight");
-  panel->addWidget(cylinderHeight);
+  coneHeight = std::make_shared<FloatSliderWidget>("Altura", INITIAL_HEIGHT, 0.001f, 2.0f,
+    program, "coneHeight");
+  panel->addWidget(coneHeight);
 
-  cylinderAxis = std::make_shared<DirectionWidget>("Eje", INITIAL_AXIS, program, "cylinderAxis");
-  cylinderAxis->setCamera(getCameraHandler()->getCameraPtr());
-  panel->addWidget(cylinderAxis);
+  coneAxis = std::make_shared<DirectionWidget>("Eje", INITIAL_AXIS, program, "coneAxis");
+  coneAxis->setCamera(getCameraHandler()->getCameraPtr());
+  panel->addWidget(coneAxis);
 
 }
 
