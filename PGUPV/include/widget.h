@@ -9,7 +9,7 @@ namespace PGUPV {
 
   class Widget {
   public:
-    Widget() : visible(true), disabled(false), preferredWidth(-1.0f) {};
+    Widget() : id(idGen++), visible(true), disabled(false), preferredWidth(-1.0f) {};
     virtual ~Widget() {};
 
     std::string getName() const { return name; };
@@ -41,8 +41,8 @@ namespace PGUPV {
   protected:
     bool visible, disabled;
 
-    static unsigned long counter;
-
+    static uint32_t idGen;
+	uint32_t id{ 0 };
     std::string label, name;
     std::shared_ptr<Program> program;
     int uniformLoc;

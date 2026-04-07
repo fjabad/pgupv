@@ -36,7 +36,7 @@ auto value = list->getSelectedUserData(); // para obtener el valor asociado al e
 
 namespace PGUPV {
 
-	bool renderListBox(const std::string& label, int* i, const char** ptr, size_t nelems, int numItems);
+	bool renderListBox(uint32_t id, const std::string& label, int* i, const char** ptr, size_t nelems, int numItems);
 
 
 	template<typename T = void*>
@@ -203,7 +203,7 @@ namespace PGUPV {
 		void renderWidget() override {
 			auto i = value.isEmpty() ? -1 : value.getValue();
 			const char** ptr = elementsCString.empty() ? nullptr : &elementsCString[0];
-			if (renderListBox(label, &i, ptr, elements.size(), showNumItems))
+			if (renderListBox(id, label, &i, ptr, elements.size(), showNumItems))
 				value.setValue(i);
 		}
 	protected:

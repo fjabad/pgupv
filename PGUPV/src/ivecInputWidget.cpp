@@ -7,7 +7,7 @@ using PGUPV::IVecInputWidget;
 template<typename V>
 bool IVecInputWidget<V>::renderIVecInputWidget(const std::string & l, V & v)
 {
-	return GUILib::InputInt(l, v);
+	return GUILib::InputInt(id, l, v);
 }
 
 template class IVecInputWidget<glm::ivec2>;

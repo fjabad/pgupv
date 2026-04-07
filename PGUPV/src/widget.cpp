@@ -4,7 +4,7 @@
 
 using PGUPV::Widget;
 
-unsigned long Widget::counter = 0;
+uint32_t Widget::idGen = 1;
 
 void Widget::render() {
 	if (visible) {

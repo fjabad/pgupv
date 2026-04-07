@@ -104,30 +104,35 @@ void GUILib::forgetState() {
 	}
 }
 
-bool GUILib::Button(const std::string &label, const glm::vec2 &size) {
-	return ImGui::Button(label.c_str(), ImVec2(size.x, size.y));
-}
-
-bool GUILib::Checkbox(const std::string &label, bool *status) {
-	return ImGui::Checkbox(label.c_str(), status);
-}
-
-bool GUILib::ColorEdit(const std::string &label, glm::vec3 &color, bool hdr) {
-	return ImGui::ColorEdit3(label.c_str(), (float*)&color.r, hdr ? ImGuiColorEditFlags_HDR : 0);
-}
-
-bool GUILib::ColorEdit(const std::string &label, glm::vec4 &color, bool hdr) {
-	return ImGui::ColorEdit4(label.c_str(), (float*)&color.r, hdr ? ImGuiColorEditFlags_HDR : 0);
+static std::string LABEL_ID(uint32_t id, const std::string& label) {
+	return label + "##" + std::to_string(id);
 }
 
 
-bool GUILib::DirectionGizmo(const std::string &label, glm::vec3 &direction) {
-	return DirectionGizmo(label, direction, direction);
+bool GUILib::Button(uint32_t id, const std::string &label, const glm::vec2 &size) {
+	return ImGui::Button(LABEL_ID(id, label).c_str(), ImVec2(size.x, size.y));
 }
 
-bool GUILib::DirectionGizmo(const std::string &label, glm::vec3 &direction, glm::vec3 &directionShown) {
+bool GUILib::Checkbox(uint32_t id, const std::string &label, bool *status) {
+	return ImGui::Checkbox(LABEL_ID(id, label).c_str(), status);
+}
+
+bool GUILib::ColorEdit(uint32_t id, const std::string &label, glm::vec3 &color, bool hdr) {
+	return ImGui::ColorEdit3(LABEL_ID(id, label).c_str(), (float*)&color.r, hdr ? ImGuiColorEditFlags_HDR : 0);
+}
+
+bool GUILib::ColorEdit(uint32_t id, const std::string &label, glm::vec4 &color, bool hdr) {
+	return ImGui::ColorEdit4(LABEL_ID(id, label).c_str(), (float*)&color.r, hdr ? ImGuiColorEditFlags_HDR : 0);
+}
+
+
+bool GUILib::DirectionGizmo(uint32_t id, const std::string &label, glm::vec3 &direction) {
+	return DirectionGizmo(id, label, direction, direction);
+}
+
+bool GUILib::DirectionGizmo(uint32_t id, const std::string &label, glm::vec3 &direction, glm::vec3 &directionShown) {
 	auto md = -direction;
-	auto result = ImGui::gizmo3D(label.c_str(), md);
+	auto result = ImGui::gizmo3D(LABEL_ID(id, label).c_str(), md);
 	direction = -md;
 	std::ostringstream os;
 	os.precision(4);
@@ -140,53 +145,53 @@ bool GUILib::DirectionGizmo(const std::string &label, glm::vec3 &direction, glm:
 	return result;
 }
 
-bool GUILib::SliderFloat(const std::string &label, float &value, float min, float max, const std::string &display_format) {
-	return ImGui::SliderFloat(label.c_str(), &value, min, max, display_format.c_str());
+bool GUILib::SliderFloat(uint32_t id, const std::string &label, float &value, float min, float max, const std::string &display_format) {
+	return ImGui::SliderFloat(LABEL_ID(id, label).c_str(), &value, min, max, display_format.c_str());
 }
 
-bool GUILib::SliderFloat(const std::string &label, glm::vec2 &value, float min, float max, const std::string &display_format)
+bool GUILib::SliderFloat(uint32_t id, const std::string &label, glm::vec2 &value, float min, float max, const std::string &display_format)
 {
-	return ImGui::SliderFloat2(label.c_str(), &value.x, min, max, display_format.c_str());
+	return ImGui::SliderFloat2(LABEL_ID(id, label).c_str(), &value.x, min, max, display_format.c_str());
 }
 
 void GUILib::ProgressBar(float fraction) {
 	ImGui::ProgressBar(fraction);
 }
 
-bool GUILib::SliderFloat(const std::string &label, glm::vec3 &value, float min, float max, const std::string &display_format) {
-	return ImGui::SliderFloat3(label.c_str(), &value.x, min, max, display_format.c_str());
+bool GUILib::SliderFloat(uint32_t id, const std::string &label, glm::vec3 &value, float min, float max, const std::string &display_format) {
+	return ImGui::SliderFloat3(LABEL_ID(id, label).c_str(), &value.x, min, max, display_format.c_str());
 }
-bool GUILib::SliderFloat(const std::string &label, glm::vec4 &value, float min, float max, const std::string &display_format) {
-	return ImGui::SliderFloat4(label.c_str(), &value.x, min, max, display_format.c_str());
-}
-
-bool GUILib::InputInt(const std::string &label, int &value) {
-	return ImGui::InputInt(label.c_str(), &value);
+bool GUILib::SliderFloat(uint32_t id, const std::string &label, glm::vec4 &value, float min, float max, const std::string &display_format) {
+	return ImGui::SliderFloat4(LABEL_ID(id, label).c_str(), &value.x, min, max, display_format.c_str());
 }
 
-bool GUILib::InputInt(const std::string &label, glm::ivec2 &value) {
-	return ImGui::InputInt2(label.c_str(), &value.x);
+bool GUILib::InputInt(uint32_t id, const std::string &label, int &value) {
+	return ImGui::InputInt(LABEL_ID(id, label).c_str(), &value);
 }
-bool GUILib::InputInt(const std::string &label, glm::ivec3 &value) {
-	return ImGui::InputInt3(label.c_str(), &value.x);
+
+bool GUILib::InputInt(uint32_t id, const std::string &label, glm::ivec2 &value) {
+	return ImGui::InputInt2(LABEL_ID(id, label).c_str(), &value.x);
 }
-bool GUILib::InputInt(const std::string &label, glm::ivec4 &value) {
-	return ImGui::InputInt4(label.c_str(), &value.x);
+bool GUILib::InputInt(uint32_t id, const std::string &label, glm::ivec3 &value) {
+	return ImGui::InputInt3(LABEL_ID(id, label).c_str(), &value.x);
+}
+bool GUILib::InputInt(uint32_t id, const std::string &label, glm::ivec4 &value) {
+	return ImGui::InputInt4(LABEL_ID(id, label).c_str(), &value.x);
 }
 
 
-bool GUILib::SliderInt(const std::string &label, int &value, int min, int max, const std::string &display_format) {
-	return ImGui::SliderInt(label.c_str(), &value, min, max, display_format.c_str());
+bool GUILib::SliderInt(uint32_t id, const std::string &label, int &value, int min, int max, const std::string &display_format) {
+	return ImGui::SliderInt(LABEL_ID(id, label).c_str(), &value, min, max, display_format.c_str());
 }
 
-bool GUILib::SliderInt(const std::string &label, glm::ivec2 &value, int min, int max, const std::string &display_format) {
-	return ImGui::SliderInt2(label.c_str(), &value.x, min, max, display_format.c_str());
+bool GUILib::SliderInt(uint32_t id, const std::string &label, glm::ivec2 &value, int min, int max, const std::string &display_format) {
+	return ImGui::SliderInt2(LABEL_ID(id, label).c_str(), &value.x, min, max, display_format.c_str());
 }
-bool GUILib::SliderInt(const std::string &label, glm::ivec3 &value, int min, int max, const std::string &display_format) {
-	return ImGui::SliderInt3(label.c_str(), &value.x, min, max, display_format.c_str());
+bool GUILib::SliderInt(uint32_t id, const std::string &label, glm::ivec3 &value, int min, int max, const std::string &display_format) {
+	return ImGui::SliderInt3(LABEL_ID(id, label).c_str(), &value.x, min, max, display_format.c_str());
 }
-bool GUILib::SliderInt(const std::string &label, glm::ivec4 &value, int min, int max, const std::string &display_format){
-	return ImGui::SliderInt4(label.c_str(), &value.x, min, max, display_format.c_str());
+bool GUILib::SliderInt(uint32_t id, const std::string &label, glm::ivec4 &value, int min, int max, const std::string &display_format){
+	return ImGui::SliderInt4(LABEL_ID(id, label).c_str(), &value.x, min, max, display_format.c_str());
 }
 
 
@@ -194,8 +199,9 @@ void GUILib::Text(const std::string &label) {
 	ImGui::Text("%s", label.c_str());
 }
 
-void GUILib::PlotLines(const std::string &label, float *values, size_t count, size_t offset, const std::string &overlay_text, float scale_min, float scale_max, const glm::vec2 &size) {
-	ImGui::PlotLines(label.c_str(), values, static_cast<int>(count), static_cast<int>(offset), overlay_text.c_str(), scale_min, scale_max, ImVec2(size.x, size.y));
+
+void GUILib::PlotLines(uint32_t id, const std::string &label, float *values, size_t count, size_t offset, const std::string &overlay_text, float scale_min, float scale_max, const glm::vec2 &size) {
+	ImGui::PlotLines(LABEL_ID(id, label).c_str(), values, static_cast<int>(count), static_cast<int>(offset), overlay_text.c_str(), scale_min, scale_max, ImVec2(size.x, size.y));
 }
 
 static ImGuiCond toImGUI(GUILib::WindowPosSizeFlags flag) {
@@ -232,18 +238,18 @@ void GUILib::Separator() {
 	ImGui::Separator();
 }
 
-bool GUILib::QuaternionGizmo(const std::string &label, glm::quat &q) {
-	return ImGui::gizmo3D(label.c_str(), q, IMGUIZMO_DEF_SIZE, imguiGizmo::mode3Axes | imguiGizmo::sphereAtOrigin);
+bool GUILib::QuaternionGizmo(uint32_t id, const std::string &label, glm::quat &q) {
+	return ImGui::gizmo3D(LABEL_ID(id, label).c_str(), q, IMGUIZMO_DEF_SIZE, imguiGizmo::mode3Axes | imguiGizmo::sphereAtOrigin);
 }
 
-bool GUILib::ListBox(const std::string &label, int *current, const char * const items[], size_t count, int height_items) {
-	bool res = ImGui::ListBox(label.c_str(), current, items, gsl::narrow<int>(count), height_items);
+bool GUILib::ListBox(uint32_t id, const std::string &label, int *current, const char * const items[], size_t count, int height_items) {
+	bool res = ImGui::ListBox(LABEL_ID(id, label).c_str(), current, items, gsl::narrow<int>(count), height_items);
 	return res;
 }
 
-bool GUILib::MultiListBoxBegin(const std::string & label)
+bool GUILib::MultiListBoxBegin(uint32_t id, const std::string & label)
 {
-	return ImGui::BeginListBox(label.c_str());
+	return ImGui::BeginListBox(LABEL_ID(id, label).c_str());
 }
 
 bool GUILib::MultiListBoxItem(const std::string & label, bool * selected)

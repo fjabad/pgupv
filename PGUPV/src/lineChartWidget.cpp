@@ -6,7 +6,6 @@
 
 using PGUPV::LineChartWidget;
 
-
 LineChartWidget::LineChartWidget(const std::string &label, size_t size, size_t height, size_t size_summary) :
 	nextPos(0), widgetHeight(height), showSummaryLastNValues(size_summary) {
 	assert(size >= size_summary);
@@ -45,5 +44,5 @@ void LineChartWidget::renderWidget() {
 		out << std::fixed << (accum / showSummaryLastNValues);
 		summ = out.str();
 	}
-	GUILib::PlotLines(summ, &values[0], values.size(), nextPos, label, FLT_MAX, FLT_MAX, glm::vec2(0, widgetHeight));
+	GUILib::PlotLines(id, summ, &values[0], values.size(), nextPos, label, FLT_MAX, FLT_MAX, glm::vec2(0, widgetHeight));
 }

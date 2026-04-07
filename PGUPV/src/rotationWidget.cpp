@@ -54,7 +54,7 @@ Value<glm::quat>& RotationWidget::getValue() {
 void RotationWidget::renderWidget() {
 	auto v = value.getValue();
 
-	if (GUILib::QuaternionGizmo(label, v)) {
+	if (GUILib::QuaternionGizmo(id, label, v)) {
 		value.setValue(v);
 	}
 }

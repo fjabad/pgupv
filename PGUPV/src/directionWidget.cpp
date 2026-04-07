@@ -48,7 +48,7 @@ void DirectionWidget::renderWidget() {
 	auto viewMatrix = cameraPtr ? glm::mat3(cameraPtr->getViewMatrix()) : glm::mat3(1.0f);
 
 	auto xformed = viewMatrix * (renderReversedFlag ? -original : original);
-	if (GUILib::DirectionGizmo(label, xformed, original)) {
+	if (GUILib::DirectionGizmo(id, label, xformed, original)) {
 		auto result = glm::transpose(viewMatrix) * (renderReversedFlag ? -xformed : xformed);
 		value.setValue(result);
 	}

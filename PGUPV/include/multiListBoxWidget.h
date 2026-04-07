@@ -20,7 +20,7 @@ Clase para seleccionar uno o varios elementos de una lista.  Ejemplo de uso:
 
 namespace PGUPV {
 
-	bool _multilistboxBegin(const std::string& label);
+	bool _multilistboxBegin(uint32_t id, const std::string& label);
 	bool _multilistboxItem(const std::string& element, bool& selected);
 	void _multilistboxEnd();
 

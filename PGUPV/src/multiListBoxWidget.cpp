@@ -2,8 +2,8 @@
 
 #include <guipg.h>
 
-bool PGUPV::_multilistboxBegin(const std::string& label) {
-	return PGUPV::GUILib::MultiListBoxBegin(label);
+bool PGUPV::_multilistboxBegin(uint32_t id, const std::string& label) {
+	return PGUPV::GUILib::MultiListBoxBegin(id, label);
 }
 
 

@@ -38,6 +38,6 @@ Value<bool>& CheckBoxWidget::getValue() {
 
 void CheckBoxWidget::renderWidget() {
 	auto b = value.getValue();
-	if (GUILib::Checkbox(label, &b))
+	if (GUILib::Checkbox(id, label, &b))
 		value.setValue(b);
 }

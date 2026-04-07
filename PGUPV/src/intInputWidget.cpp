@@ -17,7 +17,7 @@ IntInputWidget::IntInputWidget(const std::string &label, int value, int min, int
 
 void IntInputWidget::renderWidget() {
 	int i = value.getValue();
-	if (GUILib::InputInt(label, i)) {
+	if (GUILib::InputInt(id, label, i)) {
 		if (i < min) i = min;
 		else if (i > max) i = max;
 		value.setValue(i);

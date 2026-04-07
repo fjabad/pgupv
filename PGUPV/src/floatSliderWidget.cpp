@@ -43,7 +43,7 @@ const std::string FloatSliderWidget::getDisplayFormat()
 void FloatSliderWidget::renderWidget() 
 {
     float f = value.getValue();
-    if (GUILib::SliderFloat(label, f, min, max, displayFormat))
+    if (GUILib::SliderFloat(id, label, f, min, max, displayFormat))
         value.setValue(f);
 }
 

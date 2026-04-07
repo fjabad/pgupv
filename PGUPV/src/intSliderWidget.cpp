@@ -24,6 +24,6 @@ const std::string IntSliderWidget::getDisplayFormat() {
 void IntSliderWidget::renderWidget() {
 	int i = value.getValue();
 
-	if (GUILib::SliderInt(label, i, min, max, displayFormat))
+	if (GUILib::SliderInt(id, label, i, min, max, displayFormat))
 		value.setValue(i);
 }

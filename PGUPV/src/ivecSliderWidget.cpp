@@ -8,7 +8,7 @@ using PGUPV::IVecSliderWidget;
 template<typename V>
 bool IVecSliderWidget<V>::renderSliderInt(V &v)
 {
-	return GUILib::SliderInt(label, v, min, max, displayFormat);
+	return GUILib::SliderInt(id, label, v, min, max, displayFormat);
 }
 
 template class IVecSliderWidget<glm::ivec2>;

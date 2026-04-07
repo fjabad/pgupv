@@ -21,34 +21,34 @@ namespace PGUPV {
 		static void shutdown();
 		static void forgetState();
 
-		static bool Button(const std::string &label, const glm::vec2 &size);
-		static bool Checkbox(const std::string &label, bool *status);
+		static bool Button(uint32_t id, const std::string &label, const glm::vec2 &size);
+		static bool Checkbox(uint32_t id, const std::string &label, bool *status);
 
-		static bool ColorEdit(const std::string &label, glm::vec3 &color, bool hdr = false);
-		static bool ColorEdit(const std::string &label, glm::vec4 &color, bool hdr = false);
+		static bool ColorEdit(uint32_t id, const std::string &label, glm::vec3 &color, bool hdr = false);
+		static bool ColorEdit(uint32_t id, const std::string &label, glm::vec4 &color, bool hdr = false);
 
-		static bool DirectionGizmo(const std::string &label, glm::vec3 &direction);
+		static bool DirectionGizmo(uint32_t id, const std::string &label, glm::vec3 &direction);
 		// directionShown is used only in the label
-		static bool DirectionGizmo(const std::string &label, glm::vec3 &direction, glm::vec3 &directionShown);
+		static bool DirectionGizmo(uint32_t id, const std::string &label, glm::vec3 &direction, glm::vec3 &directionShown);
 
-		static bool SliderFloat(const std::string &label, float &value, float min, float max, const std::string &display_format);
-		static bool SliderFloat(const std::string &label, glm::vec2 &value, float min, float max, const std::string &display_format);
-		static bool SliderFloat(const std::string &label, glm::vec3 &value, float min, float max, const std::string &display_format);
-		static bool SliderFloat(const std::string &label, glm::vec4 &value, float min, float max, const std::string &display_format);
+		static bool SliderFloat(uint32_t id, const std::string &label, float &value, float min, float max, const std::string &display_format);
+		static bool SliderFloat(uint32_t id, const std::string &label, glm::vec2 &value, float min, float max, const std::string &display_format);
+		static bool SliderFloat(uint32_t id, const std::string &label, glm::vec3 &value, float min, float max, const std::string &display_format);
+		static bool SliderFloat(uint32_t id, const std::string &label, glm::vec4 &value, float min, float max, const std::string &display_format);
 
-		static bool InputInt(const std::string &label, int &value);
-		static bool InputInt(const std::string &label, glm::ivec2 &value);
-		static bool InputInt(const std::string &label, glm::ivec3 &value);
-		static bool InputInt(const std::string &label, glm::ivec4 &value);
+		static bool InputInt(uint32_t id, const std::string &label, int &value);
+		static bool InputInt(uint32_t id, const std::string &label, glm::ivec2 &value);
+		static bool InputInt(uint32_t id, const std::string &label, glm::ivec3 &value);
+		static bool InputInt(uint32_t id, const std::string &label, glm::ivec4 &value);
 
-		static bool SliderInt(const std::string &label, int &value, int min, int max, const std::string &display_format);
-		static bool SliderInt(const std::string &label, glm::ivec2 &value, int min, int max, const std::string &display_format);
-		static bool SliderInt(const std::string &label, glm::ivec3 &value, int min, int max, const std::string &display_format);
-		static bool SliderInt(const std::string &label, glm::ivec4 &value, int min, int max, const std::string &display_format);
+		static bool SliderInt(uint32_t id, const std::string &label, int &value, int min, int max, const std::string &display_format);
+		static bool SliderInt(uint32_t id, const std::string &label, glm::ivec2 &value, int min, int max, const std::string &display_format);
+		static bool SliderInt(uint32_t id, const std::string &label, glm::ivec3 &value, int min, int max, const std::string &display_format);
+		static bool SliderInt(uint32_t id, const std::string &label, glm::ivec4 &value, int min, int max, const std::string &display_format);
 
 		static void Text(const std::string &label);
 
-		static void PlotLines(const std::string &label, float *values, size_t count, size_t offset, const std::string &overlay_text, float scale_min, float scale_max, const glm::vec2 &size);
+		static void PlotLines(uint32_t id, const std::string &label, float *values, size_t count, size_t offset, const std::string &overlay_text, float scale_min, float scale_max, const glm::vec2 &size);
 
 		// Panel
 		enum class WindowPosSizeFlags {
@@ -66,11 +66,11 @@ namespace PGUPV {
 		static void Separator();
 		static void SameLine(float spaceInPixels = 0.0f);
 
-		static bool QuaternionGizmo(const std::string &label, glm::quat &q);
+		static bool QuaternionGizmo(uint32_t id, const std::string &label, glm::quat &q);
 
-		static bool ListBox(const std::string &label, int *current, const char * const items[], size_t count, int height_items);
+		static bool ListBox(uint32_t id, const std::string &label, int *current, const char * const items[], size_t count, int height_items);
 
-		static bool MultiListBoxBegin(const std::string &label);
+		static bool MultiListBoxBegin(uint32_t id, const std::string &label);
 		static bool MultiListBoxItem(const std::string &label, bool *selected);
 		static void MultiListBoxEnd();
 

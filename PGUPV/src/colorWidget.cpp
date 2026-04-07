@@ -7,7 +7,7 @@ using PGUPV::ColorWidget;
 template <typename T> 
 bool ColorWidget<T>::renderColorWidget(const std::string & l, T & color)
 {
-	return GUILib::ColorEdit(l, color);
+	return GUILib::ColorEdit(id, l, color);
 }
 
 template class ColorWidget<glm::vec3>;

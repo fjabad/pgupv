@@ -9,7 +9,7 @@ Button::Button(const std::string &label, std::function<void()> callback) : callb
 }
 
 void Button::renderWidget() {
-	if (GUILib::Button(label, size))
+	if (GUILib::Button(id, label, size))
 		callback();
 }
 
