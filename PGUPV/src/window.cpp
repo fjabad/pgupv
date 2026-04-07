@@ -366,8 +366,10 @@ void Window::buildStatsPanel() {
 	statspanel = std::shared_ptr<Panel>(new Panel("Stats"));
 	fpsWidget = std::make_shared<LineChartWidget>("FPS", 100, 80, 1);
 	msPerFrameWidget = std::make_shared<LineChartWidget>("ms/frame", 100, 80, 1);
+	executedDrawCalls = std::make_shared<Label>("");
 	samplesPassedWidget = std::make_shared<LineChartWidget>("samples", 100, 80, 1);
 	primitivesGeneratedWidget = std::make_shared<LineChartWidget>("primitives", 100, 80, 1);
+
 	auto extendedStatsCB = std::make_shared<CheckBoxWidget>("Collect extended stats");
 	extendedStatsCB->getValue().addListener([&](bool set) {
 		glstats.collectExtendedStats(set);
@@ -404,6 +406,7 @@ void Window::buildStatsPanel() {
 
 	statspanel->addWidget(fpsWidget);
 	statspanel->addWidget(msPerFrameWidget);
+	statspanel->addWidget(executedDrawCalls);
 	statspanel->addWidget(samplesPassedWidget);
 	statspanel->addWidget(primitivesGeneratedWidget);
 	statspanel->addWidget(extendedStatsCB);
@@ -441,6 +444,7 @@ void Window::update(uint64_t ms) {
 		if (fpsWidget) {
 			fpsWidget->pushValue(fps);
 			msPerFrameWidget->pushValue(renderElapsed / nframes);
+			executedDrawCalls->setText("Issued draw calls: " + std::to_string(glstats.getValue(GLStats::Query::IssuedDrawCalls)));
 			samplesPassedWidget->pushValue(static_cast<float>(samplesPassedAccum) / nframes);
 			primitivesGeneratedWidget->pushValue(static_cast<float>(primitivesGeneratedAccum) / nframes);
 			verticesSubmittedWidget->pushValue(static_cast<float>(verticesSubmittedAccum) / nframes);

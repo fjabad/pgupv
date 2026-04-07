@@ -17,7 +17,8 @@ namespace PGUPV {
 			SamplesPassed, PrimitivesGenerated, VerticesSubmittedExt, PrimitivesSubmittedExt,
 			VertexShaderInvocationsExt, TessControlShaderPatchesExt, TessEvalShaderInvocationsExt,
 			GeometryShaderInvocationsExt, GeometryShaderPrimitivesEmittedExt, FragmentShaderInvocationsExt,
-			ComputeShaderInvocationsExt, ClippingInputPrimitivesExt, ClippingOutputPrimitivesExt
+			ComputeShaderInvocationsExt, ClippingInputPrimitivesExt, ClippingOutputPrimitivesExt,
+			IssuedDrawCalls
 		};
 		GLStats();
 		void beginFrame();
@@ -37,6 +38,7 @@ namespace PGUPV {
 		bool collectExtendedStatsFlag;
 		MicroSecStopWatch stopwatch;
 		float elapsedMs;
+		uint64_t executedDrawCommand;
 	};
 };
 

@@ -53,11 +53,25 @@ namespace PGUPV {
 	\return el tipo de primitiva OpenGL que se dibujará (GL_TRIANGLES, GL_LINE_LOOP...)
 	*/
 	GLenum getGLPrimitiveType() const { return mode; }
+
+	/**
+	 * @brief resetea el contador de draw-calls ejecutadas
+	 */
+	static void resetDrawCommandCounter() { dcCounter = 0; }
+
+	/**
+	 * @brief devuelve el número de drawcalls ejecutadas desde la última llamada 
+		a DrawCommand::resetDrawCommandCounter
+	 * @return el número de llamadas ejecutadas (llamadas a funciones glDraw*, glMulti*, etc.)
+	 */
+	static uint64_t getDrawCommandCounter() { return dcCounter; }
+
   protected:
     GLenum mode;
     GLint verticesPerPatch;
     bool restartPrimitive;
     GLuint restartIndex;
+	static uint64_t dcCounter;
   };
 
   struct TriangleIndices {

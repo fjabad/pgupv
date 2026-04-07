@@ -1,4 +1,5 @@
 #include "glStats.h"
+#include "drawCommand.h"
 
 using PGUPV::GLStats;
 
@@ -16,6 +17,8 @@ void GLStats::beginFrame() {
 	for (unsigned int i = 0; i < end; i++) {
 		queries[i].begin();
 	}
+	PGUPV::DrawCommand::resetDrawCommandCounter();
+
 	stopwatch.restart();
 }
 
@@ -28,6 +31,7 @@ void GLStats::endFrame() {
 	for (unsigned int i = 0; i < end; i++) {
 		queries[i].end();
 	}
+	executedDrawCommand = PGUPV::DrawCommand::getDrawCommandCounter();
 }
 
 
@@ -45,5 +49,9 @@ bool GLStats::collectExtendedStats(bool extendedStats)
 }
 
 uint64_t GLStats::getValue(Query query) {
+	
+	if (query == Query::IssuedDrawCalls)
+		return executedDrawCommand;
+
 	return queries[PGUPV::to_underlying(query)].getValueU64();
 }

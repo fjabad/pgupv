@@ -225,7 +225,7 @@ namespace PGUPV {
 		std::shared_ptr<Panel> statspanel;
 		std::shared_ptr<LineChartWidget> fpsWidget, msPerFrameWidget, samplesPassedWidget, primitivesGeneratedWidget, verticesSubmittedWidget;
 		std::shared_ptr<LineChartWidget> primitivesSubmittedWidget, fragmentShaderInvWidget, clippingInWidget, clippingOutWidget;
-		std::shared_ptr<Label> vertexShaderInvWidget, tessControlShaderInvWidget, tessEvalShaderInvWidget, computeShaderInvWidget;
+		std::shared_ptr<Label> executedDrawCalls, vertexShaderInvWidget, tessControlShaderInvWidget, tessEvalShaderInvWidget, computeShaderInvWidget;
 
 		GLStats glstats;
 

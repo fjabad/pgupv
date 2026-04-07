@@ -12,6 +12,7 @@ using PGUPV::MultiDrawElements;
 using PGUPV::MultiDrawElementsBaseVertex;
 using PGUPV::TriangleIndices;
 
+uint64_t DrawCommand::dcCounter = 0;
 
 void DrawCommand::render() {
   if (mode == GL_PATCHES) {
@@ -23,6 +24,8 @@ void DrawCommand::render() {
   }
 
   renderFunc();
+
+  dcCounter++;
 
   if (restartPrimitive) {
     glDisable(GL_PRIMITIVE_RESTART);
