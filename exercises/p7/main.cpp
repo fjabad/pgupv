@@ -18,6 +18,8 @@ Visualizador de terreno usando shaders de teselación.
 
 */
 
+constexpr float terrainSize = 64.f; // El terreno tiene 64x64 unidades
+constexpr unsigned int TerrainLimitUnitTex = 55;  // Unidad de textura para las paredes del terreno
 class MyRender : public Renderer {
 public:
 	MyRender() {};
@@ -32,7 +34,12 @@ private:
 	std::shared_ptr<GLMatrices> mats;
 	Model model;
 	Texture2D heightMap;
+	
+	Model limits;
+	Texture2D limitColors;
 };
+
+void buildLimits(Model& m, Texture2D &colors);
 
 void MyRender::setup() {
 	glClearColor(1.0f, 1.f, 1.0f, 1.0f);
@@ -40,10 +47,10 @@ void MyRender::setup() {
 
 	auto m = std::make_shared<Mesh>();
 	std::vector<glm::vec3> vs;
-	vs.push_back(glm::vec3(-32.0, 0.0, 32.0));
-	vs.push_back(glm::vec3(32.0, 0.0, 32.0));
-	vs.push_back(glm::vec3(32.0, 0.0, -32.0));
-	vs.push_back(glm::vec3(-32.0, 0.0, -32.0));
+	vs.push_back(glm::vec3(-terrainSize/2, 0.0, terrainSize/2.0));
+	vs.push_back(glm::vec3(terrainSize/2.0, 0.0, terrainSize/2.0));
+	vs.push_back(glm::vec3(terrainSize/2.0, 0.0, -terrainSize/2.0));
+	vs.push_back(glm::vec3(-terrainSize/2.0, 0.0, -terrainSize/2.0));
 	m->addVertices(vs);
 
 	std::vector<glm::vec2> tc;
@@ -62,13 +69,14 @@ void MyRender::setup() {
 
 	// Cargamos la nueva textura desde un fichero
 	heightMap.loadImage(App::assetsDir() + "images/heightmap.png");
-	heightMap.bind(GL_TEXTURE0);
 
 	reload();
 
 	auto camera = std::make_shared<WalkCameraHandler>(20.0f); // Altura inicial de la cámara
 	camera->setWalkSpeed(5.0f);
 	setCameraHandler(camera);
+
+	buildLimits(limits, limitColors);
 }
 
 bool MyRender::reload() {
@@ -92,7 +100,15 @@ void MyRender::render() {
 
 	mats->setMatrix(GLMatrices::VIEW_MATRIX, getCamera().getViewMatrix());
 	program->use();
+	heightMap.bind(GL_TEXTURE0);
 	model.render();
+
+	glEnable(GL_BLEND);
+	TextureReplaceProgram::use();
+	TextureReplaceProgram::setTextureUnit(TerrainLimitUnitTex);
+	limits.render();
+	glDisable(GL_BLEND);
+
 
 	CHECK_GL();
 }
@@ -104,6 +120,30 @@ void MyRender::reshape(uint w, uint h) {
 	float ar = (float)w / h;
 	mats->setMatrix(GLMatrices::PROJ_MATRIX,
 		glm::perspective(glm::radians(60.0f), ar, 0.1f, 100.0f));
+}
+void buildLimits(Model& m, Texture2D &limitColors) {
+	auto mesh = std::make_shared<Mesh>();
+	auto s = terrainSize / 2; 
+	float h = 20.f;
+	std::vector<glm::vec3> vtcs =
+	{
+		{-s, h, -s}, {-s, 0, -s},
+		{ s, h, -s}, { s, 0, -s},
+		{ s, h,  s}, { s, 0,  s},
+		{-s, h,  s}, {-s, 0,  s},
+		{-s, h, -s}, {-s, 0, -s}
+	};
+	mesh->addVertices(vtcs);
+	std::vector<float> texc = { 0, 0, 10, 10, 20, 20, 30, 30, 40, 40 };
+	mesh->addTexCoord(0, texc);
+	mesh->addDrawCommand(new DrawArrays(GL_TRIANGLE_STRIP, 0, static_cast<GLsizei>(vtcs.size())));
+	m.addMesh(mesh);
+	std::vector<uint8_t> colors{ 10, 10, 10, 180, 20, 20};
+	limitColors.loadImageFromMemory(colors.data(), 2, 1, GL_RGB, GL_UNSIGNED_BYTE, GL_RGBA);
+	limitColors.setMagFilter(GL_NEAREST);
+	glBlendColor(0, 0, 0, 0.4f);
+	glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+	limitColors.bind(GL_TEXTURE0 + TerrainLimitUnitTex);
 }
 
 int main(int argc, char* argv[]) {
