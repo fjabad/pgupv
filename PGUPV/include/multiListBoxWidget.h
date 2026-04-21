@@ -128,7 +128,7 @@ namespace PGUPV {
 		void renderWidget() override {
 			bool changed = false;
 			const auto& selection = value.getValue();
-			if (_multilistboxBegin(label)) {
+			if (_multilistboxBegin(id, label)) {
 				std::vector<unsigned int> newselection;
 				for (index_value_type i = 0; i < static_cast<index_value_type>(elements.size()); i++) {
 					bool selected = std::find(selection.begin(), selection.end(), i) != selection.end();

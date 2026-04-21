@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>  // for string
+#include <cstdint>
 
 namespace PGUPV {
   class Program;
