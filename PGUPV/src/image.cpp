@@ -231,10 +231,10 @@ GLenum Image::ImageImpl::getGLPixelBaseType() const {
 			else
 				return GL_UNSIGNED_BYTE;
 		case FIT_UINT16:
-			return GL_UNSIGNED_SHORT;
-		case FIT_INT16:
 		case FIT_RGB16:
 		case FIT_RGBA16:
+			return GL_UNSIGNED_SHORT;
+		case FIT_INT16:
 			return GL_SHORT;
 		case FIT_UINT32:
 			return GL_UNSIGNED_INT;
